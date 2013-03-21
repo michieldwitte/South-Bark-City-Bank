@@ -1,0 +1,18 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{Sander Demeester}
+\title{OTP-crypto design}
+\begin{document}
+Voor ons OTP systeem zullen we het volgende systeem gebruiken.
+We zullen gebruik maken van een simpel, sterk keyded pseudo-random number generator. Wat we zullen maken is een soort van "grid" met passcodes. Er zal een sequence key zijn van 256-bit die gekoppeld is aan de gebruiker zijn account. 
+Deze key zal samen met een counter (die start op 1 en gewoon telt) worden gebruikt als input naar het AES-cijfer. 
+De output van het AES-cijfer is een string van 128-bits en word opgedeeld in stukken van 24bit. Elke van deze stukken wordt dan geconverdeerd naar een 4 teken passcode. Deze passworde slaan we op in een grid. Omdat 128 bit niet mooi te verdelen is over 24 bits krijgen we per iteratie van het AES-cijfer ongeveer 5 passcodes. We nemen de laatste byte van deze 128bit incrementeren opnieuw de counter maken terug 128 bits en nemen de 2 eerste bytes hiervan en samen met die vorige byte van de vorige ronde maken we terug een passcode.
+
+De master key is 384-bit groot. 
+
+Nog niet af.
+
+\end{document}
