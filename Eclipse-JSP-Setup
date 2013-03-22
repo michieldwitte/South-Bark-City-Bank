@@ -1,0 +1,23 @@
+eclipse installeren (juno ?)
+
+help > check for updates & alle updates installeren
+help > install new software
+add:
+        juno
+        http://download.eclipse.org/releases/juno/
+ok
+dan in de dropdownmenu "juno - http://..." selecteren
+Install all packages from the category "Web, XML, Java EE Development and OSGi Enterprise Development" except "PHP Development" and the "RAP" Tooling.
+
+window > preferences > server > runtime environments
+add
+Apache > Apache Tomcat v7.0
+next
+gewoon "download and install" drukken en een locatie aanduiden
+finish
+
+
+new project > web > dynamic web project
+
+dan in WebContent een index.jsp aanmaken
+en het zou moeten werken
