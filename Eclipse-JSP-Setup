@@ -16,8 +16,15 @@ next
 gewoon "download and install" drukken en een locatie aanduiden
 finish
 
+via eclipse kan je de folder OperationBank in OperationBank importeren
+om dit alles via git te laten werken kun je bij help>install new software
+terug met "juno - http://..."
+bij collaboration
+-Eclipse CVS Client
+-Eclipse EGit
+-Eclipse EGit Mylyn GitHub Feature
 
-new project > web > dynamic web project
-
-dan in WebContent een index.jsp aanmaken
-en het zou moeten werken
+installeren,
+dan bij het geimporteerde project rechts-klikken>team>share ...
+dan ergens daarbij kun je kiezen voor een al reeds bestaande .git
+en dan zou het normaal moeten werken om te committen, pullen, pushen, ...
