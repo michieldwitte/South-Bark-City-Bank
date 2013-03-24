@@ -2,17 +2,29 @@
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{hyperref}
 \usepackage{amssymb}
 \author{Sander Demeester}
 \title{OTP-crypto design}
 \begin{document}
-Voor ons OTP systeem zullen we het volgende systeem gebruiken.
-We zullen gebruik maken van een simpel, sterk keyded pseudo-random number generator. Wat we zullen maken is een soort van "grid" met passcodes. Er zal een sequence key zijn van 256-bit die gekoppeld is aan de gebruiker zijn account. 
-Deze key zal samen met een counter (die start op 1 en gewoon telt) worden gebruikt als input naar het AES-cijfer. 
-De output van het AES-cijfer is een string van 128-bits en word opgedeeld in stukken van 24bit. Elke van deze stukken wordt dan geconverdeerd naar een 4 teken passcode. Deze passworde slaan we op in een grid. Omdat 128 bit niet mooi te verdelen is over 24 bits krijgen we per iteratie van het AES-cijfer ongeveer 5 passcodes. We nemen de laatste byte van deze 128bit incrementeren opnieuw de counter maken terug 128 bits en nemen de 2 eerste bytes hiervan en samen met die vorige byte van de vorige ronde maken we terug een passcode.
+\begin{section}*{HMAC-based one-time password algoritme}
+\url{http://tools.ietf.org/html/rfc4226}
+\href{http://tools.ietf.org/html/rfc4226}{HOTP: An HMAC-Based One-Time Password Algorithm}\\
+\url{http://tools.ietf.org/html/rfc6238}
+\href{http://tools.ietf.org/html/rfc6238}{TOTP: Time-Based One-Time Password Algorithm}
+\section*{HOTP}
+HMAC based one-time password algoritme voor 2-factor authenticatie.
+\subsection*{Definitie}
+\begin{itemize}
+\item $K$ is een \emph{secret key}.
+\item $C$ is een \emph{counter}.
+\item HMAC($K$,$C$) is een HMAC functie, in rfc4226 staat vermeld dat hier SHA1 moet worden gebruikt. 
+\item Selecteer 4 bytes van de resulterende HMAC. We noemen deze functie $T()$. De 4-bytes moeten altijd op de zelde manier worden gekozen.
+\item HOTP($K$,$C$) = $T($HMAC($K$,$C$)) \& 0x7FFFFFFF. De reden dat we hier een AND-mask toepassen is om de MSB weg te werken enzo meer compatibel te zijn tussen verschillende processen.
+\end{itemize}
+\subsection*{Voorwaarden}
+Zoals vermeld moet er worden gebruikt gemaakt van een \emph{secret key}. Deze key moet gekend zijn door de client als door de server, alsook de counter. De counter moet nooit worden gecommuniceerd met de server. De \emph{secert key} wel.\\
 
-De master key is 384-bit groot. 
-
-Nog niet af.
-
+Eventueel kunnen we hier TOTP van maken door unix-time te gebruiken.
+\end{section}
 \end{document}
