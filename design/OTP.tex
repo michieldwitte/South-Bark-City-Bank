@@ -13,19 +13,22 @@
 \url{http://tools.ietf.org/html/rfc6238}
 \href{http://tools.ietf.org/html/rfc6238}{TOTP: Time-Based One-Time Password Algorithm}
 \section*{HOTP}
-HMAC based one-time password algoritme voor 2-factor authenticatie.\\
-De RFC voor dit algoritme vertelt ons dat we SHA1 moeten gebruiken. Maar SHA1 heeft technische problemen, nl er kunnen collisions worden gevonden in $2^69$ operaties. Dit is argumenteerbaar of het echt een probleem zou zijn omdat de counter die hier zou worden gebruikt blijft optellen. Dus voorspellen waar de counter zou zijn is moeilijk. Let wel op, moeilijk. Niet onmogelijk. 
+HOTP is een HMAC based one-time password algoritme dat voor 2-factor authenticatie gebruikt wordt..\\
+
 \subsection*{Definitie}
 \begin{itemize}
 \item $K$ is een \emph{secret key}.
 \item $C$ is een \emph{counter}.
-\item HMAC($K$,$C$) is een HMAC functie, in rfc4226 staat vermeld dat hier SHA1 moet worden gebruikt. 
-\item Selecteer 4 bytes van de resulterende HMAC. We noemen deze functie $T()$. De 4-bytes moeten altijd op de zelde manier worden gekozen.
+\item HMAC($K$,$C$) is een HMAC functie, in rfc4226 staat vermeld dat hier SHA1 moet worden gebruikt, maar voor een HMAC kan je een willekeurige hashing algoritme gebruiken. Als de lengte van de key (\emph{shared secret}) te groot is zal deze gewoon worden getrunceerd.
+\item Selecteer 4 bytes van de resulterende HMAC. We noemen deze functie $T()$. De 4-bytes moeten altijd op de zelde manier worden gekozen.\\
+HMAC($K$,$C$) = $H((K \oplus opad) || H((K \oplus ipad) || C))$
 \item HOTP($K$,$C$) = $T($HMAC($K$,$C$)) \& 0x7FFFFFFF. De reden dat we hier een AND-mask toepassen is om de MSB weg te werken enzo meer compatibel te zijn tussen verschillende processen.
+\item Op het gewenste aantal digits te verkrijgen trunceren we gewoon de output op de volgende manier:
+$\text{HTOP} = \text{HTOP}(K,C) \mod 10^d$ waar $d$ het aantal digits is. 
 \end{itemize}
-\subsection*{Voorwaarden}
-Zoals vermeld moet er worden gebruikt gemaakt van een \emph{secret key}. Deze key moet gekend zijn door de client als door de server, alsook de counter moet door beide partijen gekend zijn. De counter moet nooit worden gecommuniceerd met de server. De \emph{secert key} wel.\\
-\end{section}
+\subsection*{Voorwaarden en opmerkingen}
+Zoals vermeld moet er worden gebruikt gemaakt van een \emph{secret key}. Deze key moet gekend zijn door de client als door de server, alsook de counter moet door beide partijen gekend zijn. De counter moet nooit worden gecommuniceerd met de server. De \emph{secert key} wel. Na het genereren van de HMAC moet de counter worden verhoogd.\\
+De RFC voor dit algoritme vertelt ons dat we SHA1 moeten gebruiken. Maar SHA1 heeft technische problemen, nl er kunnen collisions worden gevonden in $2^69$ operaties. Dit is argumenteerbaar of het echt een probleem zou zijn omdat de counter die hier zou worden gebruikt blijft optellen. Dus voorspellen waar de counter zou zijn is moeilijk. Let wel op, moeilijk. Niet onmogelijk. 
 \section*{TOTP}
 Time-based one-time password algoritme, dit is een extentie van het HOTP, het grote verschil met HTOP is dat hier de "tijd" een factor speelt.\\
 
@@ -37,8 +40,30 @@ and represents the number of time steps between the initial counter
 time T0 and the current Unix time."
 \begin{itemize}
 \item $K$ is een \emph{shared secret key}
-\item $M$, we defineren $M$ als de huidige unix-time met een fout marge.
-\item TOTP = HOTP($K$,$M$)
+\item $M$, we defineren $M$ als de huidige unix-time met een fout marge. Om een fout marge toe te laten zullen we de unix timestamp in zijn binaire vorm bekijken $B$, de $n$ minst significante bits zullen we logische AND van de vorm 0xFFFF...FF00..00 op 0 zetten, de reden hiervoor is omdat we instaat willen zijn een \"window\" te introduceren waarin de TOTP output het zelfde zal zijn, ookal drift de unix time stamp. We negeren dus het verschil. 
+\item TOTP = HOTP($K$,$M$) (De layout van HOTP blijft het zelfde).
 \end{itemize}
-Beide definities van TOTP en HOTP zijn volgens de definitie van de bovenstaande RFC samen met voorbeeld code in java. Een implementatie van een HMAC in python kan je vinden in deze github repo onder "voorbeeld_code".
+\subsubsection*{Voorwaarde en opmerkingen}
+Onze implementatie hier maakt opnieuw gebruikt van een \emph{Shared secert}
+Beide definities van TOTP en HOTP zijn volgens de definitie van de bovenstaande RFC, de RFC's bevatten voorbeeld code in java. Een implementatie van een HMAC in python kan je vinden in deze github repo onder \"voorbeeld\_code\".
+\end{section}
+\begin{section}*{HMAC-based one-time password algoritme}
+De opgave vertelt ons ook dat we moeten instaat zijn om transacties te verificeren. Dus er moet een notie zijn het plaatsen van een digitale handtekening. De manier waarop we dit gaan doen zal terug gebasserd zijn op een HMAC en zal ook terug gebruik maken van een \emph{shared secert}, nl het zelfde \emph{shared secert} dat we gebruiken tijdens het 2-factor inloggen.\\
+
+De manier waarop dit zal werken zal de volgende zijn:
+De client stelt zijn verichting op via de web-interface. Eenmaal dit inorde is zal hij klikken op "uitvoeren". Opdat moment zal de server die verichting nemen en een hash berekenen. Daarna zal de server deze hash trunceren tot 6 digits. Dit is onze $M$. De server vraagt aan de client om dit bericht digitaal te ondertekenen met zijn smartphone. \\
+De client typt de $M$ (6 digits lang) in op zijn smartphone. Daarna nemen we opnieuw op de smartphone de current unix timestamp en beschouwen we die in zijn binaire vorm $B$, daarna voeren we terug een logische AND uit om de $n$ minst significante bits op 0 te zetten (we doen dit om opnieuw om een \"window\" van tijd te introduceren waarin de HMAC van onze bericht $M$ het zelfde zal zijn). Dus de input van onze HMAC zal het volgende zijn: $HMAC($\emph{shared secert},$M||B$ AND 0xFFFF...FF00..00$)$, waar \emph{shared secret} de zelfde key is als tijdens de 2-factor authenticatie. \\
+De output van deze HMAC zal dan terug worden getrunceerd naar 6 digits en de gebruiker tikt deze over op zijn computer. We noemen de output van onze HMAC $R$, $R$ wordt terug naar de server gestuurd en controleerd deze. De server beschikt over de unix timestamp (uiteraard met de logische AND om een window in de tijd te introduceren). Over het \emph{shared secert}, want die is geassocieerd met de user zijn account. en over $M$ want de server heeft deze aan de client gegeven. Op deze manier hebben we authenticatie en verficatie. $M$ en $R$ samen met de gebruikte unix timestamp worden in de database opgeslagen. 
+\end{section} 
+\begin{subsection}
+Dingen die we moeten bekijken.
+\begin{itemize}
+\item Het invalideren van een \emph{shared secert}
+\item Om een goeie manier omgaan met data intergiteit aan de server kant. (Deels oplossen door SRP te introduceren)
+\item Gebruik van TLS/SSL met als prioriteit GEEN block-cipher.
+\itme Gebruik maken van HSTS (ook eventueel voor android).
+\item Secure data opslag op android.
+\item vol aan...
+\end{itemize}
+
 \end{document}
