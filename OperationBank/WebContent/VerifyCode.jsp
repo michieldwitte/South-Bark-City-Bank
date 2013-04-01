@@ -6,7 +6,7 @@
 	
 	String seed = "3132333435363738393031323334353637383930";
 	long unixTime = System.currentTimeMillis() / 1000L;
-    long time = unixTime - (unixTime%30); //tijdspanne inlassen
+    long time = unixTime - (unixTime%150); //tijdspanne inlassen
 	time = time & Long.parseLong(EncryptedString);
     //System.out.println(unixTime);
     
@@ -18,7 +18,7 @@
     if(ResponseCode.equals(TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"))){
     	valid = true;
     }
-    time = unixTime - (unixTime%30) - 30; //vorig timeslot ook inrekenen
+    time = unixTime - (unixTime%150) - 150; //vorig timeslot ook inrekenen
 	time = time & Long.parseLong(EncryptedString);
     
     
