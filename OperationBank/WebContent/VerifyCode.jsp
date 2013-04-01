@@ -27,10 +27,13 @@
     steps = Long.toHexString(time).toUpperCase();
     while(steps.length() < 16) steps = "0" + steps;
     System.out.println(CryptoLibraries.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"));
+    String validstr = "";
     if (valid || ResponseCode.equals(CryptoLibraries.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"))){
     	System.out.println("VALID !");
+    	validstr = "VALID !";
     } else {
     	System.out.println("INVALID !");
+    	validstr = "INVALID !";
     }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -40,8 +43,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<f:view>
-
-</f:view>
+<a><%= validstr %></a>
 </body>
 </html>
