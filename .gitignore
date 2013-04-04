@@ -4,5 +4,4 @@
 *.gz
 # Package Files #
 *.jar
-*.war
 *.ear
