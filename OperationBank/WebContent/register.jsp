@@ -15,7 +15,7 @@
 	<br />
 	<br />
 	
-<form method=get action="RegisterController">
+<form method="POST" action="RegisterController">
 <table>
 		<tr>
 			<td><a>Register</a></td>
