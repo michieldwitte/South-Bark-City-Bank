@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/RegisterController")
 public class RegisterController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static int NUMBER_OF_PARAMETERS = 9;
+	private static int NUMBER_OF_PARAMETERS = 10;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -74,7 +74,7 @@ public class RegisterController extends HttpServlet {
 		
 		if(parameters.size() != NUMBER_OF_PARAMETERS){
 			responeString += "WRONG REQUEST";
-			printWriter.println("ok");
+			printWriter.println("ok" + Integer.toString(parameters.size()));
 			printWriter.close();
 			return;
 		}
