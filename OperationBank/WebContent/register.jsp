@@ -15,7 +15,7 @@
 	<br />
 	<br />
 	
-<form method=get action="RegisterEngine.jsp">
+<form method=get action="RegisterController">
 <table>
 		<tr>
 			<td><a>Register</a></td>
