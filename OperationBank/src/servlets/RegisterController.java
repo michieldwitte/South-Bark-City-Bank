@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
@@ -16,8 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+import org.apache.commons.codec.binary.Hex;
 
+import gnu.crypto.prng.Fortuna;
+import gnu.crypto.prng.LimitReachedException;
 /**
  * Servlet implementation class JDBC_test
  */
@@ -29,12 +32,16 @@ public class RegisterController extends HttpServlet {
 	private static final String loginPasswd = "sander";
 	private static final String loginUrl = "jdbc:postgresql://localhost/bank";
 	private static final String dataBaseString = "org.postgresql.Driver";
+	private Fortuna PRNG = new Fortuna();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public RegisterController() {
 		super();
+		Map<String,byte[]> attr = new HashMap<String, byte[]>();
+		attr.put("gnu.crypto.prng.fortuna.seed", String.valueOf(System.nanoTime()).getBytes());
+		PRNG.setup(attr);
 	}
 
 	private Connection dbcon;  // Connection for scope of ShowBedrock
@@ -73,8 +80,16 @@ public class RegisterController extends HttpServlet {
 		// check if all parameters are ok.
 		boolean verified = false;
 
-		String salt = "dummy";
-		String shared_secret ="dummy";
+		byte[] salt = new byte[32];
+		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
+
+		// out, int offset, int length
+		try {
+			PRNG.nextBytes(salt, 0, 32);
+			PRNG.nextBytes(shared_secret, 0, 64);
+		} catch (IllegalStateException | LimitReachedException e1) {
+			e1.printStackTrace();
+		}
 
 		// Define a response String
 		String responeString = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html> \n";
@@ -134,7 +149,10 @@ public class RegisterController extends HttpServlet {
 		}
 
 		try{
-			String insert = "insert into users values('"+firstName+"','"+lastName+"','"+password+"','"+salt+"','"+shared_secret+"','"+country+"','" +
+			String insert = "insert into users values('"+firstName+"','"+lastName+"','"+password+"','"+
+					Hex.encodeHex(salt).toString()+"','"+
+					Hex.encodeHex(shared_secret).toString()+"','"+
+					country+"','" +
 					areaCode + "','"+city+"','"+address+"');";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
@@ -142,9 +160,9 @@ public class RegisterController extends HttpServlet {
 			Statement stat = dbcon.createStatement();
 			stat.executeQuery(insert);
 		}catch(Exception e){
-			
+
 		}
-			
+
 		printWriter.println("ok");
 		printWriter.close();
 	}
