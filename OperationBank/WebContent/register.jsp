@@ -21,10 +21,6 @@
 			<td><a>Register</a></td>
 		</tr>
 		<tr>
-			<td><a>Username:</a></td>
-			<td><input type="text" name="Username"></td>
-		</tr>
-		<tr>
 			<td><a>Password:</a></td>
 			<td><input type="password" name="Password"></td>
 		</tr>
