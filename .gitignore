@@ -3,5 +3,4 @@
 *.pdf
 *.gz
 # Package Files #
-*.jar
 *.ear
