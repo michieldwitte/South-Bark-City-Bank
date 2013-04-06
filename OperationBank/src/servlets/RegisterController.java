@@ -1,7 +1,9 @@
 package servlets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,6 +23,14 @@ import org.apache.commons.codec.binary.Hex;
 
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
+
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.sun.management.OperatingSystemMXBean;
 /**
  * Servlet implementation class JDBC_test
  */
@@ -32,6 +42,8 @@ public class RegisterController extends HttpServlet {
 	private static final String loginPasswd = "sander";
 	private static final String loginUrl = "jdbc:postgresql://localhost/bank";
 	private static final String dataBaseString = "org.postgresql.Driver";
+	
+	private OperatingSystemMXBean mxBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	private Fortuna PRNG = new Fortuna();
 
 	/**
@@ -39,9 +51,32 @@ public class RegisterController extends HttpServlet {
 	 */
 	public RegisterController() {
 		super();
+		byte[] nanoTime = new String(Long.toString(System.nanoTime())).getBytes();
+		String randomInfo = Integer.toString(Runtime.getRuntime().availableProcessors()); //get number of cpu;
+		randomInfo       += Long.toString(Runtime.getRuntime().freeMemory()); // get free memory.
+		randomInfo		 += Long.toString(mxBean.getTotalPhysicalMemorySize());
+		
+		QRCodeWriter QRWriter = new QRCodeWriter();
+		BitMatrix bitMatrix = null;
+		try {
+			bitMatrix = QRWriter.encode("Test", BarcodeFormat.QR_CODE, 500, 500);
+			MatrixToImageWriter.toBufferedImage(bitMatrix);
+		} catch (WriterException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Map<String,byte[]> attr = new HashMap<String, byte[]>();
-		attr.put("gnu.crypto.prng.fortuna.seed", String.valueOf(System.nanoTime()).getBytes());
+		attr.put("gnu.crypto.prng.fortuna.seed", new String(randomInfo).getBytes());
 		PRNG.setup(attr);
+		PRNG.init(attr);
+		try {
+			PRNG.fillBlock();
+			PRNG.addRandomBytes(nanoTime, 0, nanoTime.length);
+		} catch (LimitReachedException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	private Connection dbcon;  // Connection for scope of ShowBedrock
@@ -80,16 +115,10 @@ public class RegisterController extends HttpServlet {
 		// check if all parameters are ok.
 		boolean verified = false;
 
-		byte[] salt = new byte[32];
+		byte[] salt = new byte[32]; // equiv van 256 bit.
 		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
 
-		// out, int offset, int length
-		try {
-			PRNG.nextBytes(salt, 0, 32);
-			PRNG.nextBytes(shared_secret, 0, 64);
-		} catch (IllegalStateException | LimitReachedException e1) {
-			e1.printStackTrace();
-		}
+
 
 		// Define a response String
 		String responeString = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html> \n";
@@ -97,6 +126,19 @@ public class RegisterController extends HttpServlet {
 		// Set correct response
 		response.setContentType("text/html");
 		PrintWriter printWriter = response.getWriter();
+
+		// out, int offset, int length
+		try {
+			PRNG.fillBlock();
+			PRNG.nextBytes(salt, 0, 32);
+			PRNG.fillBlock();
+			PRNG.nextBytes(shared_secret, 0, 64);
+		} catch (IllegalStateException | LimitReachedException e1) {
+			printWriter.println(e1.getMessage());
+			printWriter.close();
+			return;
+		}
+
 
 		String username = request.getParameter("Username");
 		String password = request.getParameter("Password");
@@ -150,15 +192,17 @@ public class RegisterController extends HttpServlet {
 
 		try{
 			String insert = "insert into users values('"+firstName+"','"+lastName+"','"+password+"','"+
-					Hex.encodeHex(salt).toString()+"','"+
-					Hex.encodeHex(shared_secret).toString()+"','"+
+					new String(Hex.encodeHex(salt)) + "','"+  
+					new String(Hex.encodeHex(shared_secret)) + "','"+
 					country+"','" +
 					areaCode + "','"+city+"','"+address+"');";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
-			stat.executeQuery(insert);
+			//			stat.executeQuery(insert);
+			printWriter.println(insert);
+
 		}catch(Exception e){
 
 		}
