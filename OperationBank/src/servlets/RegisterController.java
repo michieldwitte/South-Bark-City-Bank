@@ -3,6 +3,8 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,6 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Hex;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
+import gnu.crypto.prng.BasePRNG;
+import CryptoLibraries.PBKDF2;
+import SRP.SRPFactory;
+import SRP.SRPVerifier;
+
 import com.sun.management.OperatingSystemMXBean;
 import java.util.UUID;
 /**
@@ -97,13 +104,14 @@ public class RegisterController extends HttpServlet {
 
 		byte[] salt = new byte[32]; // equiv van 256 bit.
 		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
-
 		// Define a response String
 		String responeString = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html><body>\n";
 
 		// Set correct response
 		response.setContentType("text/html");
 		PrintWriter printWriter = response.getWriter();
+		
+		SRPVerifier srpVerifier = null;
 
 		// out, int offset, int length
 		try {
@@ -143,16 +151,29 @@ public class RegisterController extends HttpServlet {
 			printWriter.close();
 			return;
 		}
+		
+		try {
+			srpVerifier = SRPFactory.getInstance().makeVerifier(PBKDF2.deriveKey(password.getBytes(), salt, 4096));
+		} catch (InvalidKeyException e1) {
+			e1.printStackTrace();
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		try{
 			responeString += "<p>Welcome!</p>";
-			String insert = "insert into users (fname,lname,UUID,password,salt,shared_key,country,"+
-			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +password+"','" +
+			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, salt_s, country,"+
+			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
 					new String(Hex.encodeHex(salt)) + "','"+  
 					new String(Hex.encodeHex(shared_secret)) + "','"+
-					country+"','" +
+					srpVerifier.verifier_v.toString() + "','" +
+					srpVerifier.salt_s.toString()  + "','" +
+					country +"','" +
 					areaCode + "','"+city+"','"+address+"');";
 
-			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
+//			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
+			responeString = insert;
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
