@@ -15,7 +15,7 @@
 	<br />
 	<br />
 	
-<form method="POST" action="RegisterController">
+<form method="POST" action="/OperationBank/RegisterController">
 <table>
 		<tr>
 			<td><a>Register</a></td>

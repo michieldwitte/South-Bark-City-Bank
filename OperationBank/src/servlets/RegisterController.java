@@ -183,7 +183,7 @@ public class RegisterController extends HttpServlet {
 		
 		request.setAttribute("shared_secret", new String(Hex.encodeHex(shared_secret)));
 		request.setAttribute("GUID", GUUID);
-		request.getRequestDispatcher("/register_response.jsp").forward(request, response);
+		request.getRequestDispatcher("/register/register_response.jsp").forward(request, response);
 	}
 
 }

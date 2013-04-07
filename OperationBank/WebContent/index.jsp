@@ -46,7 +46,7 @@
 </tr>
 
 <tr>
-	<td><a href="register.jsp">Click here to register.</a></td>
+	<td><a href="register/register.jsp">Click here to register.</a></td>
 </tr>
 
 </table>

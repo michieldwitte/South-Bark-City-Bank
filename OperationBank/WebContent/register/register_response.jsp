@@ -29,7 +29,8 @@
 	ByteArrayOutputStream baout = QRCode.from(request.getAttribute("shared_secret").toString() + 
 											  request.getAttribute("GUID").toString()).to(ImageType.PNG).withSize(300, 300).stream();
 	String image = Base64.encodeBase64String(baout.toByteArray());
-%>
+	%>
+	<img src="data:image/jpg;base64,<%= image %>" alt="qrcode" />
 	</p>
 </body>
 </html>
