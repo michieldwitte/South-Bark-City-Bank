@@ -1,6 +1,7 @@
-<%@page import="java.math.BigInteger"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.math.BigInteger"%>
 <%@ page import="java.security.MessageDigest" %>
+
 <%
 String TransactionToEncrypt = "testencryptieshizzle";
 
