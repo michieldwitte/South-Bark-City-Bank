@@ -19,6 +19,7 @@ import org.apache.commons.codec.binary.Hex;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import com.sun.management.OperatingSystemMXBean;
+import java.util.UUID;
 /**
  * Servlet implementation class JDBC_test
  */
@@ -36,9 +37,6 @@ public class RegisterController extends HttpServlet {
 	private Fortuna PRNG = new Fortuna();
 
 	private Connection dbcon;  // Connection for scope of ShowBedrock
-
-	private int currentID;
-
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -118,8 +116,9 @@ public class RegisterController extends HttpServlet {
 			printWriter.close();
 			return;
 		}
+		
 
-		String username = "ID" + generateUID();
+		String GUUID = "ID" + UUID.randomUUID();
 		String password = request.getParameter("Password");
 		String confirmPassword = request.getParameter("ConfirmPassword");
 		String firstName = request.getParameter("FirstName");
@@ -144,41 +143,27 @@ public class RegisterController extends HttpServlet {
 			printWriter.close();
 			return;
 		}
-
 		try{
 			responeString += "<p>Welcome!</p>";
-			String insert = "insert into users values('"+firstName+"','"+lastName+"','"+password+"','"+
+			String insert = "insert into users (fname,lname,UUID,password,salt,shared_key,country,"+
+			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +password+"','" +
 					new String(Hex.encodeHex(salt)) + "','"+  
 					new String(Hex.encodeHex(shared_secret)) + "','"+
 					country+"','" +
 					areaCode + "','"+city+"','"+address+"');";
 
-			responeString += "<p>" + insert + "</p></body></html>";
+			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
-			//			stat.executeQuery(insert);
-			printWriter.println(insert);
-
+			stat.executeQuery(insert);
 		}catch(Exception e){
-
 		}
-
-		printWriter.println("ok");
+		
+		printWriter.println(responeString);
 		printWriter.close();
 	}
 
-	private String generateUID(){
-		int id = currentID++;
-		StringBuilder stringBuiler = new StringBuilder();
-
-		while((id /= ALPHA.length()) != 0){
-			stringBuiler.append(ALPHA.charAt(id % ALPHA.length()));
-		}
-		
-		return stringBuiler.toString();
-
-	}
 }
 
