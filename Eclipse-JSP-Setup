@@ -1,0 +1,31 @@
+eclipse installeren (juno ?)
+
+help > check for updates & alle updates installeren
+help > install new software
+add:
+        juno
+        http://download.eclipse.org/releases/juno/
+ok
+dan in de dropdownmenu "juno - http://..." selecteren
+Install all packages from the category "Web, XML, Java EE Development and OSGi Enterprise Development" except "PHP Development" and the "RAP" Tooling.
+
+window > preferences > server > runtime environments
+add
+Apache > Apache Tomcat v7.0
+next
+gewoon "download and install" drukken en een locatie aanduiden
+finish
+
+via eclipse kan je de folder OperationBank in OperationBank importeren
+om dit alles via git te laten werken kun je bij help>install new software
+terug met "juno - http://..."
+bij collaboration
+-Eclipse CVS Client
+-Eclipse EGit
+-Eclipse EGit Mylyn GitHub Feature
+
+installeren,
+dan bij het geimporteerde project rechts-klikken>team>share ...
+dan ergens daarbij kun je kiezen voor een al reeds bestaande .git
+en dan zou het normaal moeten werken om te committen, pullen, pushen, ...
+
