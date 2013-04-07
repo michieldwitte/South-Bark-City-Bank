@@ -172,8 +172,7 @@ public class RegisterController extends HttpServlet {
 					country +"','" +
 					areaCode + "','"+city+"','"+address+"');";
 
-//			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
-			responeString = insert;
+			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
