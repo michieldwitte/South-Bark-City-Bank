@@ -99,18 +99,13 @@ public class RegisterController extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// check if all parameters are ok.
-		boolean verified = false;
-
 		byte[] salt = new byte[32]; // equiv van 256 bit.
 		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
-		// Define a response String
-		String responeString = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html><body>\n";
 
 		// Set correct response
 		response.setContentType("text/html");
 		PrintWriter printWriter = response.getWriter();
-		
+
 		SRPVerifier srpVerifier = null;
 
 		// out, int offset, int length
@@ -124,7 +119,7 @@ public class RegisterController extends HttpServlet {
 			printWriter.close();
 			return;
 		}
-		
+
 
 		String GUUID = "ID" + UUID.randomUUID();
 		String password = request.getParameter("Password");
@@ -144,14 +139,12 @@ public class RegisterController extends HttpServlet {
 				(areaCode  != "") && 
 				(city      != "") && 
 				(address   != "")){
-			verified = true;
 		}else{
-			responeString = "WRONG REQUEST";
-			printWriter.println(responeString);
+			printWriter.println("WRONG REQUEST");
 			printWriter.close();
 			return;
 		}
-		
+
 		try {
 			srpVerifier = SRPFactory.getInstance().makeVerifier(PBKDF2.deriveKey(password.getBytes(), salt, 4096));
 		} catch (InvalidKeyException e1) {
@@ -160,11 +153,10 @@ public class RegisterController extends HttpServlet {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		try{
-			responeString += "<p>Welcome!</p>";
 			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, salt_s, country,"+
-			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
+					"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
 					new String(Hex.encodeHex(salt)) + "','"+  
 					new String(Hex.encodeHex(shared_secret)) + "','"+
 					srpVerifier.verifier_v.toString() + "','" +
@@ -172,15 +164,17 @@ public class RegisterController extends HttpServlet {
 					country +"','" +
 					areaCode + "','"+city+"','"+address+"');";
 
-			responeString += "Your ID is: " + GUUID +", you can login on the home page.";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
 			stat.executeQuery(insert);
-		}catch(Exception e){
+		}catch(Exception e1){
+			printWriter.println(e1.getMessage());
+			printWriter.close();
+			return;
 		}
-		
+
 		request.setAttribute("shared_secret", new String(Hex.encodeHex(shared_secret)));
 		request.setAttribute("GUID", GUUID);
 		request.getRequestDispatcher("/register/register_response.jsp").forward(request, response);
