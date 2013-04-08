@@ -5,6 +5,22 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>South Bark City Bank</title>
+<script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#btn").on("click",function(){
+		var GUID = $("#GUID").val();
+		var passwd   = $("#passwd").val();
+		
+		var request = $.ajax({
+			type: "GET",
+			url: "/OperationBank/RegisterController",
+			data : {"id": username}
+		});
+		
+	});
+});
+</script>
 </head>
 <body>
 	<center>
@@ -22,14 +38,14 @@
 	<legend>Login</legend>
 <table>
 <tr>
-	<td><label for="username">Username :</label></td><td><input name="username" type="text" id="username" size="30"></td>
+	<td><label for="username">Username :</label></td><td><input name="username" type="text" id="GUID" size="30"></td>
 </tr>
 <tr>
-	<td><label for="password">Password :</label></td><td><input name="password" type="password" id="password" size="30"></td>
+	<td><label for="password">Password :</label></td><td><input name="password" type="password" id="passwd" size="30"></td>
 </tr>
 <tr>
 	<td class="submit"></td>
-	<td><input type="submit" value="Submit"></td>
+	<td><input id="btn" type="submit" value="Submit"></td>
 </tr>
 </table>
 </fieldset>

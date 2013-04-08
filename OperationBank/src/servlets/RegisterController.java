@@ -95,7 +95,12 @@ public class RegisterController extends HttpServlet {
 		}
 	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		
+		String GUID = request.getParameter("GUID");
+		PrintWriter w = response.getWriter();
+		w.println(GUID);
+		w.close();
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
