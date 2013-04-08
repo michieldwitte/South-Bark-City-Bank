@@ -15,8 +15,25 @@ $(document).ready(function(){
 		var request = $.ajax({
 			type: "GET",
 			url: "/OperationBank/RegisterController",
-			data : {"id": username}
+			data : {"GUID": GUID},
+			succes: function(data){
+				alert("ok");
+			}
 		});
+		
+		request.done(function(){
+			alert("request is gedaan :)");
+		});
+	
+		request.fail(function(){
+			alert("request is gedaan en is gefaild");
+		});
+		
+		request.always(function(){
+			alert("uitvoeren van always block");
+		});
+		
+		return false;
 		
 	});
 });
@@ -33,7 +50,7 @@ $(document).ready(function(){
 
 <table><tr><td>
 
-<form name="form1" method="post" action="login.jsp">
+<form name="form1" method="post" action="#">
 <fieldset>
 	<legend>Login</legend>
 <table>
