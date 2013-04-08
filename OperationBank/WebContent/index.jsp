@@ -17,12 +17,12 @@ $(document).ready(function(){
 			url: "/OperationBank/RegisterController",
 			data : {"GUID": GUID},
 			succes: function(data){
-				alert("ok");
+				alert(data);
 			}
 		});
 		
-		request.done(function(){
-			alert("request is gedaan :)");
+		request.done(function(data){
+			alert(data);
 		});
 	
 		request.fail(function(){

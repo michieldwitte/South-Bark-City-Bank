@@ -7,6 +7,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -23,6 +24,8 @@ import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
 import SRP.SRPFactory;
+import SRP.SRPServerSession;
+import SRP.SRPServerSessionRunner;
 import SRP.SRPVerifier;
 
 import com.sun.management.OperatingSystemMXBean;
@@ -95,12 +98,25 @@ public class RegisterController extends HttpServlet {
 		}
 	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String GUID = request.getParameter("GUID");
+
+		String guid = request.getParameter("GUID");
 		PrintWriter w = response.getWriter();
-		w.println(GUID);
-		w.close();
+		String salt_s = "";
+
+		try{
+			String sqlQuery = "select salt_s from users where uuid='"+guid+"';";
+			Class.forName("org.postgresql.Driver");
+			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+			Statement stat = dbcon.createStatement();
+			ResultSet resultSet = stat.executeQuery(sqlQuery);
+
+			if(resultSet.next())
+				salt_s = resultSet.getString("salt_s");
+		}catch(Exception e){}
 		
+		w.println(salt_s);
+		w.close();
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
