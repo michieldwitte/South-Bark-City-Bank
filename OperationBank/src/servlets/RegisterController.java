@@ -146,10 +146,8 @@ public class RegisterController extends HttpServlet {
 		}
 
 		try {
-			srpVerifier = SRPFactory.getInstance().makeVerifier(PBKDF2.deriveKey(password.getBytes(), salt, 4096));
-		} catch (InvalidKeyException e1) {
-			e1.printStackTrace();
-		} catch (NoSuchAlgorithmException e1) {
+			srpVerifier = SRPFactory.getInstance().makeVerifier(password.getBytes());
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

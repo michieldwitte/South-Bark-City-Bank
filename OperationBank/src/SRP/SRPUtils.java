@@ -6,6 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.nio.ByteBuffer;
 
+import CryptoLibraries.PBKDF2;
+
 /**
  * Various utilities<br>
  *
@@ -150,9 +152,16 @@ class SRPUtils
 			MessageDigest		sha = MessageDigest.getInstance("SHA-256");
 			byte[] 				b = i.toByteArray();
 			sha.update(b, 0, b.length);
-			return sha.digest();
+			
+			// == Sander |first fase of SRP instead of H() use PBKDF2().
+			byte[] 				t = sha.digest();
+			
+			b = PBKDF2.deriveKey(t, b, 10000);
+			
+			// ==
+			return b;
 		}
-		catch ( NoSuchAlgorithmException e )
+		catch ( Exception e )
 		{
 			throw new UnsupportedOperationException(e);
 		}
