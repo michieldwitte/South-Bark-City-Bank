@@ -7,8 +7,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>South Bark City Bank</title>
-<script type="text/javascript"
-	src="/OperationBank/js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
+<script type="text/javascript" src="/OperationBank/js/rollups/sha256.js"></script>
+<script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#btn").on("click", function() {
@@ -22,22 +25,22 @@
 					"GUID" : GUID, "FASE" : 1
 				},
 				succes : function(data) {
-					alert(data);
 				}
 			});
 
 			request.done(function(data) {
-				alert(data);
 			});
 
 			request.fail(function() {
-				alert("request is gedaan en is gefaild");
 			});
 
 			request.always(function() {
-				alert("uitvoeren van always block");
 			});
+			
+			var hash = CryptoJS.SHA256("sander");
+		    var k = CryptoJS.PBKDF2(hash, "sander", { keySize: 256/32, hasher: CryptoJS.algo.SHA256, iterations: 1 });
 
+		    alert(k);
 			return false;
 
 		});

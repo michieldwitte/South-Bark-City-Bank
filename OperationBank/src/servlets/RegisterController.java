@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -139,7 +140,7 @@ public class RegisterController extends HttpServlet {
 			break;
 		}
 		}
-		
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -196,6 +197,11 @@ public class RegisterController extends HttpServlet {
 			e1.printStackTrace();
 		}
 
+		byte[] test = new byte[32];
+		try{
+			test = PBKDF2.deriveKey(address.getBytes(), "sander".getBytes(), 1);
+		}catch(Exception e){}
+
 		try{
 			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, salt_s, country,"+
 					"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
@@ -204,7 +210,7 @@ public class RegisterController extends HttpServlet {
 					srpVerifier.verifier_v.toString() + "','" +
 					srpVerifier.salt_s.toString()  + "','" +
 					country +"','" +
-					areaCode + "','"+city+"','"+address+"');";
+					areaCode + "','"+city+"','"+new String(Hex.encodeHex(test))+"');";
 
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");

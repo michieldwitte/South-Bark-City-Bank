@@ -95,37 +95,39 @@ class SRPUtils
 		ByteBuffer	bbuf = ByteBuffer.wrap(b.toByteArray());
 		byte[]		combined = new byte[abuf.capacity() + bbuf.capacity()];
 		ByteBuffer	combinedbuf = ByteBuffer.wrap(combined);
-
-		abuf.rewind();
-		bbuf.rewind();
-		combinedbuf.clear();
-
-		while ( abuf.hasRemaining() && bbuf.hasRemaining() )
-		{
-			byte		abyte = abuf.get();
-			combinedbuf.put(abyte);
-			byte		bbyte = bbuf.get();
-			combinedbuf.put(bbyte);
-			if ( ((abyte & 1) == 0) && bbuf.hasRemaining() )
-			{
-				bbyte = bbuf.get();
-				combinedbuf.put(bbyte);
-			}
-		}
-
-		while ( abuf.hasRemaining() )
-		{
-			byte		x = abuf.get();
-			combinedbuf.put(x);
-		}
-
-		while ( bbuf.hasRemaining() )
-		{
-			byte		x = bbuf.get();
-			combinedbuf.put(x);
-		}
-
-		return new BigInteger(combined);
+//
+//		abuf.rewind();
+//		bbuf.rewind();
+//		combinedbuf.clear();
+//
+//		while ( abuf.hasRemaining() && bbuf.hasRemaining() )
+//		{
+//			byte		abyte = abuf.get();
+//			combinedbuf.put(abyte);
+//			byte		bbyte = bbuf.get();
+//			combinedbuf.put(bbyte);
+//			if ( ((abyte & 1) == 0) && bbuf.hasRemaining() )
+//			{
+//				bbyte = bbuf.get();
+//				combinedbuf.put(bbyte);
+//			}
+//		}
+//
+//		while ( abuf.hasRemaining() )
+//		{
+//			byte		x = abuf.get();
+//			combinedbuf.put(x);
+//		}
+//
+//		while ( bbuf.hasRemaining() )
+//		{
+//			byte		x = bbuf.get();
+//			combinedbuf.put(x);
+//		}
+		
+		
+		
+		return new BigInteger(combinedbuf.array());
 	}
 
 	/**
