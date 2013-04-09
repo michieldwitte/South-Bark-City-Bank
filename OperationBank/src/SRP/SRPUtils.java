@@ -94,7 +94,8 @@ class SRPUtils
 		ByteBuffer	abuf = ByteBuffer.wrap(a.toByteArray());
 		ByteBuffer	bbuf = ByteBuffer.wrap(b.toByteArray());
 		byte[]		combined = new byte[abuf.capacity() + bbuf.capacity()];
-		ByteBuffer	combinedbuf = ByteBuffer.wrap(combined);
+		
+		BigInteger  c = a.add(b);
 //
 //		abuf.rewind();
 //		bbuf.rewind();
@@ -124,10 +125,8 @@ class SRPUtils
 //			byte		x = bbuf.get();
 //			combinedbuf.put(x);
 //		}
+		return c;
 		
-		
-		
-		return new BigInteger(combinedbuf.array());
 	}
 
 	/**
@@ -158,7 +157,7 @@ class SRPUtils
 			// == Sander |first fase of SRP instead of H() use PBKDF2().
 			byte[] 				t = sha.digest();
 			
-			b = PBKDF2.deriveKey(t, b, 10000);
+			b = PBKDF2.deriveKey(t, b, 1);
 			
 			// ==
 			return b;

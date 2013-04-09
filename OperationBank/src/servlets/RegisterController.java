@@ -25,12 +25,15 @@ import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
+import SRP.SRPClientSessionRunner;
 import SRP.SRPFactory;
 import SRP.SRPServerSession;
 import SRP.SRPServerSessionRunner;
 import SRP.SRPVerifier;
 
 import com.sun.management.OperatingSystemMXBean;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
+
 import java.util.UUID;
 /**
  * Servlet implementation class JDBC_test
@@ -131,8 +134,14 @@ public class RegisterController extends HttpServlet {
 
 			SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
+			
+			SRPClientSessionRunner SRPcsr = new SRPClientSessionRunner(SRPFactory.getInstance().newClientSession("sdsqf".getBytes()));
+			
 
-			w.println(salt_s);
+			w.println(SRPcsr.getSession().getConstants().largePrime_N.toString() + "|" +
+					  SRPcsr.getSession().getConstants().primitiveRoot_g.toString() + "|" +
+					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
+					  salt_s);
 			w.close();
 			break;
 		}
@@ -197,10 +206,6 @@ public class RegisterController extends HttpServlet {
 			e1.printStackTrace();
 		}
 
-		byte[] test = new byte[32];
-		try{
-			test = PBKDF2.deriveKey(address.getBytes(), "sander".getBytes(), 1);
-		}catch(Exception e){}
 
 		try{
 			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, salt_s, country,"+
@@ -210,7 +215,7 @@ public class RegisterController extends HttpServlet {
 					srpVerifier.verifier_v.toString() + "','" +
 					srpVerifier.salt_s.toString()  + "','" +
 					country +"','" +
-					areaCode + "','"+city+"','"+new String(Hex.encodeHex(test))+"');";
+					areaCode + "','"+city+"','"+ address +"');";
 
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");

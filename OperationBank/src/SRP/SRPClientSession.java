@@ -142,14 +142,18 @@ public class SRPClientSession
 		return fSessionKey_K;
 	}
 
-	SRPConstants		getConstants()
+	public SRPConstants		getConstants()
 	{
 		return fConstants;
 	}
 
 	private SRPConstants 		fConstants;
 	private byte[] 				fPassword;
+	
+	// OK
 	private BigInteger 			fPrivateKey_x;
+	
+	
 	private BigInteger 			fRandom_a;
 	private BigInteger 			fPublicKey_A;
 	private BigInteger 			fCommonValue_S;

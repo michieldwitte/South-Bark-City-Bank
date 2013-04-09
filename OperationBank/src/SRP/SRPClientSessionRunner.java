@@ -114,6 +114,10 @@ public class SRPClientSessionRunner implements SRPRunner
 		INPUT_M2,
 		DONE
 	}
+	
+	public SRPClientSession getSession(){
+		return fSession;
+	}
 
 	private SRPClientSession 	fSession;
 	private State 				fState;
