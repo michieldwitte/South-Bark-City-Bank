@@ -47,7 +47,7 @@
 			
 			// Maak BigInteger voorstelling van passwd byte array.
 			var passwordBigInt = new BigInteger(stringToByteArray(passwd));
-
+			
 			var largePrime_N;
 			var primitiveRoot_g;
 			var srp6Multiplier_k;
@@ -79,14 +79,16 @@
 			primitiveRoot_g = v[1];
 			srp6Multiplier_k = v[2];
 			salt_s = v[3];
+			saltBigInt = new BigInteger(stringToByteArray(salt_s));
 
 			// nabootsen van de combine methode in SRPUtils
-			var combine = passwordBigInt + new BigInteger(salt);
 			
 			// Zoals in SRPUtils, eerst maken we van ons password een hash.
-			var hash = CryptoJS.SHA256(stringToByteArray(passwordBigInt));
+			var hash = CryptoJS.SHA256(passwordBigInt.toString(10));
+			passwordBigInt.add(saltBigInt);
 			
-			var fPrivateKey_x = CryptoJS.PBKDF2(hash, combine, {
+			
+			var fPrivateKey_x = CryptoJS.PBKDF2(hash, passwordBigInt.toString(10), {
 				keySize : 256 / 32,
 				hasher : CryptoJS.algo.SHA256,
 				iterations : 1
