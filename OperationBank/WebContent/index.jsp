@@ -19,7 +19,7 @@
 				type : "GET",
 				url : "/OperationBank/RegisterController",
 				data : {
-					"GUID" : GUID
+					"GUID" : GUID, "FASE" : 1
 				},
 				succes : function(data) {
 					alert(data);

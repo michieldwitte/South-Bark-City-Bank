@@ -100,37 +100,46 @@ public class RegisterController extends HttpServlet {
 	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String guid = request.getParameter("GUID");
-		PrintWriter w = response.getWriter();
-		String salt_s = null;
-		String verifier_v = null;
-		SRPVerifier SRPv = null;
-		SRPServerSessionRunner SRPsr = null;
+		int fase = Integer.parseInt(request.getParameter("FASE"));
 
-		try{
-			String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
-			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-			
-			Class.forName("org.postgresql.Driver");
-			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-			Statement stat = dbcon.createStatement();
-			ResultSet resultSet = stat.executeQuery(sqlQuerySalt_S);
+		switch(fase){
+		case 1:{
+			String guid = request.getParameter("GUID");
+			String salt_s = null;
+			String verifier_v = null;
+			SRPVerifier SRPv = null;
+			SRPServerSessionRunner SRPsr = null;
+			PrintWriter w = response.getWriter();
 
-			if(resultSet.next())
-				salt_s = resultSet.getString("salt_s");
-			
-			resultSet = stat.executeQuery(sqlQueryVeri_S);
-			if(resultSet.next())
-				verifier_v = resultSet.getString("verifier_v");
-		}catch(Exception e){}
-		
-		SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
-		SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
-		
-		
-		w.println(salt_s);
-		w.close();
+			try{
+				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
+				String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
 
+				Class.forName("org.postgresql.Driver");
+				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+				Statement stat = dbcon.createStatement();
+				ResultSet resultSet = stat.executeQuery(sqlQuerySalt_S);
+
+				if(resultSet.next())
+					salt_s = resultSet.getString("salt_s");
+
+				resultSet = stat.executeQuery(sqlQueryVeri_S);
+				if(resultSet.next())
+					verifier_v = resultSet.getString("verifier_v");
+			}catch(Exception e){}
+
+			SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
+			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
+
+			w.println(salt_s);
+			w.close();
+			break;
+		}
+		case 2: {
+			break;
+		}
+		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
