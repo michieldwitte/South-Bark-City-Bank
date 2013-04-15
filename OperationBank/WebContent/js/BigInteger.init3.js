@@ -1,47 +1,3 @@
-/*
- * BigInteger.init3.js
- * A class which is a representation of variable lengthed integer.
- * Functions for Asynchronous Excecution
- *
- * See BigInteger.readme.txt for further information.
- *
- * ACKNOWLEDGMENT
- *     
- *     This class is originally written by Tom Wu
- *
- *     Copyright (c) 2005  Tom Wu
- *     All Rights Reserved.
- *     http://www-cs-students.stanford.edu/~tjw/jsbn/
- *
- *
- *     Several modifications are applied by Atsushi Oka
- *
- *     Atsushi Oka
- *     http://oka.nu/
- *
- *     - Packaged
- *     - Added Asynchronous Execution Feauture.
- *     - Modified some names of methods for use in Flash ActionScript
- *     - Fixed Some trivial bugs.
- */
-
-function initBigInteger3( packages ) {
-    __unit( "BigInteger.init3.js" );
-    __uses( "packages.js" );
-    // __uses( "nonstructured.js" );  // See ... (1)
-    __uses( "BigInteger.init1.js" );
-    __uses( "BigInteger.init2.js" );
-
-    // (1) nonstructured.js
-    // This file relies on nonstructured.js
-    // See http://oka.nu/lib/nonstructured/nonstructured.readme.txt
-
-    ///////////////////////////////////////
-    // import
-    ////////////////////////////////////////
-    // var BigInteger = __package( packages,path ).BigInteger;
-    var BigInteger = __import( packages, "titaniumcore.crypto.BigInteger" );
-
     var lowprimes  = BigInteger.lowprimes;
     var lplim      = BigInteger.lplim;
 
@@ -862,7 +818,7 @@ function initBigInteger3( packages ) {
 	// BigInteger.log( "i="  + i );
 	g.copyTo(r);
 	// BigInteger.log( "g="  + g.toString(16) ); 
-	// BigInteger.log( "r="  + r.toString(16) ); 
+	// BigInteger.log( "r="  + r.toString(16) ); i
 	while(--i >= 0) {
 	    z.sqrTo(r,r2);
 	    // trace( "i="+i +" " + r2.toString(16) );
@@ -887,8 +843,3 @@ function initBigInteger3( packages ) {
 
 
 
-}
-initBigInteger3( this );
-
-
-// vim:ts=8 sw=4:noexpandtab:

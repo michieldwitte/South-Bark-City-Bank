@@ -1,43 +1,3 @@
-/*
- * BigInteger.init1.js
- * A class which is a representation of variable lengthed integer.
- * > Basic JavaScript BN library - subset useful for RSA-encryption.
- *
- * See BigInteger.readme.txt for further information.
- *
- * ACKNOWLEDGMENT
- *
- *     This class is originally written by Tom Wu
- *
- *     Copyright (c) 2005  Tom Wu
- *     All Rights Reserved.
- *     http://www-cs-students.stanford.edu/~tjw/jsbn/
- *
- *
- *     Several modifications are applied by Atsushi Oka
- *
- *     Atsushi Oka
- *     http://oka.nu/
- *
- *     - Packaged
- *     - Added Asynchronous Execution Feauture.
- *     - Modified some names of methods for use in Flash ActionScript
- *     - Fixed Some trivial bugs.
- */
-
-function initBigInteger1( packages ) {
-    __unit( "BigInteger.init1.js" );
-    __uses( "packages.js" );
-
-    ///////////////////////////////////////////////////////////////
-    // import
-    ///////////////////////////////////////////////////////////////
-
-
-    ///////////////////////////////////////////////////////////////
-    // implementation
-    ///////////////////////////////////////////////////////////////
-    
     var installAM = function ( BigInteger ) {
 	// // Bits per digit
 	// $root.dbits= null;
@@ -774,10 +734,6 @@ function initBigInteger1( packages ) {
     BigInteger.Classic = Classic;
     BigInteger.Montgomery = Montgomery;
     
-    // main class
-    __export( packages, "titaniumcore.crypto.BigInteger" , BigInteger );
-}
 
-initBigInteger1( this );
 
-// vim:ts=8 sw=4:noexpandtab:
+
