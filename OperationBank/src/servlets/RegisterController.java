@@ -168,7 +168,7 @@ public class RegisterController extends HttpServlet {
 			PRNG.nextBytes(salt, 0, 32);
 			PRNG.fillBlock();
 			PRNG.nextBytes(shared_secret, 0, 64);
-		} catch (IllegalStateException | LimitReachedException e1) {
+		} catch (Exception e1) {
 			printWriter.println(e1.getMessage());
 			printWriter.close();
 			return;
