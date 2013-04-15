@@ -11,19 +11,12 @@
 	src="/OperationBank/js/jquery-1.9.0.min.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/sha256.js"></script>
-<script type="text/javascript" src="/OperationBank/js/packages.js"></script>
-<script type="text/javascript" src="/OperationBank/js/isarray.js"></script>
-<script type="text/javascript" src="/OperationBank/js/binary.js"></script>
-<script type="text/javascript" src="/OperationBank/js/nonstructured.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init1.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init3.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
 
 <script type="text/javascript">
-	__uses( "BigInteger.init1.js" );
-	__uses( "BigInteger.init2.js" );
-    var BigInteger = __import( this,"titaniumcore.crypto.BigInteger" );
 
 	$(document).ready(function() {
 
