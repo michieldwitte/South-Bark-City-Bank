@@ -7,8 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>South Bark City Bank</title>
-<script type="text/javascript"
-	src="/OperationBank/js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/sha256.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init1.js"></script>
