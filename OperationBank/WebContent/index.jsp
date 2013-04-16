@@ -99,9 +99,17 @@ BigInteger.prototype.getString = function(){
 			// Zoals in SRPUtils, eerst maken we van ons password een hash.
 			
 			// combine fase.
-			var combine = passwordBigInt.add(saltBigInt);
-			alert(combine.toString(10));
-			var hash = CryptoJS.SHA256(combine.toString(256));
+			var combine = passwordBigInt.toByteArray().concat(saltBigInt.toByteArray());
+			var combineString = "";
+			
+			for(var i = 0;  i < combine.length; i++){
+				combineString += String.fromCharCode(combine[i]);
+			}	
+			var bigCombineString = new BigInteger(combine);
+			alert(combineString);
+			//eventueel kunnen we hier bigComineString.getString() gebruiken om volledig 
+// 			het zelfde te doen als de java code
+			var hash = CryptoJS.SHA256(combineString());
 			alert(hash);
 			
 			// the magic hash is: 578996726a060254d6d9aae274d781d0a64583b3e2cad9baf1c8949096f098b

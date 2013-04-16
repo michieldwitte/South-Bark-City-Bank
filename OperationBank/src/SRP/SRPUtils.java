@@ -93,43 +93,14 @@ class SRPUtils
 	 */
 	static BigInteger		combine(BigInteger a, BigInteger b)
 	{
-		ByteBuffer	abuf = ByteBuffer.wrap(a.toByteArray());
-		ByteBuffer	bbuf = ByteBuffer.wrap(b.toByteArray());
-		byte[]		combined = new byte[abuf.capacity() + bbuf.capacity()];
+		byte[] ii1 = a.toByteArray();
+		byte[] ii2 = b.toByteArray();
 		
-		BigInteger  c = a.add(b);
-//
-//		abuf.rewind();
-//		bbuf.rewind();
-//		combinedbuf.clear();
-//
-//		while ( abuf.hasRemaining() && bbuf.hasRemaining() )
-//		{
-//			byte		abyte = abuf.get();
-//			combinedbuf.put(abyte);
-//			byte		bbyte = bbuf.get();
-//			combinedbuf.put(bbyte);
-//			if ( ((abyte & 1) == 0) && bbuf.hasRemaining() )
-//			{
-//				bbyte = bbuf.get();
-//				combinedbuf.put(bbyte);
-//			}
-//		}
-//
-//		while ( abuf.hasRemaining() )
-//		{
-//			byte		x = abuf.get();
-//			combinedbuf.put(x);
-//		}
-//
-//		while ( bbuf.hasRemaining() )
-//		{
-//			byte		x = bbuf.get();
-//			combinedbuf.put(x);
-//		}
-		String k = new String(c.toString());
-		return c;
+		byte[] ii3 = new byte[ii1.length + ii2.length];
+		System.arraycopy(ii1, 0, ii3, 0, ii1.length);
+		System.arraycopy(ii2, 0, ii3, ii1.length, ii2.length);
 		
+		return new BigInteger(ii3);
 	}
 
 	/**
