@@ -17,6 +17,24 @@
 
 <script type="text/javascript">
 
+String.prototype.getBytes = function(){
+	// Get byte string.
+	var bytes = [];
+	for(var i = 0; i < this.length; ++i){
+		bytes.push(this.charCodeAt(i));
+	}
+	return bytes;
+};
+
+BigInteger.prototype.getString = function(){
+	var byte_array = this.toByteArray();
+	var string = "";
+	for(var i = 0; i < byte_array.length; i++){
+		string += String.fromCharCode(byte_array[i]);
+	}
+	return String;
+};
+
 	$(document).ready(function() {
 
 		function stringToByteArray (aValue) {
