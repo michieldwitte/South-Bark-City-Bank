@@ -8,12 +8,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>South Bark City Bank</title>
 <script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
-<script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/sha256.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init1.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init3.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
+<script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
 
 <script type="text/javascript">
 
@@ -27,12 +27,13 @@ String.prototype.getBytes = function(){
 };
 
 BigInteger.prototype.getString = function(){
+	// Get char string.
 	var byte_array = this.toByteArray();
 	var string = "";
 	for(var i = 0; i < byte_array.length; i++){
 		string += String.fromCharCode(byte_array[i]);
 	}
-	return String;
+	return string;
 };
 
 	$(document).ready(function() {
@@ -50,13 +51,16 @@ BigInteger.prototype.getString = function(){
 
 			return result;
 		}
+		
+		
 		$("#btn").on("click", function() {
 			
 			var GUID = $("#GUID").val();
 			var passwd = $("#passwd").val();
+			passwd = "115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3";
 			
 			// Maak BigInteger voorstelling van passwd byte array.
-			var passwordBigInt = new BigInteger(stringToByteArray(passwd));
+			var passwordBigInt = new BigInteger(passwd,16);
 			
 			var largePrime_N;
 			var primitiveRoot_g;
@@ -64,7 +68,7 @@ BigInteger.prototype.getString = function(){
 			var salt_s;
 			
 			var fPrivateKey_x
-			var result;
+			var result = "";
 
 			request = $.ajax({
 				type : "GET",
@@ -77,33 +81,37 @@ BigInteger.prototype.getString = function(){
 				succes : function(data) {
 				}
 			});
-			
 
 			request.done(function(data) {
 				result = data;
 			});
-			
 			// Opdelen van ajax response.
 			var v = result.split("|");
 			largePrime_N = v[0];
 			primitiveRoot_g = v[1];
 			srp6Multiplier_k = v[2];
 			salt_s = v[3];
-			saltBigInt = new BigInteger(stringToByteArray(salt_s));
+			salt_s = "2"
+			saltBigInt = new BigInteger(salt_s,16);
 
 			// nabootsen van de combine methode in SRPUtils
 			
 			// Zoals in SRPUtils, eerst maken we van ons password een hash.
-			var hash = CryptoJS.SHA256(passwordBigInt.toString(10));
-			passwordBigInt.add(saltBigInt);
 			
+			// combine fase.
+			var combine = passwordBigInt.add(saltBigInt);
+			alert(combine.toString(10));
+			var hash = CryptoJS.SHA256(combine.toString(256));
+			alert(hash);
 			
-			var fPrivateKey_x = CryptoJS.PBKDF2(hash, passwordBigInt.toString(10), {
+			// the magic hash is: 578996726a060254d6d9aae274d781d0a64583b3e2cad9baf1c8949096f098b
+			
+			var fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.toString(10), {
 				keySize : 256 / 32,
 				hasher : CryptoJS.algo.SHA256,
 				iterations : 1
 			});
-
+			
 			alert(fPrivateKey_x);
 			return false;
 

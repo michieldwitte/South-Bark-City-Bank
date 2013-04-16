@@ -25,6 +25,7 @@ import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
+import SRP.SRPClientSession;
 import SRP.SRPClientSessionRunner;
 import SRP.SRPFactory;
 import SRP.SRPServerSession;
@@ -112,8 +113,10 @@ public class RegisterController extends HttpServlet {
 			String salt_s = null;
 			String verifier_v = null;
 			SRPVerifier SRPv = null;
+			SRPClientSessionRunner SRPcsr = null;
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
+			response.setContentType("text/html");
 
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
@@ -130,12 +133,18 @@ public class RegisterController extends HttpServlet {
 				resultSet = stat.executeQuery(sqlQueryVeri_S);
 				if(resultSet.next())
 					verifier_v = resultSet.getString("verifier_v");
-			}catch(Exception e){}
-
+			}catch(Exception e){
+				response.getWriter().println(e.getMessage());
+				response.getWriter().close();
+				return;
+			}
+			String k = "fsqmldkfjmsldkfjsmqldkfjmsldkfjmlsdkjfmqlskdjfml";
+			SRPFactory f = SRPFactory.getInstance();
+			SRPClientSession s = f.newClientSession(k.getBytes());
+			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
+	
 			SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
-			
-			SRPClientSessionRunner SRPcsr = new SRPClientSessionRunner(SRPFactory.getInstance().newClientSession("sdsqf".getBytes()));
 			
 
 			w.println(SRPcsr.getSession().getConstants().largePrime_N.toString() + "|" +
@@ -216,12 +225,13 @@ public class RegisterController extends HttpServlet {
 					srpVerifier.salt_s.toString()  + "','" +
 					country +"','" +
 					areaCode + "','"+city+"','"+ address +"');";
-
+			String k = new String(Hex.encodeHex(srpVerifier.verifier_v.toByteArray()));
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
 			stat.executeQuery(insert);
+			
 		}catch(Exception e1){
 			printWriter.println(e1.getMessage());
 			printWriter.close();

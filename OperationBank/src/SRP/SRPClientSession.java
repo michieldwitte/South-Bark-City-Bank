@@ -148,7 +148,7 @@ public class SRPClientSession
 	}
 
 	private SRPConstants 		fConstants;
-	private byte[] 				fPassword;
+	private byte[] 			fPassword;
 	
 	// OK
 	private BigInteger 			fPrivateKey_x;
