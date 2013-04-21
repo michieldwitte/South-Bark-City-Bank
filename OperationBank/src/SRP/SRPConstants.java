@@ -24,6 +24,23 @@ public class SRPConstants implements Serializable
 	 */
 	public SRPConstants(BigInteger largePrime, BigInteger primitiveRoot)
 	{
+
+		byte[] ii1 = largePrime.toByteArray();
+		byte[] ii2 = primitiveRoot.toByteArray();
+
+		int counter = 0;
+		for(byte tbyte : ii1){
+			if(tbyte < 0) ii1[counter] ^= (1 << 7);
+			counter++;
+		}
+		counter=0;
+		for(byte tbyte : ii2){
+			if(tbyte < 0) ii2[counter] ^= (1 << 7);
+			counter++;
+		}
+		
+		largePrime = new BigInteger(ii1);
+		primitiveRoot = new BigInteger(ii2);
 		SRPUtils.validateConstants(largePrime, primitiveRoot);
 
 		this.largePrime_N = largePrime;

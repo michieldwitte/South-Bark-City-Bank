@@ -57,10 +57,9 @@ BigInteger.prototype.getString = function(){
 			
 			var GUID = $("#GUID").val();
 			var passwd = $("#passwd").val();
-			passwd = "115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3";
 			
 			// Maak BigInteger voorstelling van passwd byte array.
-			var passwordBigInt = new BigInteger(passwd,16);
+			var passwordBigInt = new BigInteger("2115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3",16);
 			
 			var largePrime_N;
 			var primitiveRoot_g;
@@ -91,36 +90,39 @@ BigInteger.prototype.getString = function(){
 			primitiveRoot_g = v[1];
 			srp6Multiplier_k = v[2];
 			salt_s = v[3];
-			salt_s = "2"
-			saltBigInt = new BigInteger(salt_s,16);
+			salt_s = "2";
+			saltBigInt = new BigInteger("2",10);
+			
+			var s1 = passwordBigInt.getString();
+			var s2 = saltBigInt.getString();
+			
+			var b1 = s1.getBytes();
+			var b2 = s2.getBytes();
+			
+			for(var i = 0; i < b1.length; i++){
+			     if(b1[i] > 127)
+					b1[i] &= 0x7f;
+			      }
+			for(var i = 0; i < b2.length; i++){
+			      if(b2[i] > 127)
+			         b2[i] &= 0x7f;
+			      }
+			var combine = b1.concat(b2);
+			
+			var r = new BigInteger(combine);
 
-			// nabootsen van de combine methode in SRPUtils
 			
-			// Zoals in SRPUtils, eerst maken we van ons password een hash.
-			
-			// combine fase.
-			var combine = passwordBigInt.toByteArray().concat(saltBigInt.toByteArray());
-			var combineString = "";
-			
-			for(var i = 0;  i < combine.length; i++){
-				combineString += String.fromCharCode(combine[i]);
-			}	
-			var bigCombineString = new BigInteger(combine);
-			alert(combineString);
-			//eventueel kunnen we hier bigComineString.getString() gebruiken om volledig 
-// 			het zelfde te doen als de java code
-			var hash = CryptoJS.SHA256(combineString());
+			var hash = CryptoJS.SHA256(r.getString());
 			alert(hash);
 			
-			// the magic hash is: 578996726a060254d6d9aae274d781d0a64583b3e2cad9baf1c8949096f098b
 			
-			var fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.toString(10), {
-				keySize : 256 / 32,
-				hasher : CryptoJS.algo.SHA256,
-				iterations : 1
-			});
+// 			var fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.toString(10), {
+// 				keySize : 256 / 32,
+// 				hasher : CryptoJS.algo.SHA256,
+// 				iterations : 1
+// 			});
 			
-			alert(fPrivateKey_x);
+// 			alert(fPrivateKey_x);
 			return false;
 
 		});

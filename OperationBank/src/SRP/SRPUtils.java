@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.codec.binary.Hex;
@@ -33,22 +34,22 @@ class SRPUtils
 	{
 		// Developed from "SRP JavaScript Demo" from http://srp.stanford.edu<p>
 
-		if ( !N.isProbablePrime(10) )
-		{
-			throw new IllegalArgumentException("isProbablePrime(10) failed for " + N.toString(16));
-		}
-
-		BigInteger 		n_minus_one_div_2 = N.subtract(BigInteger.ONE).divide(TWO);
-
-		if ( !n_minus_one_div_2.isProbablePrime(10) )
-		{
-			throw new IllegalArgumentException("(N-1)/2 is not prime for " + N.toString(16));
-		}
-
-		if( g.modPow(n_minus_one_div_2, N).add(BigInteger.ONE).compareTo(N) != 0)
-		{
-			throw new IllegalArgumentException("Not a primitive root: " + g.toString(16));
-		}
+//		if ( !N.isProbablePrime(10) )
+//		{
+//			throw new IllegalArgumentException("isProbablePrime(10) failed for " + N.toString(16));
+//		}
+//
+//		BigInteger 		n_minus_one_div_2 = N.subtract(BigInteger.ONE).divide(TWO);
+//
+//		if ( !n_minus_one_div_2.isProbablePrime(10) )
+//		{
+//			throw new IllegalArgumentException("(N-1)/2 is not prime for " + N.toString(16));
+//		}
+//
+//		if( g.modPow(n_minus_one_div_2, N).add(BigInteger.ONE).compareTo(N) != 0)
+//		{
+//			throw new IllegalArgumentException("Not a primitive root: " + g.toString(16));
+//		}
 	}
 
 	/**
@@ -97,10 +98,14 @@ class SRPUtils
 		byte[] ii2 = b.toByteArray();
 		
 		byte[] ii3 = new byte[ii1.length + ii2.length];
+		
+		byte[] original = new byte[(ii1.length + ii2.length) - 1];
 		System.arraycopy(ii1, 0, ii3, 0, ii1.length);
 		System.arraycopy(ii2, 0, ii3, ii1.length, ii2.length);
 		
-		return new BigInteger(ii3);
+		original = Arrays.copyOfRange(ii3, 0, ii1.length + ii2.length);
+		
+		return new BigInteger(original);
 	}
 
 	/**
@@ -125,6 +130,7 @@ class SRPUtils
 		try
 		{
 			MessageDigest		sha = MessageDigest.getInstance("SHA-256");
+			String k1 = new String(Hex.encodeHex(i.toByteArray()));
 			byte[] 				b = i.toByteArray();
 //			sha.update(b, 0, b.length);
 			
@@ -133,7 +139,7 @@ class SRPUtils
 			String k = new String(Hex.encodeHex(t));
 			
 			b = PBKDF2.deriveKey(t, b, 1);
-			
+			int l = 9;
 			// ==
 			return b;
 		}
