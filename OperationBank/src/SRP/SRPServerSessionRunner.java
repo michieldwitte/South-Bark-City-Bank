@@ -114,6 +114,10 @@ public class SRPServerSessionRunner implements SRPRunner
 		OUTPUT_M2,
 		DONE
 	}
+	
+	public SRPServerSession getServerSession(){
+		return fSession;
+	}
 
 	private SRPServerSession 	fSession;
 	private State 				fState;

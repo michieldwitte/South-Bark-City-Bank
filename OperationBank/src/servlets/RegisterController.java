@@ -151,7 +151,8 @@ public class RegisterController extends HttpServlet {
 			w.println(new String(Hex.encodeHex(SRPcsr.getSession().getConstants().largePrime_N.toByteArray())) + "|" +
 					  SRPcsr.getSession().getConstants().primitiveRoot_g.toString() + "|" +
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
-					  salt_s);
+					  salt_s + "|" +
+					  SRPsr.getServerSession().getPublicKey_B().toString());
 			w.close();
 			break;
 		}
