@@ -17,7 +17,6 @@
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init3.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
-
 <script type="text/javascript">
 
 String.prototype.getBytes = function(){
