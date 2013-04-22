@@ -59,14 +59,13 @@ BigInteger.prototype.getString = function(){
 			var passwd = $("#passwd").val();
 			
 			// Maak BigInteger voorstelling van passwd byte array.
-			var passwordBigInt = new BigInteger("2115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3",16);
 			
-			var largePrime_N;
-			var primitiveRoot_g;
-			var srp6Multiplier_k;
-			var salt_s;
+			var largePrime_N = "";
+			var primitiveRoot_g = "";
+			var srp6Multiplier_k = "";
+			var salt_s = "";
 			
-			var fPrivateKey_x
+			var fPrivateKey_x = "";
 			var result = "";
 
 			request = $.ajax({
@@ -86,15 +85,18 @@ BigInteger.prototype.getString = function(){
 			});
 			// Opdelen van ajax response.
 			var v = result.split("|");
-			largePrime_N = v[0];
-			primitiveRoot_g = v[1];
+			largePrime_N = new BigInteger(v[0],16);
+			primitiveRoot_g = new BigInteger(v[1],10);
 			srp6Multiplier_k = v[2];
 			salt_s = v[3];
-			salt_s = "2";
-			saltBigInt = new BigInteger("2",10);
 			
-			var s1 = passwordBigInt.getString();
-			var s2 = saltBigInt.getString();
+			alert(largePrime_N);
+			alert(primitiveRoot_g);
+			alert(srp6Multiplier_k);
+			alert(salt_s);
+			
+			var s1 = largePrime_N.getString();
+			var s2 = primitiveRoot_g.getString();
 			
 			var b1 = s1.getBytes();
 			var b2 = s2.getBytes();
@@ -108,9 +110,7 @@ BigInteger.prototype.getString = function(){
 			         b2[i] &= 0x7f;
 			      }
 			var combine = b1.concat(b2);
-			
 			var r = new BigInteger(combine);
-
 			
 			var hash = CryptoJS.SHA256(r.getString());
 			alert(hash);

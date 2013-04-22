@@ -145,9 +145,10 @@ public class RegisterController extends HttpServlet {
 	
 			SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
+			
 			SRPcsr = new SRPClientSessionRunner(s);
 
-			w.println(SRPcsr.getSession().getConstants().largePrime_N.toString() + "|" +
+			w.println(new String(Hex.encodeHex(SRPcsr.getSession().getConstants().largePrime_N.toByteArray())) + "|" +
 					  SRPcsr.getSession().getConstants().primitiveRoot_g.toString() + "|" +
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
 					  salt_s);
