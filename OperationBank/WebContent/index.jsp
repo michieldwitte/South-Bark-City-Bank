@@ -95,7 +95,7 @@ BigInteger.prototype.getString = function(){
 				data : {
 					"GUID" : GUID,
 					"FASE" : 1,
-					"fPublicKeyA" : fPublicKey_A
+					"fPublicKeyA" : fPublicKey_A.getString()
 				},
 				succes : function(data) {
 				}
@@ -120,7 +120,7 @@ BigInteger.prototype.getString = function(){
 // 			var s2 = primitiveRoot_g.getString();
 			
 			var b1 = s1.getBytes();
-			var b2 = fPassword
+			var b2 = fPassword;
 			
 			for(var i = 0; i < b1.length; i++){
 			     if(b1[i] > 127)

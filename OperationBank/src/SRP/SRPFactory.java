@@ -122,6 +122,7 @@ public class SRPFactory
 	 */
 	public SRPVerifier			makeVerifier(byte[] password)
 	{
+		
 		return SRPUtils.makeVerifier(fConstants, password);
 	}
 

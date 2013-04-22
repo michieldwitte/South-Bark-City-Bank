@@ -117,6 +117,7 @@ public class RegisterController extends HttpServlet {
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
 			response.setContentType("text/html");
+			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"),16);
 
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
@@ -138,15 +139,17 @@ public class RegisterController extends HttpServlet {
 				response.getWriter().close();
 				return;
 			}
-			String k = "fsqmldkfjmsldkfjsmqldkfjmsldkfjmlsdkjfmqlskdjfml";
+			String k = "sander";
 			SRPFactory f = SRPFactory.getInstance();
 			SRPClientSession s = f.newClientSession(k.getBytes());
 			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
 	
-			SRPv = new SRPVerifier(new BigInteger(verifier_v,10), new BigInteger(salt_s,10));
+			SRPv = new SRPVerifier(new BigInteger(verifier_v,16), new BigInteger(salt_s,16));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
 			
 			SRPcsr = new SRPClientSessionRunner(s);
+			SRPcsr.getSession().setSalt_s(new BigInteger(salt_s,16));
+			String kk = new String(Hex.encodeHex(SRPcsr.getSession().getPrivateKey().toByteArray()));
 
 			w.println(
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 

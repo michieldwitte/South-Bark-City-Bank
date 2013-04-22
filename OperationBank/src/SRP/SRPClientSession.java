@@ -146,6 +146,10 @@ public class SRPClientSession
 	{
 		return fConstants;
 	}
+	
+	public BigInteger getPrivateKey(){
+		return fPrivateKey_x;
+	}
 
 	private SRPConstants 		fConstants;
 	private byte[] 			fPassword;
