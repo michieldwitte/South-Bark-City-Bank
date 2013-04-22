@@ -17,6 +17,7 @@
 <script type="text/javascript" src="/OperationBank/js/BigInteger.init3.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
+<script type="text/javascript" src="/OperationBank/js/rollups/rng.js"></script>
 <script type="text/javascript">
 
 String.prototype.getBytes = function(){
@@ -60,12 +61,17 @@ BigInteger.prototype.getString = function(){
 			var GUID = $("#GUID").val();
 			var fPassword = $("#passwd").val().getBytes();
 			
+			// javascript random number generator.
+			var rng = new SecureRandom();
+			
 			// Maak BigInteger voorstelling van passwd byte array.
 			var largePrime_N = "";
 			var primitiveRoot_g = "";
 			var srp6Multiplier_k = "";
 			var salt_s = "";
+			var fRandom_a = new BigInteger(32,rng);
 			
+			alert(fRandom_a.getString());
 			// A in de documentatie.
 			var fPublicKey_A = "";
 			// B in de documentatie.
