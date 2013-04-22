@@ -94,7 +94,8 @@ BigInteger.prototype.getString = function(){
 				url : "/OperationBank/RegisterController",
 				data : {
 					"GUID" : GUID,
-					"FASE" : 1
+					"FASE" : 1,
+					"fPublicKeyA" : fPublicKey_A
 				},
 				succes : function(data) {
 				}
