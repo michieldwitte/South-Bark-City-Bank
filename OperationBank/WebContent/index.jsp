@@ -101,6 +101,7 @@ BigInteger.prototype.getString = function(){
 			alert(primitiveRoot_g);
 			alert(srp6Multiplier_k);
 			alert(salt_s);
+			alert(fPublicKey_B);
 			
 			var s1 = largePrime_N.getString();
 			var s2 = primitiveRoot_g.getString();
@@ -119,7 +120,7 @@ BigInteger.prototype.getString = function(){
 			var combine = b1.concat(b2);
 			var r = new BigInteger(combine);
 			
-			PrivateKey_x = CryptoJS.SHA256(r.getString());
+			fPrivateKey_x = CryptoJS.SHA256(r.getString());
 			
 			
 //  			fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.getString(), {

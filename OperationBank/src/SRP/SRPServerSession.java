@@ -33,6 +33,8 @@ public class SRPServerSession
 
 		// B = 3v + g^b
 		fPublicKey_B = fVerifier.verifier_v.multiply(constants.srp6Multiplier_k).add(fConstants.primitiveRoot_g.modPow(fRandom_b, fConstants.largePrime_N));
+		//TODO: verwijder dit hieronder. 
+		int k = 9;
 	}
 
 	/**
