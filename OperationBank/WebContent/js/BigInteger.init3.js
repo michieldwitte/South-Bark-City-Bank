@@ -182,8 +182,6 @@
 	BigInteger.log( "stepping_isProbablePrime:create" );
 	var self = this;
 	var x = self.abs();
-	var et1 = ElapsedTime.create();
-	var et2 = ElapsedTime.create();
 	return [
 	    function(scope,param,subparam) {
 		BigInteger.log("stepping_isProbablePrime No.1: " );
@@ -633,11 +631,6 @@
 
     // ver2
     BigInteger.prototype.stepping_modPow = function (e,m) {
-	var et = ElapsedTime .create();
-	var et1 = ElapsedTime .create();
-	var et2 = ElapsedTime .create();
-	var et3 = ElapsedTime .create();
-	var et4 = ElapsedTime .create();
 	var self=this;
 
 	var i,k,r,z;
@@ -646,7 +639,6 @@
 	return [
 	    function( scope, param, subparam ) {
 		BigInteger.log("stepping_modPow 1:" );
-		et.start( "modPow" );
 
 		// var i = e.bitLength(), k, r = new BigInteger(1), z;
 		i = e.bitLength(); r = new BigInteger(1);
@@ -716,12 +708,7 @@
 			i += BigInteger.DB;
 			--j; 
 		    }
-		    et1.stop();
 
-		    et2.start( "modPow2" );
-		    et2.stop();
-
-		    et3.start( "modPow3" );
 		    if( is1 ) {	// ret == 1, don't bother squaring or multiplying it
 			g[w].copyTo(r);
 			is1 = false;
@@ -740,9 +727,6 @@
 			}
 			z.mulTo( r2, g[w], r );
 		    }
-		    et3.stop()
-	    
-		    et4.start( "modPow4" );
 		    while ( j >= 0 && ( e[j] & ( 1 << i ) ) == 0 ) {
 			z.sqrTo(r,r2);
 			t = r;

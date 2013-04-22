@@ -59,6 +59,7 @@ BigInteger.prototype.getString = function(){
 		
 		$("#btn").on("click", function() {
 			
+			// GUID is onze "I".
 			var GUID = $("#GUID").val();
 			var fPassword = $("#passwd").val().getBytes();
 			
@@ -66,15 +67,21 @@ BigInteger.prototype.getString = function(){
 			var rng = new SecureRandom();
 			
 			// Maak BigInteger voorstelling van passwd byte array.
-			var largePrime_N = "";
-			var primitiveRoot_g = "";
+			var largePrime_N = new BigInteger("2115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3",16);
+			var primitiveRoot_g = new BigInteger("2",10);
+			
 			var srp6Multiplier_k = "";
 			var salt_s = "";
 			var fRandom_a = new BigInteger(32,rng);
 			
 			alert(fRandom_a.getString());
 			// A in de documentatie.
-			var fPublicKey_A = "";
+			var fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
+			while(fPublicKey_A.mod(largePrime_N) == 0){
+				// A=g^N
+				fRandom_a = new BigInteger(32,rng);
+				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
+			}
 			// B in de documentatie.
 			var fPublicKey_B = "";
 			
@@ -98,11 +105,9 @@ BigInteger.prototype.getString = function(){
 			});
 			// Opdelen van ajax response.
 			var v = result.split("|");
-			largePrime_N = new BigInteger(v[0],16);
-			primitiveRoot_g = new BigInteger("2",10);
-			srp6Multiplier_k = v[2];
-			salt_s = v[3];
-			fPublicKey_B = v[4];
+			srp6Multiplier_k = v[0];
+			salt_s = v[1];
+			fPublicKey_B = v[2];
 			
 			alert(largePrime_N);
 			alert(primitiveRoot_g);

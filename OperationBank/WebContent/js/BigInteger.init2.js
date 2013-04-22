@@ -207,8 +207,6 @@
 
     BigInteger.prototype.fromNumber1 = function( bitLength, certainty, rnd ) {
 	// new BigInteger(int,int,SecureRandom)
-	var et = ElapsedTime.create();
-	et.start( "fromNumber1" );
 	if( bitLength < 2 ) {
 	    this.fromInt( 1 );
 	} else {
@@ -222,23 +220,17 @@
 		this.dAddOffset( 1,0 ); // force odd
 	    }
 
-	    var et2= ElapsedTime.create();
-	    et2.start( "fromNumber1.loop" );
 	    while( ! this.isProbablePrime( certainty ) ) {
 		this.dAddOffset( 2, 0 );
 		if( this.bitLength() > bitLength ) {
 		    this.subTo( BigInteger.ONE.shiftLeft( bitLength - 1 ), this );
 		}
 	    }
-	    et2.stop();
 	}
-	et.stop();
     }
 
     BigInteger.prototype.fromNumber2 = function( bitLength, rnd ) {
 	// new BigInteger(int,SecureRandom)
-	var et = ElapsedTime.create();
-	et.start( "fromNumber2" );
 	var x = new Array();
 	var t = bitLength & 7;
 	x.length = ( bitLength >> 3 ) + 1;
@@ -248,7 +240,6 @@
 	else
 	    x[0] = 0;
 	this.fromString( x, 256 );
-	et.stop();
     };
 
     
@@ -664,7 +655,6 @@
     */
 
     BigInteger.prototype.modPow = function (e,m) {
-	var et = ElapsedTime .create();
 
 	et.start( "modPow" );
 
@@ -700,15 +690,11 @@
 	}
 
     
-	var et1 = ElapsedTime .create();
-	var et2 = ElapsedTime .create();
-	var et3 = ElapsedTime .create();
-	var et4 = ElapsedTime .create();
+
 	var j = e.t-1, w, is1 = true, r2 = new BigInteger(), t;
 	i = BigInteger.nbits(e[j])-1;
 
 	while(j >= 0) {
-	    et1.start( "modPow1" );
 	    if ( i >= k1) {
 		w = ( e[j] >> ( i - k1 ) ) & km;
 	    } else {
@@ -725,12 +711,6 @@
 		i += BigInteger.DB;
 		--j; 
 	    }
-	    et1.stop();
-
-	    et2.start( "modPow2" );
-	    et2.stop();
-
-	    et3.start( "modPow3" );
 	    if( is1 ) {	// ret == 1, don't bother squaring or multiplying it
 		g[w].copyTo(r);
 		is1 = false;
@@ -749,9 +729,6 @@
 		}
 		z.mulTo( r2, g[w], r );
 	    }
-	    et3.stop()
-    
-	    et4.start( "modPow4" );
 	    while ( j >= 0 && ( e[j] & ( 1 << i ) ) == 0 ) {
 		z.sqrTo(r,r2);
 		t = r;
@@ -762,10 +739,8 @@
 		    --j;
 		}
 	    }
-	    et4.stop()
 	}
 
-	et.stop();
 	return z.revert(r);
     };
     
@@ -860,8 +835,6 @@
     
     // (public) test primality with certainty >= 1-.5^t
     BigInteger.prototype.isProbablePrime = function (t) {
-	var et1 = ElapsedTime.create();
-	et1.start("isProbablePrime");
 
 	var i, x = this.abs();
 	if( x.t == 1 && x[0] <= lowprimes[ lowprimes.length-1 ] ) {
@@ -888,11 +861,7 @@
 	    }
 	}
 	// return x.millerRabin(t);
-	var et2 = ElapsedTime.create();
-	et2.start("isProbablePrime.millerRabin");
 	var result = x.millerRabin(t);
-	et2.stop();
-	et1.stop();
 	return result;
     };
 

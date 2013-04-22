@@ -148,8 +148,7 @@ public class RegisterController extends HttpServlet {
 			
 			SRPcsr = new SRPClientSessionRunner(s);
 
-			w.println(new String(Hex.encodeHex(SRPcsr.getSession().getConstants().largePrime_N.toByteArray())) + "|" +
-					  SRPcsr.getSession().getConstants().primitiveRoot_g.toString() + "|" +
+			w.println(
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
 					  salt_s + "|" +
 					  SRPsr.getServerSession().getPublicKey_B().toString());
