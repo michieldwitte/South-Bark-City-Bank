@@ -65,6 +65,8 @@ BigInteger.prototype.getString = function(){
 			var primitiveRoot_g = "";
 			var srp6Multiplier_k = "";
 			var salt_s = "";
+			// B in de documentatie.
+			var fPublicKey_B = "";
 			
 			var fPrivateKey_x = "";
 			var result = "";
@@ -90,6 +92,7 @@ BigInteger.prototype.getString = function(){
 			primitiveRoot_g = new BigInteger(v[1],10);
 			srp6Multiplier_k = v[2];
 			salt_s = v[3];
+			fPublicKey_B = v[4];
 			
 			alert(largePrime_N);
 			alert(primitiveRoot_g);
