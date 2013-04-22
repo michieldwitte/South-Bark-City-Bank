@@ -74,7 +74,7 @@ BigInteger.prototype.getString = function(){
 			var salt_s = "";
 			var fRandom_a = new BigInteger(32,rng);
 			
-			alert(fRandom_a.getString());
+			
 			// A in de documentatie.
 			var fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			while(fPublicKey_A.mod(largePrime_N) == 0){
@@ -83,6 +83,7 @@ BigInteger.prototype.getString = function(){
 				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			}
 			fPublicKey_A = fPublicKey_A.getString();
+			alert(fPublicKey_A);
 			// B in de documentatie.
 			var fPublicKey_B = "";
 			

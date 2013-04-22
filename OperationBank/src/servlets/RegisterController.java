@@ -117,7 +117,7 @@ public class RegisterController extends HttpServlet {
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
 			response.setContentType("text/html");
-			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"),16);
+			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"));
 
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
