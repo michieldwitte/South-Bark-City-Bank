@@ -47,12 +47,10 @@ BigInteger.prototype.getString = function(){
 			var i, c;
 
 			result = [];
-
 			c = aValue.length;
 			for (i=0; i<c; i++) {
 				result[i] = aValue.charCodeAt(i);
 			}
-
 			return result;
 		}
 		
@@ -72,11 +70,13 @@ BigInteger.prototype.getString = function(){
 			
 			var srp6Multiplier_k = "";
 			var salt_s = "";
+			var randomParamter_U = "";
 			var fRandom_a = new BigInteger(32,rng);
 			
 			
 			// A in de documentatie.
-			var fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
+			var fPublicKey_A = new BigInteger();
+			fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			while(fPublicKey_A.mod(largePrime_N) == 0){
 				// A=g^N
 				fRandom_a = new BigInteger(32,rng);
@@ -97,7 +97,7 @@ BigInteger.prototype.getString = function(){
 				data : {
 					"GUID" : GUID,
 					"FASE" : 1,
-					"fPublicKeyA" : fPublicKey_A.getString()
+					"fPublicKeyA" : fPublicKey_A
 				},
 				succes : function(data) {
 				}
@@ -118,9 +118,9 @@ BigInteger.prototype.getString = function(){
 			alert(salt_s);
 			alert(fPublicKey_B);
 			
-			var s1 = salt_s.getString();
-// 			var s2 = primitiveRoot_g.getString();
+			// FASE 2
 			
+			var s1 = salt_s.getString();
 			var b1 = s1.getBytes();
 			var b2 = fPassword;
 			
@@ -138,12 +138,15 @@ BigInteger.prototype.getString = function(){
 			fPrivateKey_x = CryptoJS.SHA256(r.getString());
 			
 			
-//  			fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.getString(), {
-//  				keySize : 256 / 32,
-//  				hasher : CryptoJS.algo.SHA256,
-//  				iterations : 1
-//  			});
+ 			//fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.getString(), {
+ 			//	keySize : 256 / 32,
+ 			//	hasher : CryptoJS.algo.SHA256,
+ 			//	iterations : 1
+ 			//});
  			alert(fPrivateKey_x);
+ 			
+ 			// FASE 2
+ 			
  			
 			return false;
 

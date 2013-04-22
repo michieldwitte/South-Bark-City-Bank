@@ -150,7 +150,7 @@ public class SRPClientSession
 	public BigInteger getPrivateKey(){
 		return fPrivateKey_x;
 	}
-
+	
 	private SRPConstants 		fConstants;
 	private byte[] 			fPassword;
 	private BigInteger 			fRandom_a;

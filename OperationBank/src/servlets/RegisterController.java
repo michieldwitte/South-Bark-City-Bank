@@ -109,6 +109,7 @@ public class RegisterController extends HttpServlet {
 
 		switch(fase){
 		case 1:{
+			response.setContentType("text/html");
 			String guid = request.getParameter("GUID");
 			String salt_s = null;
 			String verifier_v = null;
@@ -116,8 +117,7 @@ public class RegisterController extends HttpServlet {
 			SRPClientSessionRunner SRPcsr = null;
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
-			response.setContentType("text/html");
-			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"));
+			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA").getBytes());
 
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
@@ -143,13 +143,14 @@ public class RegisterController extends HttpServlet {
 			SRPFactory f = SRPFactory.getInstance();
 			SRPClientSession s = f.newClientSession(k.getBytes());
 			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
-	
+			
+			ss.getSession().setSalt_s(new BigInteger(salt_s));
 			SRPv = new SRPVerifier(new BigInteger(verifier_v,16), new BigInteger(salt_s,16));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
 			
 			SRPcsr = new SRPClientSessionRunner(s);
 			SRPcsr.getSession().setSalt_s(new BigInteger(salt_s,16));
-			String kk = new String(Hex.encodeHex(SRPcsr.getSession().getPrivateKey().toByteArray()));
+			String kk = SRPsr.getServerSession().getPublicKey_B().toString();
 
 			w.println(
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
