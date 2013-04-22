@@ -656,7 +656,6 @@
 
     BigInteger.prototype.modPow = function (e,m) {
 
-	et.start( "modPow" );
 
 	var i = e.bitLength(), k, r = new BigInteger(1), z;
 	if(i <= 0) return r;

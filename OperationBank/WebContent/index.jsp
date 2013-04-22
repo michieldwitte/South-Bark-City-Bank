@@ -106,7 +106,7 @@ BigInteger.prototype.getString = function(){
 			// Opdelen van ajax response.
 			var v = result.split("|");
 			srp6Multiplier_k = v[0];
-			salt_s = v[1];
+			salt_s = new BigInteger(v[1],10);
 			fPublicKey_B = v[2];
 			
 			alert(largePrime_N);
@@ -115,11 +115,11 @@ BigInteger.prototype.getString = function(){
 			alert(salt_s);
 			alert(fPublicKey_B);
 			
-			var s1 = largePrime_N.getString();
-			var s2 = primitiveRoot_g.getString();
+			var s1 = salt_s.getString();
+// 			var s2 = primitiveRoot_g.getString();
 			
 			var b1 = s1.getBytes();
-			var b2 = s2.getBytes();
+			var b2 = fPassword
 			
 			for(var i = 0; i < b1.length; i++){
 			     if(b1[i] > 127)

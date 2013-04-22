@@ -149,13 +149,14 @@ public class SRPClientSession
 
 	private SRPConstants 		fConstants;
 	private byte[] 			fPassword;
+	private BigInteger 			fRandom_a;
+	private BigInteger 			fPublicKey_A;
 	
 	// OK
 	private BigInteger 			fPrivateKey_x;
 	
 	
-	private BigInteger 			fRandom_a;
-	private BigInteger 			fPublicKey_A;
+	
 	private BigInteger 			fCommonValue_S;
 	private byte[]	 			fSessionKey_K;
 	private BigInteger 			fEvidenceValue_M1;

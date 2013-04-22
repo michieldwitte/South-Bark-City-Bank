@@ -143,7 +143,7 @@ public class RegisterController extends HttpServlet {
 			SRPClientSession s = f.newClientSession(k.getBytes());
 			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
 	
-			SRPv = new SRPVerifier(new BigInteger(verifier_v), new BigInteger(salt_s));
+			SRPv = new SRPVerifier(new BigInteger(verifier_v,10), new BigInteger(salt_s,10));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
 			
 			SRPcsr = new SRPClientSessionRunner(s);
