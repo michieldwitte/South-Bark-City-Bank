@@ -139,6 +139,8 @@ class SRPUtils
 			String k = new String(Hex.encodeHex(t));
 			
 			b = PBKDF2.deriveKey(t, b, 1);
+			
+			k = new String(Hex.encodeHex(b));
 			int l = 9;
 			// ==
 			return b;

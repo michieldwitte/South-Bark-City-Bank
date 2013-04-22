@@ -56,10 +56,10 @@ BigInteger.prototype.getString = function(){
 		$("#btn").on("click", function() {
 			
 			var GUID = $("#GUID").val();
-			var passwd = $("#passwd").val();
+			var passwd = $("#passwd").val().getBytes();
 			
 			// Maak BigInteger voorstelling van passwd byte array.
-			
+			alert(passwd);
 			var largePrime_N = "";
 			var primitiveRoot_g = "";
 			var srp6Multiplier_k = "";
@@ -116,13 +116,13 @@ BigInteger.prototype.getString = function(){
 			alert(hash);
 			
 			
-// 			var fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.toString(10), {
-// 				keySize : 256 / 32,
-// 				hasher : CryptoJS.algo.SHA256,
-// 				iterations : 1
-// 			});
-			
-// 			alert(fPrivateKey_x);
+ 			fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.getString(), {
+ 				keySize : 256 / 32,
+ 				hasher : CryptoJS.algo.SHA256,
+ 				iterations : 1
+ 			});
+ 			alert(fPrivateKey_x);
+ 			
 			return false;
 
 		});
