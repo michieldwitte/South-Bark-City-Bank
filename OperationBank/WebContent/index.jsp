@@ -82,6 +82,7 @@ BigInteger.prototype.getString = function(){
 				fRandom_a = new BigInteger(32,rng);
 				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			}
+			fPublicKey_A = fPublicKey_A.getString();
 			// B in de documentatie.
 			var fPublicKey_B = "";
 			
