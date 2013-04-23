@@ -139,18 +139,24 @@ public class RegisterController extends HttpServlet {
 				response.getWriter().close();
 				return;
 			}
+			
+			// Enkel string om mee te testen.
 			String k = "sander";
 			SRPFactory f = SRPFactory.getInstance();
+			SRPv = new SRPVerifier(new BigInteger(verifier_v,16), new BigInteger(salt_s,16));
+
+			
+			/*
+			 * Het gebruik van sessie code op de client kant is enkel voor test gebruik.
+			 */
 			SRPClientSession s = f.newClientSession(k.getBytes());
 			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
-			
 			ss.getSession().setSalt_s(new BigInteger(salt_s));
-			SRPv = new SRPVerifier(new BigInteger(verifier_v,16), new BigInteger(salt_s,16));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
-			
 			SRPcsr = new SRPClientSessionRunner(s);
 			SRPcsr.getSession().setSalt_s(new BigInteger(salt_s,16));
-			String kk = SRPsr.getServerSession().getPublicKey_B().toString();
+			
+			SRPsr.getServerSession().setClientPublicKey_A(fPublicKey_A);
 
 			w.println(
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 

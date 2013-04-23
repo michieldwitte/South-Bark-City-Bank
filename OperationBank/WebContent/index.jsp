@@ -82,8 +82,8 @@ BigInteger.prototype.getString = function(){
 				fRandom_a = new BigInteger(32,rng);
 				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			}
-			fPublicKey_A = fPublicKey_A.getString();
-			alert(fPublicKey_A);
+			var fPublicKey_A_string = fPublicKey_A.getString();
+			alert(fPublicKey_A_string);
 			// B in de documentatie.
 			var fPublicKey_B = "";
 			
@@ -97,7 +97,7 @@ BigInteger.prototype.getString = function(){
 				data : {
 					"GUID" : GUID,
 					"FASE" : 1,
-					"fPublicKeyA" : fPublicKey_A
+					"fPublicKeyA" : fPublicKey_A_string
 				},
 				succes : function(data) {
 				}
@@ -118,7 +118,7 @@ BigInteger.prototype.getString = function(){
 			alert(salt_s);
 			alert(fPublicKey_B);
 			
-			// FASE 2
+			// FASE 1
 			
 			var s1 = salt_s.getString();
 			var b1 = s1.getBytes();
@@ -146,6 +146,12 @@ BigInteger.prototype.getString = function(){
  			alert(fPrivateKey_x);
  			
  			// FASE 2
+ 			// Op dit moment beschikken beide partijen over 
+ 			// * fPublicKey_B
+ 			// * fPublicKey_A
+ 			// Beide in een BigInteger format. 
+ 			
+ 			
  			
  			
 			return false;
