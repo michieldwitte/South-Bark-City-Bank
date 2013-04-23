@@ -1,6 +1,10 @@
 package SRP;     
 
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Arrays;
+
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * Manages a server SRP session
@@ -25,7 +29,7 @@ public class SRPServerSession
 		fConstants = constants;
 		fVerifier = verifier;
 		fRandom_b = SRPUtils.random(fConstants);
-		fSRP6_u = null;
+		fSRP6_u = new BigInteger("-1",10);
 		fPublicKey_A = null;
 		fCommonValue_S = null;
 		fEvidenceValue_M1 = null;
@@ -33,6 +37,17 @@ public class SRPServerSession
 
 		// B = 3v + g^b
 		fPublicKey_B = fVerifier.verifier_v.multiply(constants.srp6Multiplier_k).add(fConstants.primitiveRoot_g.modPow(fRandom_b, fConstants.largePrime_N));
+
+		byte[] ii1 = fPublicKey_B.toByteArray();
+
+		int counter = 0;
+		for(byte tbyte : ii1){
+			if(tbyte < 0) ii1[counter] ^= (1 << 7);
+			counter++;
+		}
+
+		fPublicKey_B = new BigInteger(ii1);
+
 		//TODO: verwijder dit hieronder. 
 		int k = 9;
 	}
@@ -51,11 +66,50 @@ public class SRPServerSession
 		}
 
 		fPublicKey_A = publicKey_A;
-		fSRP6_u = SRPUtils.calc_u(fPublicKey_A, fPublicKey_B);
+
+		do{
+
+			String k1 = fPublicKey_A.toString();
+			String k2 = fPublicKey_B.toString();
+
+			byte[] ii1 = fPublicKey_A.toByteArray();
+			byte[] ii2 = fPublicKey_B.toByteArray();
+
+			int counter = 0;
+			for(byte tbyte : ii1){
+				if(tbyte < 0) ii1[counter] ^= (1 << 7);
+				counter++;
+			}
+			counter=0;
+			for(byte tbyte : ii2){
+				if(tbyte < 0) ii2[counter] ^= (1 << 7);
+				counter++;
+
+			}
+
+			byte[] ii3 = new byte[ii1.length + ii2.length];
+			System.arraycopy(ii1, 0, ii3, 0, ii1.length);
+			System.arraycopy(ii2, 0, ii3, ii1.length, ii2.length);
+
+			System.out.println(Arrays.toString(ii3));
+
+			BigInteger xx = new BigInteger(ii3);
+			byte[] output =  new byte[32];
+			try{
+				MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+				output = sha256.digest(xx.toByteArray());
+				String s_output = new String(Hex.encodeHex(output));
+				System.out.println(s_output);
+			}catch(Exception e){}
+
+			fSRP6_u = new BigInteger(output);
+		}while(fSRP6_u.signum() != 1);
+		
 		if ( fSRP6_u.mod(fConstants.largePrime_N).equals(BigInteger.ZERO) )
 		{
 			throw new SRPAuthenticationFailedException("u%N == 0");
 		}
+
 	}
 
 	/**
@@ -140,7 +194,7 @@ public class SRPServerSession
 		return fSessionKey_K;
 	}
 
-	SRPConstants		getConstants()
+	public SRPConstants		getConstants()
 	{
 		return fConstants;
 	}
@@ -149,9 +203,13 @@ public class SRPServerSession
 	{
 		return fVerifier;
 	}
-	
+
 	public BigInteger getU(){
 		return fSRP6_u;
+	}
+
+	public BigInteger getPublicKey_A(){
+		return fPublicKey_A;
 	}
 
 	private SRPConstants 		fConstants;

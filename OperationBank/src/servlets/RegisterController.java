@@ -114,11 +114,10 @@ public class RegisterController extends HttpServlet {
 			String salt_s = null;
 			String verifier_v = null;
 			SRPVerifier SRPv = null;
-			SRPClientSessionRunner SRPcsr = null;
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
 			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"),10);
-			
+			String result = fPublicKey_A.toString();
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
 				String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
@@ -143,28 +142,21 @@ public class RegisterController extends HttpServlet {
 			// Enkel string om mee te testen.
 			String k = "sander";
 			SRPFactory f = SRPFactory.getInstance();
-			SRPv = new SRPVerifier(new BigInteger(verifier_v,16), new BigInteger(salt_s,16));
+			SRPv = new SRPVerifier(new BigInteger(verifier_v,10), new BigInteger(salt_s,10));
 
 			
-			/*
-			 * Het gebruik van sessie code op de client kant is enkel voor test gebruik.
-			 */
-			SRPClientSession s = f.newClientSession(k.getBytes());
-			SRPClientSessionRunner ss = new SRPClientSessionRunner(s);
-			ss.getSession().setSalt_s(new BigInteger(salt_s));
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
-			SRPcsr = new SRPClientSessionRunner(s);
-			SRPcsr.getSession().setSalt_s(new BigInteger(salt_s,16));
 			
 			SRPsr.getServerSession().setClientPublicKey_A(fPublicKey_A);
-			
-			// toevoegen van test string.
-			String test1 = SRPsr.getServerSession().getU().toString();
-			
+			// DEBUG
+			String kkk = SRPsr.getServerSession().getU().toString();
+			System.out.println(kkk);
+
 			w.println(
-					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
+					  SRPsr.getServerSession().getConstants().srp6Multiplier_k.toString() + "|" + 
 					  salt_s + "|" +
 					  SRPsr.getServerSession().getPublicKey_B().toString());
+			
 			w.close();
 			break;
 		}

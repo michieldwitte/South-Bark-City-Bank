@@ -18,6 +18,7 @@
 <script type="text/javascript" src="/OperationBank/js/rollups/hmac-sha256.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/pbkdf2.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/rng4.js"></script>
+<script type="text/javascript" src="/OperationBank/js/components/enc-base64-min.js"></script>
 <script type="text/javascript" src="/OperationBank/js/rollups/rng.js"></script>
 <script type="text/javascript">
 
@@ -83,7 +84,6 @@ BigInteger.prototype.getString = function(){
 				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			}
 			var fPublicKey_A_string = fPublicKey_A.toString(10);
-			alert(fPublicKey_A_string);
 			// B in de documentatie.
 			var fPublicKey_B = "";
 			
@@ -110,13 +110,13 @@ BigInteger.prototype.getString = function(){
 			var v = result.split("|");
 			srp6Multiplier_k = v[0];
 			salt_s = new BigInteger(v[1],10);
-			fPublicKey_B = v[2];
+			fPublicKey_B = new BigInteger(v[2],10);
 			
-			alert(largePrime_N);
-			alert(primitiveRoot_g);
-			alert(srp6Multiplier_k);
-			alert(salt_s);
-			alert(fPublicKey_B); // B value klopt
+// 			alert(largePrime_N);
+// 			alert(primitiveRoot_g);
+// 			alert(srp6Multiplier_k);
+// 			alert(salt_s);
+// 			alert(fPublicKey_B); // B value klopt
 			
 			// FASE 1
 			
@@ -137,12 +137,6 @@ BigInteger.prototype.getString = function(){
 			
 			fPrivateKey_x = CryptoJS.SHA256(r.getString());
 			
-			
- 			//fPrivateKey_x = CryptoJS.PBKDF2(hash, combine.getString(), {
- 			//	keySize : 256 / 32,
- 			//	hasher : CryptoJS.algo.SHA256,
- 			//	iterations : 1
- 			//});
  			alert(fPrivateKey_x);
  			
  			// FASE 2
@@ -161,7 +155,7 @@ BigInteger.prototype.getString = function(){
  			b1 = s1.getBytes();
  			b2 = s2.getBytes();
  			
- 			// normaliseer de bytes.
+//  			normaliseer de bytes.
  			for(var i = 0; i < b1.length; i++){
 			     if(b1[i] > 127)
 					b1[i] &= 0x7f;
@@ -169,14 +163,16 @@ BigInteger.prototype.getString = function(){
 			for(var i = 0; i < b2.length; i++){
 			      if(b2[i] > 127)
 			         b2[i] &= 0x7f;
-			      }
+ 			      }
  			
 			combine = b1.concat(b2);
 			r = new BigInteger(combine);
 			
 			SRP6_u = CryptoJS.SHA256(r.getString());
- 			
- 			
+			alert(SRP6_u);
+			var test1 = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
+			alert(test1.toString(10));
+		
 			return false;
 
 		});

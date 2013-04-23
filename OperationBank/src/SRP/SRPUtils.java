@@ -96,6 +96,18 @@ class SRPUtils
 	{
 		byte[] ii1 = a.toByteArray();
 		byte[] ii2 = b.toByteArray();
+//		
+//		int counter = 0;
+//		for(byte tbyte : ii1){
+//			if(tbyte < 0) ii1[counter] ^= (1 << 7);
+//			counter++;
+//		}
+//		counter=0;
+//		for(byte tbyte : ii2){
+//			if(tbyte < 0) ii2[counter] ^= (1 << 7);
+//			counter++;
+//			
+//		}
 		
 		byte[] ii3 = new byte[ii1.length + ii2.length];
 		

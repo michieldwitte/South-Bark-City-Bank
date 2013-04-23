@@ -61,5 +61,5 @@ public class SRPConstants implements Serializable
 	/**
 	 * k from SRP-6
 	 */
-	public final BigInteger		srp6Multiplier_k;
+	public final BigInteger srp6Multiplier_k;
 }
