@@ -117,8 +117,8 @@ public class RegisterController extends HttpServlet {
 			SRPClientSessionRunner SRPcsr = null;
 			SRPServerSessionRunner SRPsr = null;
 			PrintWriter w = response.getWriter();
-			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA").getBytes());
-
+			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"),10);
+			
 			try{
 				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
 				String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
@@ -157,7 +157,10 @@ public class RegisterController extends HttpServlet {
 			SRPcsr.getSession().setSalt_s(new BigInteger(salt_s,16));
 			
 			SRPsr.getServerSession().setClientPublicKey_A(fPublicKey_A);
-
+			
+			// toevoegen van test string.
+			String test1 = SRPsr.getServerSession().getU().toString();
+			
 			w.println(
 					  SRPcsr.getSession().getConstants().srp6Multiplier_k.toString() + "|" + 
 					  salt_s + "|" +

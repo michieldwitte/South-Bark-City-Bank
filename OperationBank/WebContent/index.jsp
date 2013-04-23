@@ -82,7 +82,7 @@ BigInteger.prototype.getString = function(){
 				fRandom_a = new BigInteger(32,rng);
 				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
 			}
-			var fPublicKey_A_string = fPublicKey_A.getString();
+			var fPublicKey_A_string = fPublicKey_A.toString(10);
 			alert(fPublicKey_A_string);
 			// B in de documentatie.
 			var fPublicKey_B = "";
@@ -116,7 +116,7 @@ BigInteger.prototype.getString = function(){
 			alert(primitiveRoot_g);
 			alert(srp6Multiplier_k);
 			alert(salt_s);
-			alert(fPublicKey_B);
+			alert(fPublicKey_B); // B value klopt
 			
 			// FASE 1
 			
@@ -150,8 +150,31 @@ BigInteger.prototype.getString = function(){
  			// * fPublicKey_B
  			// * fPublicKey_A
  			// Beide in een BigInteger format. 
+ 			// volgende fase is bepalen van u = H(A,B);
  			
+ 			var SRP6_u = "";
  			
+ 			// first combine
+ 			s1 = fPublicKey_A.getString();
+ 			s2 = fPublicKey_B.getString();
+ 			
+ 			b1 = s1.getBytes();
+ 			b2 = s2.getBytes();
+ 			
+ 			// normaliseer de bytes.
+ 			for(var i = 0; i < b1.length; i++){
+			     if(b1[i] > 127)
+					b1[i] &= 0x7f;
+			      }
+			for(var i = 0; i < b2.length; i++){
+			      if(b2[i] > 127)
+			         b2[i] &= 0x7f;
+			      }
+ 			
+			combine = b1.concat(b2);
+			r = new BigInteger(combine);
+			
+			SRP6_u = CryptoJS.SHA256(r.getString());
  			
  			
 			return false;

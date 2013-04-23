@@ -149,6 +149,10 @@ public class SRPServerSession
 	{
 		return fVerifier;
 	}
+	
+	public BigInteger getU(){
+		return fSRP6_u;
+	}
 
 	private SRPConstants 		fConstants;
 	private SRPVerifier 		fVerifier;
