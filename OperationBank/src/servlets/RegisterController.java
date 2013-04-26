@@ -148,6 +148,10 @@ public class RegisterController extends HttpServlet {
 			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
 			
 			SRPsr.getServerSession().setClientPublicKey_A(fPublicKey_A);
+			
+			// Bepaal S waarde op de server kant. Na deze stap zouden beide partijen genoeg info
+			// moeten hebben om op een veilige manier te kunnen authenticeren.
+			SRPsr.getServerSession().computeCommonValue_S();
 			// DEBUG
 			String kkk = SRPsr.getServerSession().getU().toString();
 			System.out.println(kkk);
@@ -155,12 +159,18 @@ public class RegisterController extends HttpServlet {
 			w.println(
 					  SRPsr.getServerSession().getConstants().srp6Multiplier_k.toString() + "|" + 
 					  salt_s + "|" +
-					  SRPsr.getServerSession().getPublicKey_B().toString());
+					  SRPsr.getServerSession().getPublicKey_B().toString() + "|" + 
+					  SRPsr.getServerSession().getSessionCommonValue().toString() + "|" + 
+					  SRPsr.getServerSession().getU().toString());
 			
 			w.close();
 			break;
 		}
 		case 2: {
+			PrintWriter w = response.getWriter();
+			BigInteger M1 = new BigInteger(request.getParameter("M"),10);
+			w.println("sander demeester");
+			w.close();
 			break;
 		}
 		}

@@ -41,7 +41,22 @@ BigInteger.prototype.getString = function(){
 	return string;
 };
 
+
 	$(document).ready(function() {
+		
+		function normal(value){
+			
+			var s1 = value.getString();
+			var b1 = s1.getBytes();
+
+
+			for(var i = 0; i < b1.length; i++){
+			     if(b1[i] > 127)
+					b1[i] &= 0x7f;
+			      }
+			return new BigInteger(b1);
+			
+		}
 
 		function stringToByteArray (aValue) {
 			var	result;
@@ -76,15 +91,18 @@ BigInteger.prototype.getString = function(){
 			
 			var S = null;
 			var K = null;
+			var U = null;
 			
 	        // M = H(H(N) xor H(g), H(I), s, A, B, K)
 			var M = null;
 	        
 	        // M2 = H(A, M, K)
-			var M1 = null;
+			var M2 = null;
 			
 			var kgx = null;
 			var aux = null;
+			
+			var serverM2 = null;
 			
 			var fPrivateKey_xBigInt = null;
 			// A in de documentatie.
@@ -123,6 +141,13 @@ BigInteger.prototype.getString = function(){
 			srp6Multiplier_k = new BigInteger(v[0],10);
 			salt_s = new BigInteger(v[1],10);
 			fPublicKey_B = new BigInteger(v[2],10);
+			serverM2 = new BigInteger(v[3],10);
+			U = v[4];
+			
+			srp6Multiplier_k = normal(srp6Multiplier_k);
+			serverM2 = normal(serverM2);
+	
+			alert("serverM2: " + serverM2);
 			
 // 			alert(largePrime_N);
 // 			alert(primitiveRoot_g);
@@ -168,7 +193,7 @@ BigInteger.prototype.getString = function(){
  			b1 = s1.getBytes();
  			b2 = s2.getBytes();
  			
-//  			normaliseer de bytes.
+//  		normaliseer de bytes.
  			for(var i = 0; i < b1.length; i++){
 			     if(b1[i] > 127)
 					b1[i] &= 0x7f;
@@ -181,12 +206,17 @@ BigInteger.prototype.getString = function(){
 			combine = b1.concat(b2);
 			r = new BigInteger(combine);
 			
+			
+			
 			SRP6_u = CryptoJS.SHA256(r.getString());
 			alert(SRP6_u);
 			var SRP6_uBigInt = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
 			alert(SRP6_uBigInt.toString(10));
+			alert(U);
 			
 // 			We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
+			fPublicKey_A = normal(fPublicKey_A);
+			fPublicKey_B = normal(fPublicKey_B);
 			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(fPrivateKey_xBigInt,largePrime_N));
 			alert(kgx);
  			aux = fRandom_a.add(SRP6_uBigInt.multiply(fPrivateKey_xBigInt));
@@ -194,14 +224,33 @@ BigInteger.prototype.getString = function(){
 			
  			S = fPublicKey_B.subtract(kgx).modPow(aux,largePrime_N);
  			alert("S: " + S);
-			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
+			var Mstr = fPublicKey_A.toString(10) + fPublicKey_B.toString(10) + S.toString(10);
 			alert("Mstr: " + Mstr);
 			M =  CryptoJS.SHA256(Mstr);
 			alert("M: " + M);
-			M1 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
-			alert("M1: " + M1);
+			M2 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
+			alert("M2: " + M2);
 			
-		
+			var M2_string = new BigInteger(M2.toString(CryptoJS.enc.Hex),16);
+			M2_string = M2_string.toString(10);
+			
+			alert("M2_string :" + M2_string);
+			
+			request = $.ajax({
+				type : "GET",
+				async : false,
+				url : "/OperationBank/RegisterController",
+				data : {
+					"FASE" : 2,
+					"M" : M2_string
+				},
+				succes : function(data) {
+				}
+			});
+			
+			request.done(function(data) {
+				result = data;
+			});
 			return false;
 
 		});
