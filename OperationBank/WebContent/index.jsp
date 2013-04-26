@@ -193,9 +193,13 @@ BigInteger.prototype.getString = function(){
  			alert(aux);
 			
  			S = fPublicKey_B.subtract(kgx).modPow(aux,largePrime_N);
-// 			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
-// 			M =  CryptoJS.SHA256(Mstr);
-// 			M1 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
+ 			alert("S: " + S);
+			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
+			alert("Mstr: " + Mstr);
+			M =  CryptoJS.SHA256(Mstr);
+			alert("M: " + M);
+			M1 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
+			alert("M1: " + M1);
 			
 		
 			return false;
