@@ -190,8 +190,9 @@ BigInteger.prototype.getString = function(){
 			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(fPrivateKey_xBigInt,largePrime_N));
 			alert(kgx);
  			aux = fRandom_a.add(SRP6_uBigInt.multiply(fPrivateKey_xBigInt));
+ 			alert(aux);
 			
-// 			S = fPublicKey_B.substract(kgx).modPow(aux,largePrimeN);
+ 			S = fPublicKey_B.subtract(kgx).modPow(aux,largePrimeN);
 // 			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
 // 			M =  CryptoJS.SHA256(Mstr);
 // 			M1 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
