@@ -79,6 +79,10 @@ BigInteger.prototype.getString = function(){
 			var M = null; 
 			var M1 = null;
 			
+			var kgx = null;
+			var aux = null;
+			
+			var fPrivateKey_xBigInt = null;
 			// A in de documentatie.
 			var fPublicKey_A = new BigInteger();
 			fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
@@ -112,7 +116,7 @@ BigInteger.prototype.getString = function(){
 			});
 			// Opdelen van ajax response.
 			var v = result.split("|");
-			srp6Multiplier_k = v[0];
+			srp6Multiplier_k = new BigInteger(v[0],10);
 			salt_s = new BigInteger(v[1],10);
 			fPublicKey_B = new BigInteger(v[2],10);
 			
@@ -140,6 +144,7 @@ BigInteger.prototype.getString = function(){
 			var r = new BigInteger(combine);
 			
 			fPrivateKey_x = CryptoJS.SHA256(r.getString());
+			fPrivateKey_xBigInt = new BigInteger(fPrivateKey_x.toString(CryptoJS.enc.Hex),16);
 			
  			alert(fPrivateKey_x);
  			
@@ -174,8 +179,16 @@ BigInteger.prototype.getString = function(){
 			
 			SRP6_u = CryptoJS.SHA256(r.getString());
 			alert(SRP6_u);
-			var test1 = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
-			alert(test1.toString(10));
+			var SRP6_uBigInt = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
+			alert(SRP6_uBigInt.toString(10));
+			
+			// We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
+			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(x,largePrime_N));
+			aux = fRandom_a.add(SRP6_uBigInt.multiply(x));
+			
+			S = fPublicKey_B.substract(kgx).modPow(aux,largePrimeN);
+			
+			
 		
 			return false;
 
