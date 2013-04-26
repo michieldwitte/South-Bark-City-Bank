@@ -188,7 +188,8 @@ BigInteger.prototype.getString = function(){
 			
 // 			We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
 			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(fPrivateKey_xBigInt,largePrime_N));
-// 			aux = fRandom_a.add(SRP6_uBigInt.multiply(x));
+			alert(kgx);
+ 			aux = fRandom_a.add(SRP6_uBigInt.multiply(fPrivateKey_xBigInt));
 			
 // 			S = fPublicKey_B.substract(kgx).modPow(aux,largePrimeN);
 // 			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
