@@ -76,7 +76,11 @@ BigInteger.prototype.getString = function(){
 			
 			var S = null;
 			var K = null;
-			var M = null; 
+			
+	        // M = H(H(N) xor H(g), H(I), s, A, B, K)
+			var M = null;
+	        
+	        // M2 = H(A, M, K)
 			var M1 = null;
 			
 			var kgx = null;
@@ -182,12 +186,14 @@ BigInteger.prototype.getString = function(){
 			var SRP6_uBigInt = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
 			alert(SRP6_uBigInt.toString(10));
 			
-			// We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
-			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(x,largePrime_N));
-			aux = fRandom_a.add(SRP6_uBigInt.multiply(x));
+// 			We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
+			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(fPrivateKey_xBigInt,largePrime_N));
+// 			aux = fRandom_a.add(SRP6_uBigInt.multiply(x));
 			
-			S = fPublicKey_B.substract(kgx).modPow(aux,largePrimeN);
-			
+// 			S = fPublicKey_B.substract(kgx).modPow(aux,largePrimeN);
+// 			var Mstr = fPublicKey_A.toString(16) + fPublicKey_B.toString(16) + S.toString(16);
+// 			M =  CryptoJS.SHA256(Mstr);
+// 			M1 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
 			
 		
 			return false;

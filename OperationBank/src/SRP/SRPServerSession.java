@@ -34,9 +34,17 @@ public class SRPServerSession
 		fCommonValue_S = null;
 		fEvidenceValue_M1 = null;
 		fSessionKey_K = null;
+		
+		calculatepublicKeyB();
 
+		
+	}
+	
+	private void calculatepublicKeyB(){
+		
+		fRandom_b = SRPUtils.random(fConstants);
 		// B = 3v + g^b
-		fPublicKey_B = fVerifier.verifier_v.multiply(constants.srp6Multiplier_k).add(fConstants.primitiveRoot_g.modPow(fRandom_b, fConstants.largePrime_N));
+		fPublicKey_B = fVerifier.verifier_v.multiply(fConstants.srp6Multiplier_k).add(fConstants.primitiveRoot_g.modPow(fRandom_b, fConstants.largePrime_N));
 
 		byte[] ii1 = fPublicKey_B.toByteArray();
 
@@ -47,9 +55,7 @@ public class SRPServerSession
 		}
 
 		fPublicKey_B = new BigInteger(ii1);
-
-		//TODO: verwijder dit hieronder. 
-		int k = 9;
+		
 	}
 
 	/**
@@ -68,7 +74,7 @@ public class SRPServerSession
 		fPublicKey_A = publicKey_A;
 
 		do{
-
+			calculatepublicKeyB();
 			String k1 = fPublicKey_A.toString();
 			String k2 = fPublicKey_B.toString();
 
