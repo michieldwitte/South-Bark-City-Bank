@@ -74,6 +74,10 @@ BigInteger.prototype.getString = function(){
 			var randomParamter_U = "";
 			var fRandom_a = new BigInteger(32,rng);
 			
+			var S = null;
+			var K = null;
+			var M = null; 
+			var M1 = null;
 			
 			// A in de documentatie.
 			var fPublicKey_A = new BigInteger();

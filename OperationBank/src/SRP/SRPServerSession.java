@@ -92,7 +92,6 @@ public class SRPServerSession
 			System.arraycopy(ii2, 0, ii3, ii1.length, ii2.length);
 
 			System.out.println(Arrays.toString(ii3));
-
 			BigInteger xx = new BigInteger(ii3);
 			byte[] output =  new byte[32];
 			try{
