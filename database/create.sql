@@ -11,3 +11,4 @@ create table users(
 	city text not null,
 	address text not null
 );
+

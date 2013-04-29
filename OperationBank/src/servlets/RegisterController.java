@@ -131,13 +131,32 @@ public class RegisterController extends HttpServlet {
 			System.out.println(verifier_v);
 
 			if(BCrypt.checkpw(password, verifier_v)){
-				request.getSession().setAttribute("login", "ok");
-				w.println("ok");
+				request.getSession().setAttribute("login", "ok-session");
 			}else{
-				request.getSession().setAttribute("login", "nok");
-				w.println("nok");
+				request.getSession().setAttribute("att", "1");
 			}
 			w.close();
+			// Generate a OTP value based on the shared secret.
+			// TOTP = HOTP(K,T||H(data))
+			// K is ons shared secret
+			// T is de unix time stamp
+			// H(data) is de random data die we vragen om de "signen".
+			
+			// We gebruiken SHA-256.
+			MessageDigest sha = null;
+			
+			// Pseudo random data dat we zullen laten signeren door de ontvanger.
+			byte[] randomData = new byte[32];
+			byte[] output = new byte[32];
+			try{
+			sha = MessageDigest.getInstance("SHA-256");
+			PRNG.fillBlock();
+			PRNG.nextBytes(randomData, 0, 32);
+			output = sha.digest(randomData);
+			}catch(Exception e){}
+			
+			request.setAttribute("sign_data", new String(Hex.encodeHex(output)));
+			request.getRequestDispatcher("/OTP_login.jsp").forward(request, response);
 			return;
 		}
 		case 2: {
