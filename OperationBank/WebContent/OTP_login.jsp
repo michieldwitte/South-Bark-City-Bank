@@ -8,9 +8,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Inloggen fase 2.</title>
 </head>
 <body>
+<p>
+De hex voorstelling van de qr code.
+<% out.print(request.getAttribute("sign_data").toString()); %>
+</p>
+De echte voorstelling van de qr code.
+<p>
+<%
+	ByteArrayOutputStream baout = QRCode.from(request.getAttribute("sign_data").toString()).to(ImageType.PNG).withSize(300,300).stream();
+	String image = Base64.encodeBase64String(baout.toByteArray());
+%>
 
+<img src="data:image/jpg;base64,<%= image %>" alt="qrcode" />
+</p>
 </body>
 </html>
