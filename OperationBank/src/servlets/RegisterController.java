@@ -248,7 +248,7 @@ public class RegisterController extends HttpServlet {
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
-			stat.executeQuery(insert);
+			stat.executeUpdate(insert);
 
 		}catch(Exception e1){
 			printWriter.println(e1.getMessage());
