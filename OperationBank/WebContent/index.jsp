@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="SRP.*"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -73,186 +72,33 @@ BigInteger.prototype.getString = function(){
 		
 		$("#btn").on("click", function() {
 			
-			// GUID is onze "I".
-			var GUID = $("#GUID").val();
-			var fPassword = $("#passwd").val().getBytes();
+			var password = $("#passwd").val();
+			var guid     = $("#GUID").val();
+			var salt     =  CryptoJS.SHA256(password);
+			var pw_pbkdf2 = CryptoJS.PBKDF2(password,
+					                        salt, {
+				keySize : 256 / 32,
+				hasher : CryptoJS.algo.SHA256,
+				iterations : 1
+			});
 			
-			// javascript random number generator.
-			var rng = new SecureRandom();
-			
-			// Maak BigInteger voorstelling van passwd byte array.
-			var largePrime_N = new BigInteger("2115b8b692e0e045692cf280b436735c77a5a9e8a9e7ed56c965f87db5b2a2ece3",16);
-			var primitiveRoot_g = new BigInteger("2",10);
-			
-			var srp6Multiplier_k = "";
-			var salt_s = "";
-			var randomParamter_U = "";
-			var fRandom_a = new BigInteger(32,rng);
-			
-			var S = null;
-			var K = null;
-			var U = null;
-			
-	        // M = H(H(N) xor H(g), H(I), s, A, B, K)
-			var M = null;
-	        
-	        // M2 = H(A, M, K)
-			var M2 = null;
-			
-			var kgx = null;
-			var aux = null;
-			
-			var serverM2 = null;
-			
-			var fPrivateKey_xBigInt = null;
-			// A in de documentatie.
-			var fPublicKey_A = new BigInteger();
-			fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
-			while(fPublicKey_A.mod(largePrime_N) == 0){
-				// A=g^N
-				fRandom_a = new BigInteger(32,rng);
-				fPublicKey_A = primitiveRoot_g.modPow(fRandom_a,largePrime_N);
-			}
-			var fPublicKey_A_string = fPublicKey_A.toString(10);
-			// B in de documentatie.
-			var fPublicKey_B = "";
-			
-			var fPrivateKey_x = "";
-			var result = "";
-
-			request = $.ajax({
+			var request = $.ajax({
 				type : "GET",
 				async : false,
 				url : "/OperationBank/RegisterController",
 				data : {
-					"GUID" : GUID,
 					"FASE" : 1,
-					"fPublicKeyA" : fPublicKey_A_string
-				},
-				succes : function(data) {
-				}
-			});
-
-			request.done(function(data) {
-				result = data;
-			});
-			// Opdelen van ajax response.
-			var v = result.split("|");
-			srp6Multiplier_k = new BigInteger(v[0],10);
-			salt_s = new BigInteger(v[1],10);
-			fPublicKey_B = new BigInteger(v[2],10);
-			serverM2 = new BigInteger(v[3],10);
-			U = v[4];
-			
-			srp6Multiplier_k = normal(srp6Multiplier_k);
-			serverM2 = normal(serverM2);
-	
-			alert("serverM2: " + serverM2);
-			
-// 			alert(largePrime_N);
-// 			alert(primitiveRoot_g);
-// 			alert(srp6Multiplier_k);
-// 			alert(salt_s);
-// 			alert(fPublicKey_B); // B value klopt
-			
-			// FASE 1
-			
-			var s1 = salt_s.getString();
-			var b1 = s1.getBytes();
-			var b2 = fPassword;
-			
-			for(var i = 0; i < b1.length; i++){
-			     if(b1[i] > 127)
-					b1[i] &= 0x7f;
-			      }
-			for(var i = 0; i < b2.length; i++){
-			      if(b2[i] > 127)
-			         b2[i] &= 0x7f;
-			      }
-			var combine = b1.concat(b2);
-			var r = new BigInteger(combine);
-			
-			fPrivateKey_x = CryptoJS.SHA256(r.getString());
-			fPrivateKey_xBigInt = new BigInteger(fPrivateKey_x.toString(CryptoJS.enc.Hex),16);
-			
- 			alert(fPrivateKey_x);
- 			
- 			// FASE 2
- 			// Op dit moment beschikken beide partijen over 
- 			// * fPublicKey_B
- 			// * fPublicKey_A
- 			// Beide in een BigInteger format. 
- 			// volgende fase is bepalen van u = H(A,B);
- 			
- 			var SRP6_u = "";
- 			
- 			// first combine
- 			s1 = fPublicKey_A.getString();
- 			s2 = fPublicKey_B.getString();
- 			
- 			b1 = s1.getBytes();
- 			b2 = s2.getBytes();
- 			
-//  		normaliseer de bytes.
- 			for(var i = 0; i < b1.length; i++){
-			     if(b1[i] > 127)
-					b1[i] &= 0x7f;
-			      }
-			for(var i = 0; i < b2.length; i++){
-			      if(b2[i] > 127)
-			         b2[i] &= 0x7f;
- 			      }
- 			
-			combine = b1.concat(b2);
-			r = new BigInteger(combine);
-			
-			
-			
-			SRP6_u = CryptoJS.SHA256(r.getString());
-			alert(SRP6_u);
-			var SRP6_uBigInt = new BigInteger(SRP6_u.toString(CryptoJS.enc.Hex),16);
-			alert(SRP6_uBigInt.toString(10));
-			alert(U);
-			
-// 			We need to execute the callculation, S = (B - kg^x) ^ (a + ux).
-			fPublicKey_A = normal(fPublicKey_A);
-			fPublicKey_B = normal(fPublicKey_B);
-			kgx = srp6Multiplier_k.multiply(primitiveRoot_g.modPow(fPrivateKey_xBigInt,largePrime_N));
-			alert(kgx);
- 			aux = fRandom_a.add(SRP6_uBigInt.multiply(fPrivateKey_xBigInt));
- 			alert(aux);
-			
- 			S = fPublicKey_B.subtract(kgx).modPow(aux,largePrime_N);
- 			alert("S: " + S);
-			var Mstr = fPublicKey_A.toString(10) + fPublicKey_B.toString(10) + S.toString(10);
-			alert("Mstr: " + Mstr);
-			M =  CryptoJS.SHA256(Mstr);
-			alert("M: " + M);
-			M2 = CryptoJS.SHA256(fPublicKey_A.toString(16) + M + S.toString);
-			alert("M2: " + M2);
-			
-			var M2_string = new BigInteger(M2.toString(CryptoJS.enc.Hex),16);
-			M2_string = M2_string.toString(10);
-			
-			alert("M2_string :" + M2_string);
-			
-			request = $.ajax({
-				type : "GET",
-				async : false,
-				url : "/OperationBank/RegisterController",
-				data : {
-					"FASE" : 2,
-					"M" : M2_string
+					"guid" : guid,
+					"password" : pw_pbkdf2.toString()
 				},
 				succes : function(data) {
 				}
 			});
 			
-			request.done(function(data) {
-				result = data;
+			request.done(function(data){
+				alert(data);
 			});
 			return false;
-
 		});
 	});
 </script>
@@ -290,8 +136,6 @@ BigInteger.prototype.getString = function(){
 						</table>
 					</fieldset>
 				</form>
-
-
 			</td>
 			<td>
 

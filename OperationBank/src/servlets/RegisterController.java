@@ -12,26 +12,26 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
-import SRP.SRPClientSession;
-import SRP.SRPClientSessionRunner;
-import SRP.SRPFactory;
-import SRP.SRPServerSession;
-import SRP.SRPServerSessionRunner;
-import SRP.SRPVerifier;
-
+import bcrypt.BCrypt;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
 
@@ -103,78 +103,47 @@ public class RegisterController extends HttpServlet {
 			System.err.println("SQLException: " + ex.getMessage());
 		}
 	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		int fase = Integer.parseInt(request.getParameter("FASE"));
-
+		System.out.println(fase);
 		switch(fase){
 		case 1:{
-			response.setContentType("text/html");
-			String guid = request.getParameter("GUID");
-			String salt_s = null;
+			PrintWriter w   = response.getWriter();
 			String verifier_v = null;
-			SRPVerifier SRPv = null;
-			SRPServerSessionRunner SRPsr = null;
-			PrintWriter w = response.getWriter();
-			BigInteger fPublicKey_A = new BigInteger(request.getParameter("fPublicKeyA"),10);
-			String result = fPublicKey_A.toString();
+			String guid     = request.getParameter("guid");
+			String password = request.getParameter("password");
+			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
+			
 			try{
-				String sqlQuerySalt_S = "select salt_s from users where uuid='"+guid+"';";
-				String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 				Statement stat = dbcon.createStatement();
-				ResultSet resultSet = stat.executeQuery(sqlQuerySalt_S);
 
-				if(resultSet.next())
-					salt_s = resultSet.getString("salt_s");
-
-				resultSet = stat.executeQuery(sqlQueryVeri_S);
+				ResultSet resultSet = stat.executeQuery(sqlQueryVeri_S);
 				if(resultSet.next())
 					verifier_v = resultSet.getString("verifier_v");
 			}catch(Exception e){
-				response.getWriter().println(e.getMessage());
-				response.getWriter().close();
-				return;
+				System.out.println("fout");
 			}
-			
-			// Enkel string om mee te testen.
-			String k = "sander";
-			SRPFactory f = SRPFactory.getInstance();
-			SRPv = new SRPVerifier(new BigInteger(verifier_v,10), new BigInteger(salt_s,10));
+			response.setContentType("text/html");
+			System.out.println(verifier_v);
 
-			
-			SRPsr = new SRPServerSessionRunner(SRPFactory.getInstance().newServerSession(SRPv));
-			
-			SRPsr.getServerSession().setClientPublicKey_A(fPublicKey_A);
-			
-			// Bepaal S waarde op de server kant. Na deze stap zouden beide partijen genoeg info
-			// moeten hebben om op een veilige manier te kunnen authenticeren.
-			SRPsr.getServerSession().computeCommonValue_S();
-			// DEBUG
-			String kkk = SRPsr.getServerSession().getU().toString();
-			System.out.println(kkk);
-
-			w.println(
-					  SRPsr.getServerSession().getConstants().srp6Multiplier_k.toString() + "|" + 
-					  salt_s + "|" +
-					  SRPsr.getServerSession().getPublicKey_B().toString() + "|" + 
-					  SRPsr.getServerSession().getSessionCommonValue().toString() + "|" + 
-					  SRPsr.getServerSession().getU().toString());
-			
+			if(BCrypt.checkpw(password, verifier_v)){
+				request.getSession().setAttribute("login", "ok");
+				w.println("ok");
+			}else{
+				request.getSession().setAttribute("login", "nok");
+				w.println("nok");
+			}
 			w.close();
-			break;
+			return;
 		}
 		case 2: {
-			PrintWriter w = response.getWriter();
-			BigInteger M1 = new BigInteger(request.getParameter("M"),10);
-			w.println("sander demeester");
-			w.close();
-			break;
-		}
-		}
 
+		}
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -185,7 +154,6 @@ public class RegisterController extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter printWriter = response.getWriter();
 
-		SRPVerifier srpVerifier = null;
 
 		// out, int offset, int length
 		try {
@@ -199,7 +167,6 @@ public class RegisterController extends HttpServlet {
 			return;
 		}
 
-
 		String GUUID = "ID" + UUID.randomUUID();
 		String password = request.getParameter("Password");
 		String confirmPassword = request.getParameter("ConfirmPassword");
@@ -209,6 +176,8 @@ public class RegisterController extends HttpServlet {
 		String areaCode = request.getParameter("AreaCode");
 		String city = request.getParameter("City");
 		String address = request.getParameter("Address");
+
+		String verifier_v = BCrypt.hashpw(password, BCrypt.gensalt(10));
 
 
 		if (password != "" && confirmPassword.equals(password) && 
@@ -222,32 +191,23 @@ public class RegisterController extends HttpServlet {
 			printWriter.println("WRONG REQUEST");
 			printWriter.close();
 			return;
-		}
 
-		try {
-			srpVerifier = SRPFactory.getInstance().makeVerifier(password.getBytes());
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
-
 
 		try{
-			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, salt_s, country,"+
-					"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
-					new String(Hex.encodeHex(salt)) + "','"+  
-					new String(Hex.encodeHex(shared_secret)) + "','"+
-					srpVerifier.verifier_v.toString() + "','" +
-					srpVerifier.salt_s.toString()  + "','" +
-					country +"','" +
-					areaCode + "','"+city+"','"+ address +"');";
-			String k = new String(Hex.encodeHex(srpVerifier.verifier_v.toByteArray()));
+			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
+			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
+			new String(Hex.encodeHex(salt)) + "','"+  
+			new String(Hex.encodeHex(shared_secret)) + "','"+
+			verifier_v  + "','" +
+			country +"','" +
+			areaCode + "','"+city+"','"+ address +"');";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 			Statement stat = dbcon.createStatement();
 			stat.executeQuery(insert);
-			
+
 		}catch(Exception e1){
 			printWriter.println(e1.getMessage());
 			printWriter.close();
