@@ -11,10 +11,9 @@
 	src="/OperationBank/js/jquery-1.9.0.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#btn").on("click", function() {
+		$("#btn-submit").on("click", function() {
 			var response_code = $("#response_code").val();
 			alert(response_code);
-		});
 		
 		var request = $.ajax({
 			type : "GET",
@@ -29,6 +28,7 @@
 		
 		request.done(function(data){
 			alert(data);
+		});
 		});
 	});
 </script>
@@ -61,7 +61,7 @@
 				</td>
 				<td><input name="response_code" id="response_code" size="30">
 				</td>
-				<td><input id="btn" type="submit" value="Submit">
+				<td><input id="btn-submit" type="submit" value="Submit">
 				</td>
 			</tr>
 		</table>
