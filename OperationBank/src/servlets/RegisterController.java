@@ -156,6 +156,7 @@ public class RegisterController extends HttpServlet {
 			// Alsook de huidige timestamp die we verwachten van de client.
 			request.setAttribute("sign_data", new String(Hex.encodeHex(output)));
 			request.setAttribute("timestamp", String.valueOf(System.currentTimeMillis()/1000L));
+			break;
 		}
 		case 2: {
 			// Ontvangen van de response code van de client.
@@ -180,6 +181,7 @@ public class RegisterController extends HttpServlet {
 			
 			// TODO: Debug, geef het shared secret terug
 			response.getWriter().println(shared_secret);
+			break;
 		}
 		}
 		request.getRequestDispatcher("OTP_login.jsp").forward(request, response);
