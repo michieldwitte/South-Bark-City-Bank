@@ -96,7 +96,9 @@ BigInteger.prototype.getString = function(){
 			});
 			
 			request.done(function(data){
-				alert(data);
+				document.open();
+				document.write(data);
+				document.close();
 			});
 			return false;
 		});

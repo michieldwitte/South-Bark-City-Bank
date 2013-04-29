@@ -110,12 +110,11 @@ public class RegisterController extends HttpServlet {
 		System.out.println(fase);
 		switch(fase){
 		case 1:{
-			PrintWriter w   = response.getWriter();
 			String verifier_v = null;
 			String guid     = request.getParameter("guid");
 			String password = request.getParameter("password");
 			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-			
+
 			try{
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
@@ -127,7 +126,6 @@ public class RegisterController extends HttpServlet {
 			}catch(Exception e){
 				System.out.println("fout");
 			}
-			response.setContentType("text/html");
 			System.out.println(verifier_v);
 
 			if(BCrypt.checkpw(password, verifier_v)){
@@ -135,34 +133,57 @@ public class RegisterController extends HttpServlet {
 			}else{
 				request.getSession().setAttribute("att", "1");
 			}
-			w.close();
 			// Generate a OTP value based on the shared secret.
 			// TOTP = HOTP(K,T||H(data))
 			// K is ons shared secret
 			// T is de unix time stamp
 			// H(data) is de random data die we vragen om de "signen".
-			
+
 			// We gebruiken SHA-256.
 			MessageDigest sha = null;
-			
+
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
 			byte[] randomData = new byte[32];
 			byte[] output = new byte[32];
 			try{
-			sha = MessageDigest.getInstance("SHA-256");
-			PRNG.fillBlock();
-			PRNG.nextBytes(randomData, 0, 32);
-			output = sha.digest(randomData);
+				sha = MessageDigest.getInstance("SHA-256");
+				PRNG.fillBlock();
+				PRNG.nextBytes(randomData, 0, 32);
+				output = sha.digest(randomData);
 			}catch(Exception e){}
 			
+			// In de het HTTP sessie object slaan we de random data op die we laten signen.
+			// Alsook de huidige timestamp die we verwachten van de client.
 			request.setAttribute("sign_data", new String(Hex.encodeHex(output)));
-			request.getRequestDispatcher("/OTP_login.jsp").forward(request, response);
-			return;
+			request.setAttribute("timestamp", String.valueOf(System.currentTimeMillis()/1000L));
 		}
 		case 2: {
+			// Ontvangen van de response code van de client.
+			String sign_data = request.getAttribute("sign_data").toString();
+			String guid = request.getAttribute("guid").toString();
+			long timestamp = Long.parseLong(request.getAttribute("timestamp").toString());
+			String shared_secret = null;
+			
+			// Eerst moeten we terug het shared secret opvragen.
+			String sql_query = "select shared_key from users where uuid='" + guid + "';";
+			
+			try{
+				Class.forName("org.postgresql.Driver");
+				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+				
+				Statement stat = dbcon.createStatement();
 
+				ResultSet resultSet = stat.executeQuery(sql_query);
+				if(resultSet.next())
+					shared_secret = resultSet.getString("shared_key");
+			}catch(Exception e){}
+			
+			// TODO: Debug, geef het shared secret terug
+			response.getWriter().println(shared_secret);
 		}
 		}
+		request.getRequestDispatcher("OTP_login.jsp").forward(request, response);
+		return; 
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
