@@ -31,6 +31,7 @@ import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
+import CryptoLibraries.TOTP;
 import bcrypt.BCrypt;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
@@ -152,6 +153,24 @@ public class RegisterController extends HttpServlet {
 				output = sha.digest(randomData);
 			}catch(Exception e){}
 			
+			// Gebruik van unix time.
+			Long unixTime = System.currentTimeMillis() / 1000L;
+			long time = unixTime - (unixTime%150);
+			
+			// TODO: concatenatie. De hex string is de signed_data
+			time = time & Long.parseLong(new String(Hex.encodeHex(output)));
+			
+			// Define steps
+			String steps = "0";
+			steps = Long.toHexString(time).toUpperCase();
+			while(steps.length() < 16)
+				steps = "0" + steps;
+			
+			// Opslaan van de OTP waarde in het sessie object.
+			// verifier_v: shared secet
+			// steps     : sign_data || unix time stamp.
+			request.setAttribute("otp-value", TOTP.generateTOTP(verifier_v, steps, "HmacSHA512"));
+			
 			// In de het HTTP sessie object slaan we de random data op die we laten signen.
 			// Alsook de huidige timestamp die we verwachten van de client.
 			request.setAttribute("sign_data", new String(Hex.encodeHex(output)));
@@ -209,7 +228,8 @@ public class RegisterController extends HttpServlet {
 			return;
 		}
 
-		String GUUID = "ID" + UUID.randomUUID();
+		
+		String GUUID = "ID" + UUID.randomUUID().toString().substring(0, 13);
 		String password = request.getParameter("Password");
 		String confirmPassword = request.getParameter("ConfirmPassword");
 		String firstName = request.getParameter("FirstName");
@@ -219,7 +239,7 @@ public class RegisterController extends HttpServlet {
 		String city = request.getParameter("City");
 		String address = request.getParameter("Address");
 
-		String verifier_v = BCrypt.hashpw(password, BCrypt.gensalt(10));
+		String verifier_v = BCrypt.hashpw(password, BCrypt.gensalt(20));
 
 
 		if (password != "" && confirmPassword.equals(password) && 
