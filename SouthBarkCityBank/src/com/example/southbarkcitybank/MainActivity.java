@@ -12,7 +12,8 @@ import android.view.View.OnClickListener;
 
 public class MainActivity extends Activity implements OnClickListener{
 
-	public String seed = "";
+	public String ssecret = "";
+	public String message = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,13 +21,14 @@ public class MainActivity extends Activity implements OnClickListener{
 		setContentView(R.layout.activity_main);
 		Button btn = (Button) findViewById(R.id.button1);
 		btn.setOnClickListener(this);
-		Button btn2 = (Button) findViewById(R.id.button2);
-		btn2.setOnClickListener(this);
-		//import seed ---------------------- nog te doen -----------------
-		if(seed.equals("")){
-			btn2.setVisibility(Button.VISIBLE);
-		}
 		
+		Bundle extras = getIntent().getExtras(); 
+		if(extras !=null) {
+		    ssecret = extras.getString("SSecret");
+		} else {
+			((TextView) findViewById(R.id.textView2)).setText("Error: Shared Secret is niet ingeladen");
+			((TextView) findViewById(R.id.textView2)).setVisibility(TextView.VISIBLE);
+		}
 	}
 
 	@Override
@@ -38,37 +40,22 @@ public class MainActivity extends Activity implements OnClickListener{
 
 	@Override
 	public void onClick(View arg0) {
-		if (((Button) arg0).getText().toString().equals("Generate")){
-			TextView tv2 = (TextView) findViewById(R.id.textView2);
-			TextView tv3 = (TextView) findViewById(R.id.textView3);
-			EditText et = (EditText) findViewById(R.id.editText1);
-			
-			String message = et.getText().toString();
-			tv2.setVisibility(TextView.VISIBLE);
-			if(!message.equals("")){
-				tv3.setText(generateTOTPCode(message));
-			} else {
-				tv3.setText("Invalid input");
-			}
-			tv3.setVisibility(TextView.VISIBLE);
-		} else {
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 			intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
 			startActivityForResult(intent, 0);
-		}
 	}
 	
-	public String generateTOTPCode(String message){
-        seed = "3132333435363738393031323334353637383930"; //de shared secret
-        
+	public String generateTOTPCode(String message){        
         long unixTime = System.currentTimeMillis() / 1000L;
         long time = unixTime - (unixTime%150); //tijdspanne inlassen
-    	time = time & Long.parseLong(message);
-        
-        String steps = "0";
-        steps = Long.toHexString(time).toUpperCase();
-        while(steps.length() < 16) steps = "0" + steps;
-        return TOTP.generateTOTP(seed, steps, "8", "HmacSHA512");
+    	Long toEncrypt = null;
+    	
+    	try{
+    		toEncrypt = Long.parseLong(message)^time; // de message is een long die we xorren met de tijd
+    	} catch (Exception e){
+    		return "Error: Invalid QR-Code";
+    	}
+        return TOTP.generateTOTP(ssecret, toEncrypt.toString(), "8", "HmacSHA512");
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -76,15 +63,17 @@ public class MainActivity extends Activity implements OnClickListener{
 			if (resultCode == RESULT_OK) {
 				String contents = intent.getStringExtra("SCAN_RESULT");
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-				// Handle successful scan
-				seed = contents;
-				((TextView) findViewById(R.id.textView3)).setText("Successfully read shared secret");
-				((TextView) findViewById(R.id.textView3)).setVisibility(TextView.VISIBLE);
-				((TextView) findViewById(R.id.textView2)).setVisibility(TextView.INVISIBLE);
-				((Button) findViewById(R.id.button2)).setVisibility(Button.INVISIBLE);
+				message = contents;
+				String TOTPCode = generateTOTPCode(message);
+				
+				((TextView) findViewById(R.id.textView2)).setText(TOTPCode);
+				((TextView) findViewById(R.id.textView2)).setVisibility(TextView.VISIBLE);
+
 			} else if (resultCode == RESULT_CANCELED) {
 				// Handle cancel
-				((TextView) findViewById(R.id.textView3)).setText("Failed to read shared secret");
+				((TextView) findViewById(R.id.textView2)).setText("Failed to read QR-Code");
+				((TextView) findViewById(R.id.textView2)).setVisibility(TextView.VISIBLE);
+				
 			}
 		}
 	}
