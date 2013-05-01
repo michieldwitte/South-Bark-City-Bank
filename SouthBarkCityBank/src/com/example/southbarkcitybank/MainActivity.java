@@ -1,5 +1,8 @@
 package com.example.southbarkcitybank;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -8,12 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.view.View.OnClickListener;
 
 public class MainActivity extends Activity implements OnClickListener{
 
 	public String ssecret = "";
 	public String message = "";
+	public String username = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +30,8 @@ public class MainActivity extends Activity implements OnClickListener{
 		Bundle extras = getIntent().getExtras(); 
 		if(extras !=null) {
 		    ssecret = extras.getString("SSecret");
+		    username = extras.getString("Username");
+		    ((TextView) findViewById(R.id.textView3)).setText("Username: " + username);
 		} else {
 			((TextView) findViewById(R.id.textView2)).setText("Error: Shared Secret is niet ingeladen");
 			((TextView) findViewById(R.id.textView2)).setVisibility(TextView.VISIBLE);
@@ -55,7 +62,9 @@ public class MainActivity extends Activity implements OnClickListener{
     	} catch (Exception e){
     		return "Error: Invalid QR-Code";
     	}
-        return TOTP.generateTOTP(ssecret, toEncrypt.toString(), "8", "HmacSHA512");
+    	String fin = Long.toHexString(toEncrypt).toUpperCase();
+    	
+        return TOTP.generateTOTP(ssecret, fin, "8", "HmacSHA512");
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -63,7 +72,12 @@ public class MainActivity extends Activity implements OnClickListener{
 			if (resultCode == RESULT_OK) {
 				String contents = intent.getStringExtra("SCAN_RESULT");
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-				message = contents;
+				try {
+					message = new String(Hex.decodeHex(contents.toCharArray()));
+				} catch (DecoderException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				String TOTPCode = generateTOTPCode(message);
 				
 				((TextView) findViewById(R.id.textView2)).setText(TOTPCode);

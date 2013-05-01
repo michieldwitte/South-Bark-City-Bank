@@ -12,6 +12,9 @@ import java.security.MessageDigest;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 	public String ssecret;
 	public int triesleft;
 	public byte[] iv;
+	public String username;
 	private final String fileName="TotalyNotTheSharedSecret";
 	
 	@Override
@@ -67,7 +71,7 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 		String txt = btn.getText().toString();
 		EditText pinfield = (EditText) findViewById(R.id.editText1);
 		if(txt.equals("OK")){
-			onOKClick(arg0);
+				onOKClick(arg0);
 		} else if(txt.equals("Clear")){
 			pinfield.setText("");
 		} else {//een getal
@@ -116,6 +120,7 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 				}
 				Intent i = new Intent(getApplicationContext(), MainActivity.class);
 				i.putExtra("SSecret", ssecret);
+				i.putExtra("Username", username);
 				startActivity(i);
 				finish();
 			}
@@ -126,13 +131,18 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
-				ssecret = intent.getStringExtra("SCAN_RESULT");
+				String stringinput = intent.getStringExtra("SCAN_RESULT");
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+				
+				ssecret = stringinput.substring(0,128);
+				//ssecret = new String(Hex.decodeHex(stringinput.substring(0, 128).toCharArray()));
+				username = stringinput.substring(128, stringinput.length());
 				
 				WriteSeedAndIV();
 				
 				Intent i = new Intent(getApplicationContext(), MainActivity.class);
 				i.putExtra("SSecret", ssecret);
+				i.putExtra("Username", username);
 				startActivity(i);
 				finish();
 			} else if (resultCode == RESULT_CANCELED) {
@@ -147,7 +157,10 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 		File fl = new File(getFilesDir() +"/" + fileName);
 		BufferedReader br = new BufferedReader(new FileReader(fl));
 		byte[] input = Base64.decode(br.readLine(), Base64.NO_WRAP);
+		byte[] tmp = Base64.decode(br.readLine(), Base64.NO_WRAP);
 		iv = Base64.decode(br.readLine(), Base64.NO_WRAP);
+		String ret = new String(decrypt(pin.getBytes(), input));
+		username = new String(decrypt(pin.getBytes(), tmp));
 		return new String(decrypt(pin.getBytes(), input));
 	}
 	
@@ -156,9 +169,12 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 		try {
 			File fl = new File(getFilesDir() + "/" + fileName);
 			BufferedWriter bw = new BufferedWriter(new FileWriter(fl));
-			String encrypted = Base64.encodeToString(encrypt(pin.getBytes(), ssecret.getBytes()), Base64.NO_WRAP);
+			String encryptedSsecret = Base64.encodeToString(encrypt(pin.getBytes(), ssecret.getBytes()), Base64.NO_WRAP);
+			String encryptedUsername = Base64.encodeToString(encrypt(pin.getBytes(), username.getBytes()), Base64.NO_WRAP);
 			String IV = Base64.encodeToString(iv, Base64.NO_WRAP);
-			bw.write(encrypted);
+			bw.write(encryptedSsecret);
+			bw.write("\n");
+			bw.write(encryptedUsername);
 			bw.write("\n");
 			bw.write(IV);
 			bw.flush();
@@ -193,4 +209,8 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
         byte[] decrypted = cipher.doFinal(encrypted);
         return decrypted;
     }
+    
+    
+
+
 }
