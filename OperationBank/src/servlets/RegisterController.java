@@ -144,32 +144,21 @@ public class RegisterController extends HttpServlet {
 			MessageDigest sha = null;
 
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
-			byte[] randomData = new byte[32];
-			byte[] output = new byte[32];
+			byte[] output = new byte[16];
 			try{
 				sha = MessageDigest.getInstance("SHA-256");
 				PRNG.fillBlock();
-				PRNG.nextBytes(randomData, 0, 32);
-				output = sha.digest(randomData);
+				PRNG.nextBytes(output, 0, 16);
 			}catch(Exception e){}
 			
 			// Gebruik van unix time.
 			Long unixTime = System.currentTimeMillis() / 1000L;
 			long time = unixTime - (unixTime%150);
 			
-			// TODO: concatenatie. De hex string is de signed_data
-			time = time & Long.parseLong(new String(Hex.encodeHex(output)));
-			
-			// Define steps
-			String steps = "0";
-			steps = Long.toHexString(time).toUpperCase();
-			while(steps.length() < 16)
-				steps = "0" + steps;
 			
 			// Opslaan van de OTP waarde in het sessie object.
 			// verifier_v: shared secet
 			// steps     : sign_data || unix time stamp.
-			request.setAttribute("otp-value", TOTP.generateTOTP(verifier_v, steps, "HmacSHA512"));
 			
 			// In de het HTTP sessie object slaan we de random data op die we laten signen.
 			// Alsook de huidige timestamp die we verwachten van de client.
@@ -181,6 +170,7 @@ public class RegisterController extends HttpServlet {
 			// Ontvangen van de response code van de client.
 			String sign_data = request.getAttribute("sign_data").toString();
 			String guid = request.getAttribute("guid").toString();
+			String response_code = request.getAttribute("response_code").toString();
 			long timestamp = Long.parseLong(request.getAttribute("timestamp").toString());
 			String shared_secret = null;
 			
