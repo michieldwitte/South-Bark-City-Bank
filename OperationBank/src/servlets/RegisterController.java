@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -134,45 +135,49 @@ public class RegisterController extends HttpServlet {
 			}else{
 				request.getSession().setAttribute("att", "1");
 			}
-			// Generate a OTP value based on the shared secret.
-			// TOTP = HOTP(K,T||H(data))
-			// K is ons shared secret
-			// T is de unix time stamp
-			// H(data) is de random data die we vragen om de "signen".
-
-			// We gebruiken SHA-256.
-			MessageDigest sha = null;
-
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
-			byte[] output = new byte[16];
+			byte[] output = new byte[32];
 			try{
-				sha = MessageDigest.getInstance("SHA-256");
 				PRNG.fillBlock();
-				PRNG.nextBytes(output, 0, 16);
+				PRNG.nextBytes(output, 0, 32);
 			}catch(Exception e){}
 			
-			// Gebruik van unix time.
-			Long unixTime = System.currentTimeMillis() / 1000L;
-			long time = unixTime - (unixTime%150);
+			// Omzetten van random byte array naar Long format.
+			ByteBuffer bb = ByteBuffer.wrap(output);
+			Long t = bb.getLong();
 			
-			
-			// Opslaan van de OTP waarde in het sessie object.
-			// verifier_v: shared secet
-			// steps     : sign_data || unix time stamp.
-			
-			// In de het HTTP sessie object slaan we de random data op die we laten signen.
-			// Alsook de huidige timestamp die we verwachten van de client.
-			request.setAttribute("sign_data", new String(Hex.encodeHex(output)));
-			request.setAttribute("timestamp", String.valueOf(System.currentTimeMillis()/1000L));
+			request.setAttribute("sign_data", new String(Hex.encodeHex(t.toString().getBytes())));
 			break;
 		}
 		case 2: {
 			// Ontvangen van de response code van de client.
 			String sign_data = request.getAttribute("sign_data").toString();
+			
+			// Ontvangen van de GUID van de user.
 			String guid = request.getAttribute("guid").toString();
+			
+			// Ontvangen van de response code van de client.
 			String response_code = request.getAttribute("response_code").toString();
-			long timestamp = Long.parseLong(request.getAttribute("timestamp").toString());
+			
+			// De eerste server response code.
+			String server_response_code1 = null;
+			
+			// De tweede server response code.
+			String server_response_code2 = null;
+
+			// Defineren van de unix time.
+			Long unixTime = System.currentTimeMillis() / 1000L;
+			long time1 = unixTime - (unixTime%150);
+			long time2 = unixTime - (unixTime%150) - 150;
 			String shared_secret = null;
+			
+			Long message1;
+			Long message2;
+			
+			String seed1 = "";
+			String seed2 = "";
+			ByteBuffer bb = ByteBuffer.wrap(sign_data.getBytes());
+			Long t = bb.getLong();
 			
 			// Eerst moeten we terug het shared secret opvragen.
 			String sql_query = "select shared_key from users where uuid='" + guid + "';";
@@ -188,8 +193,27 @@ public class RegisterController extends HttpServlet {
 					shared_secret = resultSet.getString("shared_key");
 			}catch(Exception e){}
 			
-			// TODO: Debug, geef het shared secret terug
-			response.getWriter().println(shared_secret);
+			
+			try{
+				message1 = t^time1;
+				message2 = t^time2;
+				
+				seed1 = Long.toHexString(message1).toUpperCase();
+				seed2 = Long.toHexString(message2).toUpperCase();
+				
+			}catch(Exception e){}
+			
+			server_response_code1 = TOTP.generateTOTP(shared_secret, seed1, "8","HmacSHA512");
+			server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA512");
+			
+			if( response_code.equals(server_response_code1) ||
+				response_code.equals(server_response_code2)){
+				response.getWriter().println("login succesvol");
+				response.getWriter().close();
+			}else{
+				response.getWriter().println("login fail");
+				response.getWriter().close();
+			}
 			break;
 		}
 		}
@@ -229,7 +253,7 @@ public class RegisterController extends HttpServlet {
 		String city = request.getParameter("City");
 		String address = request.getParameter("Address");
 
-		String verifier_v = BCrypt.hashpw(password, BCrypt.gensalt(20));
+		String verifier_v = BCrypt.hashpw(password, BCrypt.gensalt(12));
 
 
 		if (password != "" && confirmPassword.equals(password) && 

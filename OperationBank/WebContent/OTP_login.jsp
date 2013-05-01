@@ -37,9 +37,6 @@
 </head>
 <body>
 
-<p>
-	DEBUG: otp value van de server.
-</p>
 	<p>
 		De hex voorstelling van de qr code.<br>
 		<%
