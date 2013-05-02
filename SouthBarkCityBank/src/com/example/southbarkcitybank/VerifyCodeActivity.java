@@ -19,6 +19,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -108,7 +110,8 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 					pin="";
 					
 					if (triesleft == 0){
-						deleteFile(getFilesDir() +"/" + fileName);
+				    	File fl = new File(getFilesDir() +"/" + fileName);
+				    	fl.delete();
 						((TextView) findViewById(R.id.textView1)).setText("Exceeded the number of tries: the shared secret has been removed");
 						((EditText) findViewById(R.id.editText1)).setText("");
 						return;
@@ -133,21 +136,27 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
 			if (resultCode == RESULT_OK) {
 				String stringinput = intent.getStringExtra("SCAN_RESULT");
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-				
-				ssecret = stringinput.substring(0,128);
-				//ssecret = new String(Hex.decodeHex(stringinput.substring(0, 128).toCharArray()));
-				username = stringinput.substring(128, stringinput.length());
-				
-				WriteSeedAndIV();
-				
-				Intent i = new Intent(getApplicationContext(), MainActivity.class);
-				i.putExtra("SSecret", ssecret);
-				i.putExtra("Username", username);
-				startActivity(i);
-				finish();
+				try{
+					ssecret = stringinput.substring(0,128);
+					//ssecret = new String(Hex.decodeHex(stringinput.substring(0, 128).toCharArray()));
+					username = stringinput.substring(128, stringinput.length());
+					WriteSeedAndIV();
+					
+					Intent i = new Intent(getApplicationContext(), MainActivity.class);
+					i.putExtra("SSecret", ssecret);
+					i.putExtra("Username", username);
+					startActivity(i);
+					finish();
+				} catch (Exception e){
+					((TextView) findViewById(R.id.textView1)).setText("Invalid QR-Code, try again");
+					((EditText) findViewById(R.id.editText1)).setText("");
+					pin="";
+				}
 			} else if (resultCode == RESULT_CANCELED) {
 				// Handle cancel
 				((TextView) findViewById(R.id.textView1)).setText("Failed to read shared secret, try again");
+				((EditText) findViewById(R.id.editText1)).setText("");
+				pin="";
 			}
 		}
 	}
@@ -213,4 +222,21 @@ public class VerifyCodeActivity extends Activity implements OnClickListener{
     
 
 
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        menu.add("delete Shared Secret & restart");
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	File fl = new File(getFilesDir() +"/" + fileName);
+    	fl.delete();
+    	this.finish();
+		return true;
+    	//check selected menu item
+    }
 }
