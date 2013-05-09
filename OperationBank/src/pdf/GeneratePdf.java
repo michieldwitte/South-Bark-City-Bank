@@ -14,6 +14,7 @@ import org.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.pdfbox.pdmodel.font.PDFont;
 import org.pdfbox.pdmodel.font.PDType1Font;
 import org.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 /**
  * @author sander
