@@ -329,6 +329,7 @@ public class RegisterController extends HttpServlet {
 			verifier_v  + "','" +
 			country +"','" +
 			areaCode + "','"+city+"','"+ address + "','" + 0 + "');";
+			
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);

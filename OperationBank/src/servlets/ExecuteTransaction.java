@@ -102,10 +102,10 @@ public class ExecuteTransaction extends HttpServlet {
 		
 		if( response_code.equals(server_response_code1) ||
 			response_code.equals(server_response_code2)){
-			response.getWriter().println("login succesvol");
+			response.getWriter().println("Verification Success !!!");
 			response.getWriter().close();
 		}else{
-			response.getWriter().println("login fail");
+			response.getWriter().println("Verification fail");
 			response.getWriter().close();
 		}
 	}
