@@ -90,7 +90,6 @@ public class RegisterController extends HttpServlet {
 
 	private void setupConnection() throws Exception{
 
-
 		// Load the PostgreSQL driver
 		try 
 		{
@@ -120,9 +119,30 @@ public class RegisterController extends HttpServlet {
 			String guid     = request.getParameter("guid");
 			String password = request.getParameter("password");
 			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-
+			
+			Object k = request.getSession().getAttribute("att");
 			// Set number of login times.
-			request.setAttribute("att", "0");
+			if(request.getSession().getAttribute("att") == null){
+				// First login attempt
+				System.out.println("first login attempt");
+				request.getSession().setAttribute("att", "0");
+				request.setAttribute("att", "0");
+			}else{
+				// if there are more then 2 login attemets, the users account is disabled.
+				Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
+				System.out.println("att value on begin of methode: " + request.getSession().getAttribute("att"));
+				if(att >= 2){
+					String update_block_value = "update users set block='1' where id='"+guid+"');";
+					try{
+						Class.forName("org.postgres.Driver");
+						dbcon = DriverManager.getConnection(loginUrl,loginUser,loginPasswd);
+						Statement stat = dbcon.createStatement();
+						stat.executeUpdate(update_block_value);
+					}catch(Exception e){}
+					request.setAttribute("login", "over");
+					return;
+				}
+			}
 
 			try{
 				Class.forName("org.postgresql.Driver");
@@ -132,6 +152,8 @@ public class RegisterController extends HttpServlet {
 				ResultSet resultSet = stat.executeQuery(sqlQueryVeri_S);
 				if(resultSet.next())
 					verifier_v = resultSet.getString("verifier_v");
+				else
+					return;
 			}catch(Exception e){
 				System.out.println("fout");
 			}
@@ -143,18 +165,15 @@ public class RegisterController extends HttpServlet {
 			}else{
 				if(d){
 					System.out.println("password check failed");
-					System.out.println(request.getAttribute("att").toString());
+					System.out.println(request.getSession().getAttribute("att").toString());
 				}
-
-				if(request.getAttribute("att").toString().isEmpty()){
-					// Set debug information
 					request.setAttribute("login", "nok-session");
-					request.setAttribute("att", "1");
-				}else{
-					Integer att = Integer.parseInt(request.getAttribute("att").toString());
+					Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
 					att += 1;
-					request.setAttribute("att", att.toString());
-				}
+					
+					request.getSession().setAttribute("att", att.toString());
+					System.out.println("new counter: " + request.getSession().getAttribute("att").toString());
+
 			}
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
 			byte[] output = new byte[32];
@@ -296,12 +315,12 @@ public class RegisterController extends HttpServlet {
 
 		try{
 			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
-			"areaycode,city,address)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
+			"areaycode,city,address,blocked)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
 			new String(Hex.encodeHex(salt)) + "','"+  
 			new String(Hex.encodeHex(shared_secret)) + "','"+
 			verifier_v  + "','" +
 			country +"','" +
-			areaCode + "','"+city+"','"+ address +"');";
+			areaCode + "','"+city+"','"+ address + "','" + 0 + "');";
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
 			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);

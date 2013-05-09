@@ -107,6 +107,13 @@ BigInteger.prototype.getString = function(){
 </script>
 </head>
 <body>
+<%
+
+	out.print("<script>alet('test');</script>");
+	if(request.getAttribute("login") != null){
+		out.print("<script>alert('no more login')</script>");
+	}
+%>
 	<center>
 		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
 	</center>
