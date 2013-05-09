@@ -33,7 +33,6 @@ import org.pdfbox.exceptions.COSVisitorException;
 import org.xml.sax.SAXException;
 
 import pdf.GeneratePdf;
-import pdf.ITextServlet;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
