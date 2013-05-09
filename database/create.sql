@@ -10,5 +10,14 @@ create table users(
 	areaycode text not null,
 	city text not null,
 	address text not null
+	blocked integer not null
 );
 
+create table usertransactions(
+	id SERIAL,
+	user_id_from text not null,
+	user_id_to text not null,
+	signature text not null,
+	amount money not null,
+	date timestamp not null,
+);
