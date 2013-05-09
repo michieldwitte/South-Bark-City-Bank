@@ -66,10 +66,29 @@ op welke manieren probeert ons syteem te voldoen aan de beveiligingseisen die wo
 
 \subsubsection{Multi-factor authentication}
 Dit is de notie van \"something you have and something you know \". 
-Het traditioneel gebruik van wachtwoorden is niet voldoende. Wachtwoorden worden hergebruikt en zijn een single point of failure voor een authenticatie systeem. We moeten dus gebruik maken van een extra factor waar beide entititen (zowel de bank als de klant) weet van moeten hebben. Het is belangrijk dat deze factor onafhankelijk is van het systeem en niet berust op de gebruiker om iets te moeten onthouden (zoals een wachtwoord). Deze werkwijze neemt meestal de vorm aan van een hardware token.
+Het traditioneel gebruik van wachtwoorden is niet voldoende. Wachtwoorden worden hergebruikt en zijn een single point of failure voor een authenticatie systeem. We moeten dus gebruik maken van een extra factor waar beide entititen (zowel de bank als de klant) weet van moeten hebben. Het is belangrijk dat deze factor onafhankelijk is van het systeem en niet berust op de gebruiker om iets te moeten onthouden (zoals een wachtwoord). Deze werkwijze neemt meestal de vorm aan van een hardware token. Omdat het niet mogelijk was zelf hardware tokens te maken hebben we een android app ontworpen om een deel van deze functionaliteit te simuleren.
 \section{Architectuur en Implementatie}
 \subsection{Architectuur}
+Gekoppeld aan het gebruik van het systeem is een android app die we gebruiken voor multifactor authenticatie in de vorm van een OTP systeem. Dit is niet ideaal omdat het geen dedecated hardware is en er de mogelijheid is dat de klant controle verliest over zijn smartphone.
+
+De android app zal het ook mogelijk maken om bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als veriticatie voor een transactie.
+
+Tijdens het opzetten van een account zal de klant persoonlijke informatie aanbieden aan de bank (via een webform), deze informatie bevat onderandere een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn email adres en woonplaats.
+
+Voor deze informatie naar de server word overbracht word eens op de client het wachtwoord versterkt. We maken gebruik van een password based key derivation functie om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
+
+We doen dit voor de volgende redenen.
+\begin{itemize}
+\item De server kent nooit de gebruiker zijn plain text wachtwoord. 
+\item De server zal deze 256 bits gebruiken om het shared key die op de server zal worden aangemaakt te encrypteren .
+\end{itemize}
+
+Deze informatie zal naar de server worden verzonden over een vertrouwlijke link (ssl/tls). 
+De server maakt een shared secret aan (256 bits) met fortuna. Dit shared secret word in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie word opgeslagen. Het shared secret word eerst ge\"encrpteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot het shared secret als de klant aanwezig is. De andere informatie heeft de bank wel nodig om de rekening van de klant te kunnen beheren.
+
 \subsection{Implementatie}
+\section{Problemen}
+Als de klant zijn wachtwoord is gelekt moet ook nog het shared sercet worden gevonden. Dit shared secret kan worden gedecrypteerd op de server maar de hacker kent het dan nog niet.
 \section{Conclusie}
 If you are wondering where your old default text is; it has been stored as a template. The template menu can be used to access and restore it. 
 
