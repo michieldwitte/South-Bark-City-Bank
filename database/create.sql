@@ -9,7 +9,7 @@ create table users(
 	country text not null,
 	areaycode text not null,
 	city text not null,
-	address text not null
+	address text not null,
 	blocked integer not null
 );
 
