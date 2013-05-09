@@ -44,6 +44,8 @@ import java.util.UUID;
 @WebServlet("/RegisterController")
 public class RegisterController extends HttpServlet {
 
+	private static final boolean d = true;
+
 	private static final long serialVersionUID = 1L;
 	private static final String loginUser = "postgres";
 	private static final String loginPasswd = "sander";
@@ -112,16 +114,16 @@ public class RegisterController extends HttpServlet {
 		System.out.println(fase);
 		switch(fase){
 		case 1:{
-			
+
 			// select information from datbase.
 			String verifier_v = null;
 			String guid     = request.getParameter("guid");
 			String password = request.getParameter("password");
 			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-			
+
 			// Set number of login times.
 			request.setAttribute("att", "0");
-			
+
 			try{
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
@@ -135,12 +137,18 @@ public class RegisterController extends HttpServlet {
 			}
 
 			if(BCrypt.checkpw(password, verifier_v)){
-				System.out.println("hier");	
+				if(d)
+					System.out.println("hier");	
 				request.setAttribute("login", "ok-session");
 			}else{
-				System.out.println("password check failed");
-				System.out.println(request.getAttribute("att").toString());
+				if(d){
+					System.out.println("password check failed");
+					System.out.println(request.getAttribute("att").toString());
+				}
+
 				if(request.getAttribute("att").toString().isEmpty()){
+					// Set debug information
+					request.setAttribute("login", "nok-session");
 					request.setAttribute("att", "1");
 				}else{
 					Integer att = Integer.parseInt(request.getAttribute("att").toString());
@@ -154,27 +162,27 @@ public class RegisterController extends HttpServlet {
 				PRNG.fillBlock();
 				PRNG.nextBytes(output, 0, 32);
 			}catch(Exception e){}
-			
+
 			// Omzetten van random byte array naar Long format.
 			ByteBuffer bb = ByteBuffer.wrap(output);
 			Long t = bb.getLong();
-			
+
 			request.setAttribute("sign_data", new String(Hex.encodeHex(t.toString().getBytes())));
 			break;
 		}
 		case 2: {
 			// Ontvangen van de response code van de client.
 			String sign_data = request.getAttribute("sign_data").toString();
-			
+
 			// Ontvangen van de GUID van de user.
 			String guid = request.getAttribute("guid").toString();
-			
+
 			// Ontvangen van de response code van de client.
 			String response_code = request.getAttribute("response_code").toString();
-			
+
 			// De eerste server response code.
 			String server_response_code1 = null;
-			
+
 			// De tweede server response code.
 			String server_response_code2 = null;
 
@@ -183,45 +191,47 @@ public class RegisterController extends HttpServlet {
 			long time1 = unixTime - (unixTime%150);
 			long time2 = unixTime - (unixTime%150) - 150;
 			String shared_secret = null;
-			
+
 			Long message1;
 			Long message2;
-			
+
 			String seed1 = "";
 			String seed2 = "";
 			ByteBuffer bb = ByteBuffer.wrap(sign_data.getBytes());
 			Long t = bb.getLong();
-			
+
 			// Eerst moeten we terug het shared secret opvragen.
 			String sql_query = "select shared_key from users where uuid='" + guid + "';";
-			
+
 			try{
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-				
+
 				Statement stat = dbcon.createStatement();
 
 				ResultSet resultSet = stat.executeQuery(sql_query);
 				if(resultSet.next())
 					shared_secret = resultSet.getString("shared_key");
 			}catch(Exception e){}
-			
-			
+
+
 			try{
 				message1 = t^time1;
 				message2 = t^time2;
-				
+
 				seed1 = Long.toHexString(message1).toUpperCase();
 				seed2 = Long.toHexString(message2).toUpperCase();
-				
+
 			}catch(Exception e){}
-			
+
 			server_response_code1 = TOTP.generateTOTP(shared_secret, seed1, "8","HmacSHA512");
 			server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA512");
-			
+
+			System.out.println(request.getAttribute("att").toString());
+
 			if( response_code.equals(server_response_code1) ||
-				response_code.equals(server_response_code2) && 
-				request.getSession().getAttribute("att").toString().equals("0")){
+					response_code.equals(server_response_code2) && 
+					request.getSession().getAttribute("att").toString().equals("0")){
 				response.getWriter().println("login succesvol");
 				response.getWriter().close();
 			}else{
@@ -256,7 +266,7 @@ public class RegisterController extends HttpServlet {
 			return;
 		}
 
-		
+
 		String GUUID = "ID" + UUID.randomUUID().toString().substring(0, 13);
 		String password = request.getParameter("Password");
 		String confirmPassword = request.getParameter("ConfirmPassword");
