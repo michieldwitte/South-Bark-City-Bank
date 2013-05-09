@@ -125,7 +125,7 @@ BigInteger.prototype.getString = function(){
 						<table>
 							<tr>
 								<td><label for="username">Username :</label></td>
-								<td><input name="username" type="text" id="GUID" size="30"></td>
+								<td><input name="username" type="text" id="GUUID" size="30"></td>
 							</tr>
 							<tr>
 								<td><label for="password">Password :</label></td>
