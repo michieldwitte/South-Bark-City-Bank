@@ -10,7 +10,8 @@ create table users(
 	areaycode text not null,
 	city text not null,
 	address text not null,
-	blocked integer not null
+	blocked integer not null,
+	balance integer not null
 );
 
 create table usertransactions(
