@@ -36,7 +36,12 @@
 <title>Inloggen fase 2.</title>
 </head>
 <body>
-
+<p>
+	DEBUG:
+	<%
+		out.print(request.getAttribute("login").toString());
+	%>
+</p>
 	<p>
 		De hex voorstelling van de qr code.<br>
 		<%

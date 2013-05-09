@@ -112,11 +112,16 @@ public class RegisterController extends HttpServlet {
 		System.out.println(fase);
 		switch(fase){
 		case 1:{
+			
+			// select information from datbase.
 			String verifier_v = null;
 			String guid     = request.getParameter("guid");
 			String password = request.getParameter("password");
 			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-
+			
+			// Set number of login times.
+			request.setAttribute("att", "0");
+			
 			try{
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
@@ -128,12 +133,20 @@ public class RegisterController extends HttpServlet {
 			}catch(Exception e){
 				System.out.println("fout");
 			}
-			System.out.println(verifier_v);
 
 			if(BCrypt.checkpw(password, verifier_v)){
-				request.getSession().setAttribute("login", "ok-session");
+				System.out.println("hier");	
+				request.setAttribute("login", "ok-session");
 			}else{
-				request.getSession().setAttribute("att", "1");
+				System.out.println("password check failed");
+				System.out.println(request.getAttribute("att").toString());
+				if(request.getAttribute("att").toString().isEmpty()){
+					request.setAttribute("att", "1");
+				}else{
+					Integer att = Integer.parseInt(request.getAttribute("att").toString());
+					att += 1;
+					request.setAttribute("att", att.toString());
+				}
 			}
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
 			byte[] output = new byte[32];
@@ -207,7 +220,8 @@ public class RegisterController extends HttpServlet {
 			server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA512");
 			
 			if( response_code.equals(server_response_code1) ||
-				response_code.equals(server_response_code2)){
+				response_code.equals(server_response_code2) && 
+				request.getSession().getAttribute("att").toString().equals("0")){
 				response.getWriter().println("login succesvol");
 				response.getWriter().close();
 			}else{
