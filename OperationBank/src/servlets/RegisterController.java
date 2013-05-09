@@ -38,6 +38,8 @@ import gnu.crypto.prng.BasePRNG;
 import CryptoLibraries.PBKDF2;
 import CryptoLibraries.TOTP;
 import bcrypt.BCrypt;
+
+import com.sun.corba.se.spi.protocol.RequestDispatcherDefault;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
 
@@ -276,9 +278,6 @@ public class RegisterController extends HttpServlet {
 		byte[] salt = new byte[32]; // equiv van 256 bit.
 		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
 
-		// Set correct response
-		response.setContentType("text/html");
-
 		// out, int offset, int length
 		try {
 			PRNG.fillBlock();
@@ -338,20 +337,15 @@ public class RegisterController extends HttpServlet {
 		try{
 			
 			// Try to make a pdf document with users information.
-			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID);
-//			response.addHeader("Content-Type", "application/force-download"); 
-//			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
+			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID,new String(Hex.encodeHex(shared_secret)));
+			response.addHeader("Content-Type", "application/force-download"); 
+			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
 			
-			request.setAttribute("pdf_stream", byteDocument.toByteArray());
-			//response.getOutputStream().write(byteDocument.toByteArray());
+			response.getOutputStream().write(byteDocument.toByteArray());
+			response.getOutputStream().close();
 		}catch(COSVisitorException e){
-
-		}
-		
-		// Set attributes for requestDispatcher
-		request.setAttribute("shared_secret", new String(Hex.encodeHex(shared_secret)));
-		request.setAttribute("GUID", GUUID);
-		request.getRequestDispatcher("/register/register_response.jsp").forward(request, response);
+			System.out.println("foutje");
+		}	
 	}
 
 }
