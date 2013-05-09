@@ -1,2 +1,6 @@
 *.classpath
 *.class
+OperationBank/.settings/org.eclipse.ltk.core.refactoring.prefs
+SouthBarkCityBank/bin/dexedLibs/*
+design/build/*
+.gitignore
