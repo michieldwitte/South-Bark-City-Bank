@@ -1,5 +1,6 @@
 package servlets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
@@ -28,6 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
+import org.pdfbox.exceptions.COSVisitorException;
+
+import pdf.GeneratePdf;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
@@ -46,6 +50,8 @@ public class RegisterController extends HttpServlet {
 
 	private static final boolean d = true;
 
+
+	private GeneratePdf generatePdf = new GeneratePdf();
 	private static final long serialVersionUID = 1L;
 	private static final String loginUser = "postgres";
 	private static final String loginPasswd = "sander";
@@ -119,7 +125,7 @@ public class RegisterController extends HttpServlet {
 			String guid     = request.getParameter("guid");
 			String password = request.getParameter("password");
 			String sqlQueryVeri_S = "select verifier_v from users where uuid='"+guid+"';";
-			
+
 			Object k = request.getSession().getAttribute("att");
 			// Set number of login times.
 			if(request.getSession().getAttribute("att") == null){
@@ -132,14 +138,16 @@ public class RegisterController extends HttpServlet {
 				Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
 				System.out.println("att value on begin of methode: " + request.getSession().getAttribute("att"));
 				if(att >= 2){
-					String update_block_value = "update users set block='1' where id='"+guid+"');";
+					String update_block_value = "update users set block='1' where uuid='"+guid+"');";
 					try{
-						Class.forName("org.postgres.Driver");
+						Class.forName("org.postgresql.Driver");
 						dbcon = DriverManager.getConnection(loginUrl,loginUser,loginPasswd);
 						Statement stat = dbcon.createStatement();
 						stat.executeUpdate(update_block_value);
 					}catch(Exception e){}
 					request.setAttribute("login", "over");
+
+					//TODO: return a page that tells the user his/she should contact the bank.
 					return;
 				}
 			}
@@ -167,12 +175,12 @@ public class RegisterController extends HttpServlet {
 					System.out.println("password check failed");
 					System.out.println(request.getSession().getAttribute("att").toString());
 				}
-					request.setAttribute("login", "nok-session");
-					Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
-					att += 1;
-					
-					request.getSession().setAttribute("att", att.toString());
-					System.out.println("new counter: " + request.getSession().getAttribute("att").toString());
+				request.setAttribute("login", "nok-session");
+				Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
+				att += 1;
+
+				request.getSession().setAttribute("att", att.toString());
+				System.out.println("new counter: " + request.getSession().getAttribute("att").toString());
 
 			}
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
@@ -333,6 +341,18 @@ public class RegisterController extends HttpServlet {
 			return;
 		}
 
+		try{
+			
+			// Try to make a pdf document with users information.
+			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID);
+			response.addHeader("Content-Type", "application/force-download"); 
+			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
+			response.getOutputStream().write(byteDocument.toByteArray());
+		}catch(COSVisitorException e){
+
+		}
+		
+		// Set attributes for requestDispatcher
 		request.setAttribute("shared_secret", new String(Hex.encodeHex(shared_secret)));
 		request.setAttribute("GUID", GUUID);
 		request.getRequestDispatcher("/register/register_response.jsp").forward(request, response);
