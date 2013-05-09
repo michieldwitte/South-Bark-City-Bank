@@ -11,7 +11,7 @@ create table users(
 	city text not null,
 	address text not null,
 	blocked integer not null,
-	balance money not null
+	balance integer not null
 );
 
 create table usertransactions(
