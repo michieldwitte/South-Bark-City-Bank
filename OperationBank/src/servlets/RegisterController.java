@@ -278,8 +278,6 @@ public class RegisterController extends HttpServlet {
 
 		// Set correct response
 		response.setContentType("text/html");
-		PrintWriter printWriter = response.getWriter();
-
 
 		// out, int offset, int length
 		try {
@@ -288,8 +286,7 @@ public class RegisterController extends HttpServlet {
 			PRNG.fillBlock();
 			PRNG.nextBytes(shared_secret, 0, 64);
 		} catch (Exception e1) {
-			printWriter.println(e1.getMessage());
-			printWriter.close();
+			e1.printStackTrace();
 			return;
 		}
 
@@ -315,20 +312,18 @@ public class RegisterController extends HttpServlet {
 				(city      != "") && 
 				(address   != "")){
 		}else{
-			printWriter.println("WRONG REQUEST");
-			printWriter.close();
 			return;
 
 		}
 
 		try{
 			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
-			"areaycode,city,address,blocked)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
+			"areaycode,city,address,blocked,balance)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
 			new String(Hex.encodeHex(salt)) + "','"+  
 			new String(Hex.encodeHex(shared_secret)) + "','"+
 			verifier_v  + "','" +
 			country +"','" +
-			areaCode + "','"+city+"','"+ address + "','" + 0 + "');";
+			areaCode + "','"+city+"','"+ address + "','" + 0 + "','" + 500 + "');";
 			
 			// Load the PostgreSQL driver
 			Class.forName("org.postgresql.Driver");
@@ -337,8 +332,6 @@ public class RegisterController extends HttpServlet {
 			stat.executeUpdate(insert);
 
 		}catch(Exception e1){
-			printWriter.println(e1.getMessage());
-			printWriter.close();
 			return;
 		}
 
@@ -346,9 +339,11 @@ public class RegisterController extends HttpServlet {
 			
 			// Try to make a pdf document with users information.
 			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID);
-			response.addHeader("Content-Type", "application/force-download"); 
-			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
-			response.getOutputStream().write(byteDocument.toByteArray());
+//			response.addHeader("Content-Type", "application/force-download"); 
+//			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
+			
+			request.setAttribute("pdf_stream", byteDocument.toByteArray());
+			//response.getOutputStream().write(byteDocument.toByteArray());
 		}catch(COSVisitorException e){
 
 		}
