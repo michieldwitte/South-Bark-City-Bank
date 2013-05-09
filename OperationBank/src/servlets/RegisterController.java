@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
 import org.pdfbox.exceptions.COSVisitorException;
+import org.xml.sax.SAXException;
 
 import pdf.GeneratePdf;
 import gnu.crypto.prng.Fortuna;
@@ -333,8 +334,12 @@ public class RegisterController extends HttpServlet {
 		}catch(Exception e1){
 			return;
 		}
-
+		
+		generatePdf.createPDF(response, GUUID, new String(Hex.encodeHex(shared_secret)));
+		
+		/*
 		try{
+			
 			
 			// Try to make a pdf document with users information.
 			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID,new String(Hex.encodeHex(shared_secret)));
@@ -345,7 +350,14 @@ public class RegisterController extends HttpServlet {
 			response.getOutputStream().close();
 		}catch(COSVisitorException e){
 			System.out.println("foutje");
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}	
+		*/
 	}
 
 }
