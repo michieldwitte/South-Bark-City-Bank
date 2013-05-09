@@ -19,5 +19,5 @@ create table usertransactions(
 	user_id_to text not null,
 	signature text not null,
 	amount money not null,
-	date timestamp not null,
+	date timestamp not null
 );
