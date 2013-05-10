@@ -1,7 +1,1 @@
-OperationBank
-=============
-
-Project informatie beveiliging. 
-
-Focuspunten:
-- hoe user-info (adres, geboortedatum, ...) beveiligen
+At Bank, we recognize the value of online banking­ -- it’s quick, convenient, and available any time you need it. Unfortunately, though, the threats posed by malware and identity theft are very real and all too common nowadays. That’s why, when you’re finished with your online banking session, we recommend three simple steps to protect your personal information: log out of your account, close your web browser, and then charter a seafaring vessel to take you 30 miles out into the open ocean and throw your computer overboard.
