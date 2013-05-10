@@ -9,24 +9,27 @@
 <script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
+		$("#btn-submit").click(function() {
 			var response_code = $("#response_code").val();
-			alert(response_code);
+			var request = $.ajax({
+				type : "GET",
+				async : false,
+				url : "/OperationBank/OTPController",
+				data : {
+					"FASE" : 2,
+					"response_code" : response_code,
+					"sign_data" : "<%out.print(request.getAttribute("sign_data").toString());%>"
+				},
+				succes : function(data){}
+			});
+			
+			request.done(function(data){
+				alert(data);
+			});
+		});
+	});
 		
-		var request = $.ajax({
-			type : "GET",
-			async : false,
-			url : "/OperationBank/LoginController",
-			data : {
-				"FASE" : 2,
-				response_code : response_code
-			},
-			succes : function(data){}
-		});
 		
-		request.done(function(data){
-			alert(data);
-		});
-		});
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Inloggen fase 2.</title>

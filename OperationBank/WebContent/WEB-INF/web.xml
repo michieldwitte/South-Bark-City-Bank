@@ -7,13 +7,25 @@
   <servlet>
     <servlet-name>RegisterController</servlet-name>
     <servlet-class>servlets.RegisterController</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>LoginController</servlet-name>
     <servlet-class>servlets.LoginController</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>OTPController</servlet-name>
+    <servlet-class>servlets.OTPController</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RegisterController</servlet-name>
     <url-pattern>/RegisterController</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>LoginController</servlet-name>
     <url-pattern>/LoginController</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>OTPController</servlet-name>
+    <url-pattern>/OTPController</url-pattern>
   </servlet-mapping>
 </web-app>
