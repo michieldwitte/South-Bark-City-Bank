@@ -50,9 +50,11 @@ public class LoginController extends HttpServlet {
 		switch(fase){
 		case 1:{
 			fase1(request,response);
+			break;
 		}
 		case 2: {
 			fase2(request,response);
+			break;
 		}
 		}
 		request.getRequestDispatcher("login/OTP_login.jsp").forward(request, response);
