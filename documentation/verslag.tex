@@ -105,12 +105,17 @@ Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. He
 
 Op dit moment beschikken zowel de server als de client over het shared secret. De server voert een \emph{challenge and response} protocol uit om te controleren of de client beschikt over het correcte shared secret.\\
 
-De manier waarop de server dit doet is de volgende, de server genereerd 32 random bytes gebruik makende van fortuna \ref{sec:fortuna}
-%TODO: hier bezig
+De manier waarop de server dit doet is de volgende, de server genereerd 8 random bytes gebruik makende van fortuna \ref{sec:fortuna}. Deze 8 random bytes worden in de vorm van een QR-code aan de client gepresenteerd. De client gebruikt de smartphone app om deze 8 random bytes te verwerken op de volgende manier.\\
+
+De 8 random bytes worden ge-xored met de unix time / 1000L (we delen hier door 1000L) om een tijd raam van 30 seconden te introduceren. Daarna gebruiken we een Time-Based One-Time password Algorithm \ref{sec:totp} met als key het \emph{shared secret} en als tijd factor de 8 bytes ge-xored met de unix time. We herkennen het probleem dat ongeveer de 32 minst significaten bits zullen worden beinvloed door de tijd. Dit is niet echt een probleem omdat de overige bits ook random zijn.
+
+De client voert het time based one time password algoritme uit met als key het \emph{shared secret} en als message de 8 bytes. Het resultaat is een token van 8 digits lang die afhankelijk is van de server zijn \emph{challenge}, een tijds factor en het \emph{shared secret}, dit stuurt de client terug naar de server.
 \subsection{Implementatie}
 \subsubsection{Fortuna}
 \label{sec:fortuna}
 Implementatie details over fortuna
+\subsubsection{TOTP}
+\label{sec:totp}
 \section{Problemen}
 De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia".
 Als de klant zijn wachtwoord is gelekt moet ook nog het shared sercet worden gevonden. Dit shared secret kan worden gedecrypteerd op de server maar de hacker kent het dan nog niet.
