@@ -1,48 +1,23 @@
 package servlets;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Hex;
-import org.pdfbox.exceptions.COSVisitorException;
-import org.xml.sax.SAXException;
 
 import pdf.GeneratePdf;
-import gnu.crypto.prng.Fortuna;
-import gnu.crypto.prng.LimitReachedException;
-import gnu.crypto.prng.BasePRNG;
 import bcrypt.BCrypt;
 
-import com.sun.corba.se.spi.protocol.RequestDispatcherDefault;
-import com.sun.management.OperatingSystemMXBean;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
-
-import crypto.PBKDF2;
 import crypto.Random;
 import crypto.TOTP;
 
