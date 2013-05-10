@@ -88,7 +88,7 @@ BigInteger.prototype.getString = function(){
 				url : "/OperationBank/LoginController",
 				data : {
 					"FASE" : 1,
-					"guid" : guuid,
+					"guuid" : guuid,
 					"password" : pw_pbkdf2.toString()
 				},
 				succes : function(data) {
