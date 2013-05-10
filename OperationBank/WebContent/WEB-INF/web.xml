@@ -16,6 +16,14 @@
     <servlet-name>OTPController</servlet-name>
     <servlet-class>servlets.OTPController</servlet-class>
   </servlet>
+   <servlet>
+    <servlet-name>ViewTransactions</servlet-name>
+    <servlet-class>servlets.ViewTransactions</servlet-class>
+  </servlet>
+  
+   
+   
+   
   <servlet-mapping>
     <servlet-name>RegisterController</servlet-name>
     <url-pattern>/RegisterController</url-pattern>
@@ -27,5 +35,9 @@
   <servlet-mapping>
     <servlet-name>OTPController</servlet-name>
     <url-pattern>/OTPController</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ViewTransactions</servlet-name>
+    <url-pattern>/ViewTransactions</url-pattern>
   </servlet-mapping>
 </web-app>

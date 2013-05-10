@@ -41,7 +41,8 @@ public class LoginController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-				// De velden die informatie bevatten over het inloggen.
+		
+		// De velden die informatie bevatten over het inloggen.
 		String verifier_v = null;
 		String guuid     = request.getParameter("guuid");
 		String password = request.getParameter("password");

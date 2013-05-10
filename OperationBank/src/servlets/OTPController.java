@@ -41,7 +41,7 @@ public class OTPController extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		// Ontvangen van de response code van de client.
 		String sign_data = request.getParameter("sign_data").toString();
 
@@ -113,13 +113,13 @@ public class OTPController extends HttpServlet {
 		if( response_code.equals(server_response_code1) ||
 			response_code.equals(server_response_code2) && 
 			request.getSession().getAttribute("att").toString().equals("0")){
-			response.getWriter().println("login succesvol");
-			response.getWriter().close();
-			request.getRequestDispatcher("login/Transactions.jsp").forward(request, response);
+			request.getRequestDispatcher("ViewTransactions").forward(request, response);
+			return;
 		}else{
-			response.getWriter().println("login fail");
-			response.getWriter().close();
+			//response.getWriter().println("login fail");
+			//response.getWriter().close();
 			request.getRequestDispatcher("index.jsp").forward(request, response);
+			return;
 		}
 	}
 }

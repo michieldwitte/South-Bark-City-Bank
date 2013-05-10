@@ -35,6 +35,13 @@
 <title>Inloggen fase 2.</title>
 </head>
 <body>
+	<center>
+		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
+	</center>
+	<br />
+	<br />
+	<br />
+	<br />
 <p>
 	DEBUG:
 	<%
