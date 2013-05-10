@@ -57,6 +57,8 @@ public class LoginController extends HttpServlet {
 			break;
 		}
 		}
+		if(request.getAttribute("login") == null)
+			System.out.println("probleem");
 		request.getRequestDispatcher("login/OTP_login.jsp").forward(request, response);
 
 	}
