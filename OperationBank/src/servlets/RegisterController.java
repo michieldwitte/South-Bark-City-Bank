@@ -36,13 +36,17 @@ import pdf.GeneratePdf;
 import gnu.crypto.prng.Fortuna;
 import gnu.crypto.prng.LimitReachedException;
 import gnu.crypto.prng.BasePRNG;
-import CryptoLibraries.PBKDF2;
-import CryptoLibraries.TOTP;
 import bcrypt.BCrypt;
 
 import com.sun.corba.se.spi.protocol.RequestDispatcherDefault;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QDecoderStream;
+
+import crypto.PBKDF2;
+import crypto.Random;
+import crypto.TOTP;
+
+import database.DatabaseManager;
 
 import java.util.UUID;
 /**
@@ -60,10 +64,6 @@ public class RegisterController extends HttpServlet {
 	private static final String loginPasswd = "sander";
 	private static final String loginUrl = "jdbc:postgresql://localhost/bank";
 	private static final String dataBaseString = "org.postgresql.Driver";
-	private static final String ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-	private OperatingSystemMXBean mxBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-	private Fortuna PRNG = new Fortuna();
 
 	private Connection dbcon;  // Connection for scope of ShowBedrock
 
@@ -72,21 +72,6 @@ public class RegisterController extends HttpServlet {
 	 */
 	public RegisterController() {
 		super();
-		byte[] nanoTime = new String(Long.toString(System.nanoTime())).getBytes();
-		String randomInfo = Integer.toString(Runtime.getRuntime().availableProcessors()); //get number of cpu;
-		randomInfo       += Long.toString(Runtime.getRuntime().freeMemory()); // get free memory.
-		randomInfo		 += Long.toString(mxBean.getTotalPhysicalMemorySize());
-
-		Map<String,byte[]> attr = new HashMap<String, byte[]>();
-		attr.put("gnu.crypto.prng.fortuna.seed", new String(randomInfo).getBytes());
-		PRNG.setup(attr);
-		PRNG.init(attr);
-		try {
-			PRNG.fillBlock();
-			PRNG.addRandomBytes(nanoTime, 0, nanoTime.length);
-		} catch (LimitReachedException e) {
-			e.printStackTrace();
-		}
 	}
 
 
@@ -189,8 +174,8 @@ public class RegisterController extends HttpServlet {
 			// Pseudo random data dat we zullen laten signeren door de ontvanger.
 			byte[] output = new byte[32];
 			try{
-				PRNG.fillBlock();
-				PRNG.nextBytes(output, 0, 32);
+				Random.getInstance().getFortuna().fillBlock();
+				Random.getInstance().getFortuna().nextBytes(output, 0, 32);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -273,7 +258,7 @@ public class RegisterController extends HttpServlet {
 			break;
 		}
 		}
-		request.getRequestDispatcher("OTP_login.jsp").forward(request, response);
+		request.getRequestDispatcher("login/OTP_login.jsp").forward(request, response);
 		return; 
 	}
 
@@ -281,12 +266,11 @@ public class RegisterController extends HttpServlet {
 		byte[] salt = new byte[32]; // equiv van 256 bit.
 		byte[] shared_secret = new byte[64]; // equiv van 512 bit.
 
-		// out, int offset, int length
 		try {
-			PRNG.fillBlock();
-			PRNG.nextBytes(salt, 0, 32);
-			PRNG.fillBlock();
-			PRNG.nextBytes(shared_secret, 0, 64);
+			Random.getInstance().getFortuna().fillBlock();
+			Random.getInstance().getFortuna().nextBytes(salt, 0, 32);
+			Random.getInstance().getFortuna().fillBlock();
+			Random.getInstance().getFortuna().nextBytes(shared_secret, 0, 64);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return;
@@ -319,47 +303,18 @@ public class RegisterController extends HttpServlet {
 		}
 
 		try{
-			String insert = "insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
-			"areaycode,city,address,blocked,balance)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
-			new String(Hex.encodeHex(salt)) + "','"+  
-			new String(Hex.encodeHex(shared_secret)) + "','"+
-			verifier_v  + "','" +
-			country +"','" +
-			areaCode + "','"+city+"','"+ address + "','" + 0 + "','" + 500 + "');";
-			
-			// Load the PostgreSQL driver
-			Class.forName("org.postgresql.Driver");
-			dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-			Statement stat = dbcon.createStatement();
-			stat.executeUpdate(insert);
-
+			DatabaseManager.getInstance().executeUpdate("insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
+					"areaycode,city,address,blocked,balance)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
+					new String(Hex.encodeHex(salt)) + "','"+  
+					new String(Hex.encodeHex(shared_secret)) + "','"+
+					verifier_v  + "','" +
+					country +"','" +
+					areaCode + "','"+city+"','"+ address + "','" + 0 + "','" + 500 + "');");
 		}catch(Exception e1){
+			e1.printStackTrace();
 			return;
 		}
-		
 		generatePdf.createPDF(response, GUUID, new String(Hex.encodeHex(shared_secret)));
-		
-		/*
-		try{
-			
-			
-			// Try to make a pdf document with users information.
-			ByteArrayOutputStream byteDocument = generatePdf.getDocument(GUUID,new String(Hex.encodeHex(shared_secret)));
-			response.addHeader("Content-Type", "application/force-download"); 
-			response.addHeader("Content-Disposition", "attachment; filename=\register"+ GUUID +".pdf\"");
-			
-			response.getOutputStream().write(byteDocument.toByteArray());
-			response.getOutputStream().close();
-		}catch(COSVisitorException e){
-			System.out.println("foutje");
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-		*/
 	}
 
 }

@@ -31,7 +31,6 @@ $("#reg").on("click", function() {
 	
 	$("#password").val(pw_pbkdf2);
 	$("#ConfirmPassword").val(pw_pbkdf2);
-	alert($("#password").val());
 	});
 });
 </script>

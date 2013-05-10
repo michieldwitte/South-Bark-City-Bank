@@ -85,7 +85,7 @@ BigInteger.prototype.getString = function(){
 			var request = $.ajax({
 				type : "GET",
 				async : false,
-				url : "/OperationBank/RegisterController",
+				url : "/OperationBank/LoginController",
 				data : {
 					"FASE" : 1,
 					"guid" : guuid,

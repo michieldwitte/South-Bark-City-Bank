@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import CryptoLibraries.TOTP;
+import crypto.TOTP;
+
 
 /**
  * Servlet implementation class ExecuteTransaction

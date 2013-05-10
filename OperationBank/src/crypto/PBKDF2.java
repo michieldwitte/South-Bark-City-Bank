@@ -1,4 +1,4 @@
-package CryptoLibraries;
+package crypto;
 
 import java.security.MessageDigest;
 

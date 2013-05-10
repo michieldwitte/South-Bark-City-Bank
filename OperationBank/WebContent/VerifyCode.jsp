@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="CryptoLibraries.TOTP" %>
+<%@ page import="crypto.TOTP" %>
 <%
 	String ResponseCode = request.getParameter("ResponseCode");
 	String EncryptedString = (String) session.getAttribute( "encryptedString" );
@@ -14,7 +14,7 @@
     String steps = "0";
     steps = Long.toHexString(time).toUpperCase();
     while(steps.length() < 16) steps = "0" + steps;
-    System.out.println(CryptoLibraries.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"));
+    System.out.println(crypto.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"));
     if(ResponseCode.equals(TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"))){
     	valid = true;
     }
@@ -26,9 +26,9 @@
     steps = "0";
     steps = Long.toHexString(time).toUpperCase();
     while(steps.length() < 16) steps = "0" + steps;
-    System.out.println(CryptoLibraries.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"));
+    System.out.println(crypto.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"));
     String validstr = "";
-    if (valid || ResponseCode.equals(CryptoLibraries.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"))){
+    if (valid || ResponseCode.equals(crypto.TOTP.generateTOTP(seed, steps, "8", "HmacSHA512"))){
     	System.out.println("VALID !");
     	validstr = "VALID !";
     } else {

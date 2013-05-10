@@ -18,7 +18,7 @@
 		var request = $.ajax({
 			type : "GET",
 			async = false,
-			url : "/OperationBank/RegisterController",
+			url : "/OperationBank/LoginController",
 			data : {
 				"FASE" : 2,
 				response_code : response_code

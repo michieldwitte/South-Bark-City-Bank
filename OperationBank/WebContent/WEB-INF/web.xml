@@ -7,9 +7,13 @@
   <servlet>
     <servlet-name>RegisterController</servlet-name>
     <servlet-class>servlets.RegisterController</servlet-class>
+    <servlet-name>LoginController</servlet-name>
+    <servlet-class>servlets.LoginController</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RegisterController</servlet-name>
     <url-pattern>/RegisterController</url-pattern>
+    <servlet-name>LoginController</servlet-name>
+    <url-pattern>/LoginController</url-pattern>
   </servlet-mapping>
 </web-app>
