@@ -34,7 +34,7 @@ We maken het onderscheid tussen 2 belangrijke zaken. nl:
 \end{itemize}
 \subsection{Beveiliging aanvalsvectoren}
 %TODO: Hier bekijken we het threat model. Waar beschermen we tegen en vooral waar beschermen we niet tegen
-We analyseren het \" threat model \" van ons systeem. Aan de hand van onze applicatie-eisen zullen we een threat model opstellen en proberen mogelijke aanvalsvectoren te identificeren.
+We analyseren het \" threat model \" van ons systeem. Aan de hand van onze applicatie-eisen zullen we een threat model opstellen en proberen mogelijke aanvalsvectoren te identificeren. We herkennen dat zoiets als "perfecte beveiling niet bestaat". Er zijn altijd meerdere partijen betrokken bij het systeem en foutief gedrag van een partij kan leiden tot een gecompromitteerd systeem. Ons doel is een voldoende beveiling te garanderen voor onze resources.
 \subsubsection{Authenticatie van entititen op applicatie niveau}
 %TODO: bespreken wachtwoorden en andere mechanismes voor authenticatie en verificatie
 %Opnemen van multifactor authenticatie en hun nut (something you are, something you know, something you have).
@@ -73,24 +73,46 @@ Het traditioneel gebruik van wachtwoorden is niet voldoende. Wachtwoorden worden
 \subsection{Architectuur}
 Gekoppeld aan het gebruik van het systeem is een android app die we gebruiken voor multifactor authenticatie in de vorm van een OTP systeem. Dit is niet ideaal omdat het geen dedecated hardware is en er de mogelijheid is dat de klant controle verliest over zijn smartphone.
 
-De android app zal het ook mogelijk maken om bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als veriticatie voor een transactie.
+De android app maakt het mogelijk om bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als veriticatie voor een transactie (we gaan hier later dieper op in).
 
 Tijdens het opzetten van een account zal de klant persoonlijke informatie aanbieden aan de bank (via een webform), deze informatie bevat onderandere een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn email adres en woonplaats.
 
-Voor deze informatie naar de server word overbracht word eens op de client het wachtwoord versterkt. We maken gebruik van een password based key derivation functie om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
+Voor deze informatie naar de server wordt overbracht zal op de client het wachtwoord worden versterkt. We maken gebruik van een password based key derivation function om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
 
 We doen dit voor de volgende redenen.
 \begin{itemize}
 \item De server kent nooit de gebruiker zijn plain text wachtwoord. 
-\item De server zal deze 256 bits gebruiken om het shared key die op de server zal worden aangemaakt te encrypteren .
+\item De server zal deze 256 bits gebruiken om het shared key die op de server zal worden aangemaakt te encrypteren.
 \end{itemize}
 
 Deze informatie zal naar de server worden verzonden over een vertrouwlijke link (ssl/tls). 
 De server maakt een shared secret aan (256 bits) met fortuna. Dit shared secret word in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie word opgeslagen. Het shared secret word eerst ge\"encrpteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot het shared secret als de klant aanwezig is. De andere informatie heeft de bank wel nodig om de rekening van de klant te kunnen beheren.
 
+Password storage op de server kant wordt gedaan door het password eerst te onderwerpen aan bcrypt. Bcrypt is een key derivation function die is ontworpen met 2 doelstellingen.
+\begin{itemize}
+\item Introduceren van een salt om rainbow tables tegen te gaan.
+\item Meerdere rondes van encryptie met blowfish. Bcrypt maakt gebruik van een licht aangepaste key setup. Zowel het bericht (het wachtwoord) als de salt worden gebruikt om subkeys te maken. Het doel hiervan is om de hoeveel rekenkracht nodig om 1 wachtwoord te bepalen omhoog gaat. 
+\end{itemize}
+De reden dat we zowel hashen op de server kant alsop de client kant is omdat de server kan garanderen dat het nooit het wachtwoord van de gebruiker kent. En de server kan garanderen dat als alle wachtwoorden zouden verloren geraken het \emph{computational invisible} is om de wachtwoorden te bruteforcen.\\
+
+Om een gebruiker uniek te identifieren wordt een unique id aangemaakt die met de gebruiker zijn account wordt geassocieerd. Dit zal, samen met het gekozen wachtwoord worden gebruikt als één authenticatie factor van het multifactor authenticatie proces.
+	
+\subsubsection{Shared secret}
+Het shared secret ligt zowat centraal in ons systeem. Het wordt gebruikt om veilig in te loggen en om transactie goed te keuren. Het shared secret is een random string van 512 bits dat wordt aangemaakt met fortuna \ref{sec:fortuna}. 
+Het \emph{shared secret} wordt gedeelde tussen de gebruiker en de server. De manier waarop we dit communiceren met de client is door het \emph{shared secret} te encoderen in een QR-code en de smartphone app deze code te laten inlezen. %TODO: michiel: beschrijf hoe de app die opslaat. 
+Het \emph{shared secret} wordt op 2 manieren gebruikt. \\
+Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. Het wachtwoord word op de client kant terug door een PBKDF2 transformatie gestuurd en verzonden naar de server. Eerst wordt gecontroleerd of het wachtwoord correct is door bcrypt te gebruiken en te vergelijken met het resulaat in de databank. Als dit correct blijkt te zijn zal het origineel verzonden wachtwoord (de output van de PBKDF2 functie op de client) worden gebruikt om het shared secret te decrypteren in de databank.
+
+Op dit moment beschikken zowel de server als de client over het shared secret. De server voert een \emph{challenge and response} protocol uit om te controleren of de client beschikt over het correcte shared secret.\\
+
+De manier waarop de server dit doet is de volgende, de server genereerd 32 random bytes gebruik makende van fortuna \ref{sec:fortuna}
+%TODO: hier bezig
 \subsection{Implementatie}
+\subsubsection{Fortuna}
+\label{sec:fortuna}
+Implementatie details over fortuna
 \section{Problemen}
-De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia"
+De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia".
 Als de klant zijn wachtwoord is gelekt moet ook nog het shared sercet worden gevonden. Dit shared secret kan worden gedecrypteerd op de server maar de hacker kent het dan nog niet.
 \section{Conclusie}
 If you are wondering where your old default text is; it has been stored as a template. The template menu can be used to access and restore it. 
