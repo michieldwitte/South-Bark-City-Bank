@@ -90,7 +90,7 @@ De server maakt een shared secret aan (256 bits) met fortuna. Dit shared secret 
 
 \subsection{Implementatie}
 \section{Problemen}
-De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia"
+De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia".
 Als de klant zijn wachtwoord is gelekt moet ook nog het shared sercet worden gevonden. Dit shared secret kan worden gedecrypteerd op de server maar de hacker kent het dan nog niet.
 \section{Conclusie}
 If you are wondering where your old default text is; it has been stored as a template. The template menu can be used to access and restore it. 
