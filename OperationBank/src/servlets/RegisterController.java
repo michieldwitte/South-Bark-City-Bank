@@ -159,7 +159,7 @@ public class RegisterController extends HttpServlet {
 				Class.forName("org.postgresql.Driver");
 				dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
 				Statement stat = dbcon.createStatement();
-
+				System.out.println(sqlQueryVeri_S);
 				ResultSet resultSet = stat.executeQuery(sqlQueryVeri_S);
 				if(resultSet.next())
 					verifier_v = resultSet.getString("verifier_v");
@@ -191,7 +191,9 @@ public class RegisterController extends HttpServlet {
 			try{
 				PRNG.fillBlock();
 				PRNG.nextBytes(output, 0, 32);
-			}catch(Exception e){}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 
 			// Omzetten van random byte array naar Long format.
 			ByteBuffer bb = ByteBuffer.wrap(output);

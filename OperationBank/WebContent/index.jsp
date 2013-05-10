@@ -73,7 +73,7 @@ BigInteger.prototype.getString = function(){
 		$("#btn").on("click", function() {
 			
 			var password = $("#passwd").val();
-			var guid     = $("#GUID").val();
+			var guuid     = $("#GUUID").val();
 			var salt     =  CryptoJS.SHA256(password);
 			var pw_pbkdf2 = CryptoJS.PBKDF2(password,
 					                        salt, {
@@ -88,7 +88,7 @@ BigInteger.prototype.getString = function(){
 				url : "/OperationBank/RegisterController",
 				data : {
 					"FASE" : 1,
-					"guid" : guid,
+					"guid" : guuid,
 					"password" : pw_pbkdf2.toString()
 				},
 				succes : function(data) {
@@ -97,6 +97,7 @@ BigInteger.prototype.getString = function(){
 			});
 			
 			request.done(function(data){
+				alert("data: " + data);
 				document.open();
 				document.write(data);
 				document.close();
