@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
+import crypto.AES;
 import crypto.Random;
 import crypto.TOTP;
 
@@ -101,7 +103,14 @@ public class LoginController extends HttpServlet {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			request.getSession().setAttribute("shared_secret", shared_secret);
+			
+			String dec = "";
+			try {
+				dec = AES.getInstance().decryptMessage(password.getBytes(),shared_secret);
+			} catch (DecoderException e) {
+				e.printStackTrace();
+			}
+			request.getSession().setAttribute("shared_secret", dec);
 			
 		}else{
 			if(d){
