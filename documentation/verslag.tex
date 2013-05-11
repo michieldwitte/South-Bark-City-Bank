@@ -71,13 +71,13 @@ Dit is de notie van \"something you have and something you know \".
 Het traditioneel gebruik van wachtwoorden is niet voldoende. Wachtwoorden worden hergebruikt en zijn een single point of failure voor een authenticatie systeem. We moeten dus gebruik maken van een extra factor waar beide entititen (zowel de bank als de klant) weet van moeten hebben. Het is belangrijk dat deze factor onafhankelijk is van het systeem en niet berust op de gebruiker om iets te moeten onthouden (zoals een wachtwoord). Deze werkwijze neemt meestal de vorm aan van een hardware token. Omdat het niet mogelijk was zelf hardware tokens te maken hebben we een android app ontworpen om een deel van deze functionaliteit te simuleren.
 \section{Architectuur en Implementatie}
 \subsection{Architectuur}
-Gekoppeld aan het gebruik van het systeem is een android app die we gebruiken voor multifactor authenticatie in de vorm van een OTP systeem. Dit is niet ideaal omdat het geen dedecated hardware is en er de mogelijheid is dat de klant controle verliest over zijn smartphone.
+Gekoppeld aan het gebruik van het systeem is een android app die we gebruiken voor multifactor authenticatie in de vorm van een OTP systeem. Dit is niet ideaal omdat het geen dedecated hardware is en er de mogelijheid is dat de gebruiker controle verliest over zijn smartphone.\\
 
 De android app maakt het mogelijk om bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als veriticatie voor een transactie (we gaan hier later dieper op in).
 
-Tijdens het opzetten van een account zal de klant persoonlijke informatie aanbieden aan de bank (via een webform), deze informatie bevat onderandere een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn email adres en woonplaats.
+Tijdens het opzetten van een account zal de gebruiker persoonlijke informatie aanbieden aan de bank (via een web formulier), deze informatie bevat ondermeer een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn email adres en woonplaats.\\
 
-Voor deze informatie naar de server wordt overbracht zal op de client het wachtwoord worden versterkt. We maken gebruik van een password based key derivation function om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
+Voor deze informatie naar de server wordt overbracht zal op de gebruiker zijn computer het wachtwoord worden versterkt. We maken gebruik van een password based key derivation function \ref{sec:pbkdf2} om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
 
 We doen dit voor de volgende redenen.
 \begin{itemize}
@@ -86,7 +86,7 @@ We doen dit voor de volgende redenen.
 \end{itemize}
 
 Deze informatie zal naar de server worden verzonden over een vertrouwlijke link (ssl/tls). 
-De server maakt een shared secret aan (256 bits) met fortuna. Dit shared secret word in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie word opgeslagen. Het shared secret word eerst ge\"encrpteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot het shared secret als de klant aanwezig is. De andere informatie heeft de bank wel nodig om de rekening van de klant te kunnen beheren.
+De server maakt een shared secret aan (512 bits) met fortuna. Dit shared secret word in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie word opgeslagen. Het shared secret word eerst ge\"encrpteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot het shared secret als de klant aanwezig is. De andere informatie heeft de bank wel nodig om de rekening van de klant te kunnen beheren.
 
 Password storage op de server kant wordt gedaan door het password eerst te onderwerpen aan bcrypt. Bcrypt is een key derivation function die is ontworpen met 2 doelstellingen.
 \begin{itemize}
@@ -98,23 +98,36 @@ De reden dat we zowel hashen op de server kant alsop de client kant is omdat de 
 Om een gebruiker uniek te identifieren wordt een unique id aangemaakt die met de gebruiker zijn account wordt geassocieerd. Dit zal, samen met het gekozen wachtwoord worden gebruikt als één authenticatie factor van het multifactor authenticatie proces.
 	
 \subsubsection{Shared secret}
-Het shared secret ligt zowat centraal in ons systeem. Het wordt gebruikt om veilig in te loggen en om transactie goed te keuren. Het shared secret is een random string van 512 bits dat wordt aangemaakt met fortuna \ref{sec:fortuna}. 
-Het \emph{shared secret} wordt gedeelde tussen de gebruiker en de server. De manier waarop we dit communiceren met de client is door het \emph{shared secret} te encoderen in een QR-code en de smartphone app deze code te laten inlezen. %TODO: michiel: beschrijf hoe de app die opslaat. 
+Het shared secret heeft een centrale rol in ons systeem. Het wordt gebruikt om veilig in te loggen en om transactie te veriferen en authenticeren. Het shared secret is een random string van 512 bits dat wordt aangemaakt met fortuna \ref{sec:fortuna}. 
+Het \emph{shared secret} wordt gedeelde tussen de gebruiker en de server. De manier waarop we dit communiceren met de client is door het \emph{shared secret} te encoderen als een QR-code en de smartphone app deze code te laten inlezen. %TODO: michiel: beschrijf hoe de app die opslaat. 
 Het \emph{shared secret} wordt op 2 manieren gebruikt. \\
-Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. Het wachtwoord word op de client kant terug door een PBKDF2 transformatie gestuurd en verzonden naar de server. Eerst wordt gecontroleerd of het wachtwoord correct is door bcrypt te gebruiken en te vergelijken met het resulaat in de databank. Als dit correct blijkt te zijn zal het origineel verzonden wachtwoord (de output van de PBKDF2 functie op de client) worden gebruikt om het shared secret te decrypteren in de databank.
+Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. Het wachtwoord word op de client kant terug door een PBKDF2 transformatie gestuurd en verzonden naar de server. Eerst wordt gecontroleerd of het wachtwoord correct is door bcrypt te gebruiken en te vergelijken met het resulaat in de databank. Als de verificatie slaagtzal het origineel verzonden wachtwoord (de output van de PBKDF2 functie op de client) worden gebruikt om het \emph{shared secret} te decrypteren in de databank.
 
 Op dit moment beschikken zowel de server als de client over het shared secret. De server voert een \emph{challenge and response} protocol uit om te controleren of de client beschikt over het correcte shared secret.\\
 
 De manier waarop de server dit doet is de volgende, de server genereerd 8 random bytes gebruik makende van fortuna \ref{sec:fortuna}. Deze 8 random bytes worden in de vorm van een QR-code aan de client gepresenteerd. De client gebruikt de smartphone app om deze 8 random bytes te verwerken op de volgende manier.\\
 
-De 8 random bytes worden ge-xored met de unix time / 1000L (we delen hier door 1000L) om een tijd raam van 30 seconden te introduceren. Daarna gebruiken we een Time-Based One-Time password Algorithm \ref{sec:totp} met als key het \emph{shared secret} en als tijd factor de 8 bytes ge-xored met de unix time. We herkennen het probleem dat ongeveer de 32 minst significaten bits zullen worden beinvloed door de tijd. Dit is niet echt een probleem omdat de overige bits ook random zijn.
+De 8 random bytes worden ge-xored met de unix time / 1000L (we delen hier door 1000L) om een tijd raam van 30 seconden te introduceren waarin de response geldig zal zijn. Daarna gebruiken we een Time-Based One-Time password Algorithm \ref{sec:totp} met als key het \emph{shared secret} en als tijd factor de 8 bytes ge-xored met de unix time. We herkennen het probleem dat ongeveer de 32 minst significaten bits zullen worden beinvloed door de tijd. Dit is niet echt een probleem omdat de overige bits ook random zijn.
 
-De client voert het time based one time password algoritme uit met als key het \emph{shared secret} en als message de 8 bytes. Het resultaat is een token van 8 digits lang die afhankelijk is van de server zijn \emph{challenge}, een tijds factor en het \emph{shared secret}, dit stuurt de client terug naar de server.
+De client voert het time based one time password algoritme uit met als key het \emph{shared secret} en als message de 8 bytes. Het resultaat is een token van 8 digits lang die afhankelijk is van de server zijn \emph{challenge}, een tijds factor en het \emph{shared secret}. De client stuurt dit terug naar de server. De server beschikt over de zelfde informatie en kan dus controleren dat de response geldig is. We herkennen het probleem dat de tijd lichtjes kan verschillen. De server houdt hier rekening mee.\\
+
+De tweede manier waarop het \emph{shared secret} wordt gebruikt is tijdens het authenticeren en het veriferen van een transactie.
+
+Op het moment dat de gebruiker een transactie wil uitvoeren zal de server een hash-based message authenticatie code bepalen van de transactie (HMAC). Op dit moment is de gebruiker ingelogd en heeft het systeem toegang tot de plain text versie van het \emph{shared secret}. Dit \emph{shared secret} zal als key worden gebruikt (herinner dat het \emph{shared secret} 512 bits lang is). Als bericht word alle informatie in de transactie samen beschouwd (inclusief de tijd). \\
+
+Het is enkel mogelijk om een geldige HMAC te bepalen van een transactie als de gebruiker is ingelogd en zijn \emph{shared secret} is gedecrypteerd.\\
+
+We gebruiken hier een HMAC in tegenstelling tot een gewone bericht authenticate om de length extension attack te voorkomen.\\
+
+Eenmaal de HMAC is berekend nemen we de 64 minst significante bits en maken terug een QR-code en voeren we opnieuw het bovenstaande challenge en reponse protocol uit. Dit resulteerde in transactie authenticatie, de response code slaan we ook op in de databank samen met de HMAC.
 \subsection{Implementatie}
 \subsubsection{Fortuna}
 \label{sec:fortuna}
 Implementatie details over fortuna
 \subsubsection{TOTP}
+\subsubsection{PBBKDF2}
+\label{sec:pbkdf2}
+Informatie over PBKDF2
 \label{sec:totp}
 \section{Problemen}
 De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia".
