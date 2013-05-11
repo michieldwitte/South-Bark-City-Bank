@@ -1,12 +1,6 @@
 package servlets;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,21 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-
-import crypto.Random;
 import crypto.TOTP;
-
-import database.DatabaseManager;
-
-import bcrypt.BCrypt;
-
 /**
  * Servlet implementation class LoginController
  */
 @WebServlet("/LoginController")
 public class OTPController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final boolean d = true;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -51,9 +37,6 @@ public class OTPController extends HttpServlet {
 		// Ontvangen van de response code van de client.
 		String sign_data = request.getParameter("sign_data").toString();
 
-		// Ontvangen van de GUID van de user.
-		String guuid = request.getSession().getAttribute("GUUID").toString();
-
 		// Ontvangen van de response code van de client.
 		String response_code = request.getParameter("response_code").toString();
 
@@ -67,7 +50,7 @@ public class OTPController extends HttpServlet {
 		Long unixTime = System.currentTimeMillis() / 1000L;
 		long time1 = unixTime - (unixTime%150);
 		long time2 = unixTime - (unixTime%150) - 150;
-		String shared_secret = null;
+		String shared_secret = request.getSession().getAttribute("shared_secret").toString();
 
 		Long message1;
 		Long message2;
@@ -82,18 +65,6 @@ public class OTPController extends HttpServlet {
 			e1.printStackTrace();
 		} catch (DecoderException e1) {
 			e1.printStackTrace();
-		}
-
-
-		// Eerst moeten we terug het shared secret opvragen.
-		String sql_select_shard_secret = "select shared_key from users where uuid='" + guuid + "';";
-
-		try{
-			ResultSet resultSet = DatabaseManager.getInstance().executeQuery(sql_select_shard_secret);
-			if(resultSet.next())
-				shared_secret = resultSet.getString("shared_key");
-		}catch(Exception e){
-			e.printStackTrace();
 		}
 
 		try{

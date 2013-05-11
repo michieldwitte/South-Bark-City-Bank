@@ -107,7 +107,7 @@ public class RegisterController extends HttpServlet {
 			DatabaseManager.getInstance().executeUpdate("insert into users (fname,lname,uuid,salt,shared_key,verifier_v, country,"+
 					"areaycode,city,address,blocked,balance)" + "values('"+firstName+"','"+lastName+"','" + GUUID + "','" +
 					new String(Hex.encodeHex(salt)) + "','"+  
-					new String(Hex.encodeHex(shared_secret)) + "','"+
+					AES.getInstance().encryptMessage(password.getBytes(),new String(shared_secret)) + "','"+
 					verifier_v  + "','" +
 					country +"','" +
 					areaCode + "','"+city+"','"+ address + "','" + 0 + "','" + 500 + "');");
@@ -124,7 +124,6 @@ public class RegisterController extends HttpServlet {
 		try {
 			dec = AES.getInstance().decryptMessage(password.getBytes(),enc);
 		} catch (DecoderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

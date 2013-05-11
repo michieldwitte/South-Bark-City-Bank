@@ -41,6 +41,12 @@
 		out.print(request.getAttribute("sign_data").toString());
 	 	%> 
 	</p>
+	<p>
+	DEBUG:
+		<%
+			out.print(request.getSession().getAttribute("shared_secret"));
+		%>
+	</p>
 	De echte voorstelling van de qr code.
 	<p>
 		<%

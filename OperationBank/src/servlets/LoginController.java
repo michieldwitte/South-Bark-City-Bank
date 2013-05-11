@@ -61,9 +61,10 @@ public class LoginController extends HttpServlet {
 			// Als er meer dan 2 foutieve login poingen zijn moet de gebruiker zijn account worden geblokeerd.
 			Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
 			System.out.println("att value on begin of methode: " + request.getSession().getAttribute("att"));
-			if(att >= 2){
+			if(att >= 3){
 				try{
-				String update_block_value = "update users set block='1' where uuid='"+guuid+"');";
+				String update_block_value = "update users set blocked='1' where uuid='"+guuid+"';";
+				System.out.println(update_block_value);
 				DatabaseManager.getInstance().executeUpdate(update_block_value);
 				request.setAttribute("login", "over");
 				}catch(SQLException e){
@@ -74,8 +75,8 @@ public class LoginController extends HttpServlet {
 			}
 		}
 
+		
 		try{
-			Class.forName("org.postgresql.Driver");
 			ResultSet resultSet = DatabaseManager.getInstance().executeQuery(sqlQueryVeri_S);
 			if(resultSet.next())
 				verifier_v = resultSet.getString("verifier_v");
@@ -89,6 +90,19 @@ public class LoginController extends HttpServlet {
 			if(d)
 				System.out.println("hier");	
 			request.setAttribute("login", "ok-session");
+			String shared_secret = "";
+			try{
+			// Haal shared secret op uit de databank en decrypteert het met de gebruiker zijn wachtwoord. 
+			// Daarna slaan we het shared secret op in het sessionObject
+			String sql_shared_secret = "select shared_key from users where uuid='"+guuid+"';";
+			ResultSet resultSet = DatabaseManager.getInstance().executeQuery(sql_shared_secret);
+			if(resultSet.next())
+				shared_secret = resultSet.getString("shared_key");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			request.getSession().setAttribute("shared_secret", shared_secret);
+			
 		}else{
 			if(d){
 				System.out.println("password check failed");
