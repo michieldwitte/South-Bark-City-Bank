@@ -11,6 +11,9 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 /**
  * @author sander
  *
@@ -35,25 +38,41 @@ public class AES {
 			instance = new AES();
 		return instance;
 	}
-
-	public String encryptMessage(byte[] password, byte[] message){
+	
+	/**
+	 * 
+	 * @param password in byte formaat
+	 * @param message in String formaat
+	 * @return hex encoded message
+	 */
+	public String encryptMessage(byte[] password, String message){
 		Key key = new SecretKeySpec(password, "AES");
+		byte[] byteMessage = message.getBytes();
 		byte[] encryptedValue = null;
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE,key);
-			encryptedValue = cipher.doFinal(message);
+			encryptedValue = cipher.doFinal(byteMessage);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new String(encryptedValue);
+		return new String(Hex.encodeHex(encryptedValue));
 	}
 
-	public String decryptMessage(byte[] password, byte[] message){
+	/**
+	 * 
+	 * @param password in byte formaat
+	 * @param message in String formaat
+	 * @return original message
+	 * @throws DecoderException 
+	 */
+	public String decryptMessage(byte[] password, String message) throws DecoderException{
 		Key key = new SecretKeySpec(password,"AES");
+		
+		byte[] encryptedValueFromHex = Hex.decodeHex(message.toCharArray());
 		byte[] decryptedValue = null;
 		try{
 			cipher.init(Cipher.DECRYPT_MODE, key);
-			cipher.doFinal(message);
+			cipher.doFinal(encryptedValueFromHex);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -115,7 +115,11 @@ public class RegisterController extends HttpServlet {
 		}
 		
 		//TODO: verwijderen van debug output
-		System.out.println(AES.getInstance().encryptMessage(password.getBytes(),shared_secret));
+		String enc = AES.getInstance().encryptMessage(password.getBytes(), shared_secret);
+		String dec = AES.getInstance().decryptMessage(password.getBytes(),enc.getBytes());
+		
+		System.out.println(enc);
+		System.out.println(dec);
 		generatePdf.createPDF(response, GUUID, new String(Hex.encodeHex(shared_secret)));
 	}
 
