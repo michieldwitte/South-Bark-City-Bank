@@ -121,15 +121,27 @@ We gebruiken hier een HMAC in tegenstelling tot een gewone bericht authenticate 
 
 Eenmaal de HMAC is berekend nemen we de 64 minst significante bits en maken terug een QR-code en voeren we opnieuw het bovenstaande challenge en reponse protocol uit. Dit resulteerde in transactie authenticatie, de response code slaan we ook op in de databank samen met de HMAC.
 \subsection{Implementatie}
+\subsubsection{Random events}
 \subsubsection{Fortuna}
 \label{sec:fortuna}
 Implementatie details over fortuna
-\subsubsection{TOTP}
+
+\subsubsection{Time-based One-time Password Algorithm}
+\label{sec:totp}
+RFC 6238
+
 \subsubsection{PBBKDF2}
 \label{sec:pbkdf2}
 Informatie over PBKDF2
-\label{sec:totp}
+
+\subsubsection{Bericht authenticatie}
+\label{sec:mac}
+
+\subsubsection{Account beveiliging}
+\label{sec:bev}
+3 keer inloggen
 \section{Problemen}
+\subsection{Algemene problemen en hun oplossingen}
 De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia".
 Als de klant zijn wachtwoord is gelekt moet ook nog het shared sercet worden gevonden. Dit shared secret kan worden gedecrypteerd op de server maar de hacker kent het dan nog niet.
 \section{Conclusie}
