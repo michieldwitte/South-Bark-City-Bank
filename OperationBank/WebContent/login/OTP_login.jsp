@@ -11,6 +11,7 @@
 	$(document).ready(function() {
 		$("#btn-submit").click(function() {
 			var response_code = $("#response_code").val();
+			alert(response_code);
 			$("#sign_data").val(<%out.print(request.getAttribute("sign_data").toString());%>);
 		});
 	});

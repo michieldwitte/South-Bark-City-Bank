@@ -37,11 +37,17 @@ public class OTPController extends HttpServlet {
 	public OTPController() {
 		super();
 	}
+	
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.getWriter().println("INVALID REQUEST");
+		response.getWriter().close();
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		// Ontvangen van de response code van de client.
 		String sign_data = request.getParameter("sign_data").toString();
 
