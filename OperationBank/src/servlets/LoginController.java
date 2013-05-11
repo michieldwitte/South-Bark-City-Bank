@@ -63,7 +63,7 @@ public class LoginController extends HttpServlet {
 			System.out.println("att value on begin of methode: " + request.getSession().getAttribute("att"));
 			if(att >= 2){
 				try{
-				String update_block_value = "update users set block='1' where uuid='"+guuid+"');";
+				String update_block_value = "update users set blocked='1' where uuid='"+guuid+"';";
 				DatabaseManager.getInstance().executeUpdate(update_block_value);
 				request.setAttribute("login", "over");
 				}catch(SQLException e){

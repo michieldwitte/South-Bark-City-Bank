@@ -118,6 +118,7 @@ public class OTPController extends HttpServlet {
 			response_code.equals(server_response_code2) && 
 			request.getSession().getAttribute("att").toString().equals("0")){
 			request.getRequestDispatcher("ViewTransactions").forward(request, response);
+			response.sendRedirect("/ViewTransactions");
 			return;
 		}else{
 			//response.getWriter().println("login fail");
