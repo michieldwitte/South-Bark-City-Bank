@@ -11,21 +11,7 @@
 	$(document).ready(function() {
 		$("#btn-submit").click(function() {
 			var response_code = $("#response_code").val();
-			var request = $.ajax({
-				type : "GET",
-				async : false,
-				url : "/OperationBank/OTPController",
-				data : {
-					"FASE" : 2,
-					"response_code" : response_code,
-					"sign_data" : "<%out.print(request.getAttribute("sign_data").toString());%>"
-				},
-				succes : function(data){}
-			});
-			
-			request.done(function(data){
-				alert(data);
-			});
+			$("#sign_data").val(<%out.print(request.getAttribute("sign_data").toString());%>);
 		});
 	});
 		
@@ -66,12 +52,14 @@
 		<img src="data:image/jpg;base64,<%=image%>" alt="qrcode" />
 	</p>
 	<p>
-	<form name="response_form" method="post" action="#">
+	<form name="response_form" method="post" action="/OperationBank/OTPController">
 		<table>
 			<tr>
 				<td><label for="response_code">Response code: </label>
 				</td>
 				<td><input name="response_code" id="response_code" size="30">
+				</td>
+				<td><input type="hidden" id="sign_data" name="sign_data" value="">
 				</td>
 				<td><input id="btn-submit" type="submit" value="Submit">
 				</td>
