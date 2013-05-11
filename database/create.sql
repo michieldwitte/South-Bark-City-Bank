@@ -18,7 +18,8 @@ create table usertransactions(
 	id SERIAL,
 	user_id_from text not null,
 	user_id_to text not null,
+	amount integer not null,
+	date text not null,
 	signature text not null,
-	amount money not null,
-	date timestamp not null
+	responsecode_from_client text not null	
 );
