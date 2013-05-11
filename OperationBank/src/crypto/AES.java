@@ -72,7 +72,7 @@ public class AES {
 		byte[] decryptedValue = null;
 		try{
 			cipher.init(Cipher.DECRYPT_MODE, key);
-			cipher.doFinal(encryptedValueFromHex);
+			decryptedValue = cipher.doFinal(encryptedValueFromHex);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -13,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 import pdf.GeneratePdf;
@@ -115,8 +117,16 @@ public class RegisterController extends HttpServlet {
 		}
 		
 		//TODO: verwijderen van debug output
-		String enc = AES.getInstance().encryptMessage(password.getBytes(), shared_secret);
-		String dec = AES.getInstance().decryptMessage(password.getBytes(),enc.getBytes());
+		String test = "sander demeester";
+		String enc = AES.getInstance().encryptMessage(password.getBytes(),test);
+		System.out.println(enc);
+		String dec = "";
+		try {
+			dec = AES.getInstance().decryptMessage(password.getBytes(),enc);
+		} catch (DecoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		System.out.println(enc);
 		System.out.println(dec);
