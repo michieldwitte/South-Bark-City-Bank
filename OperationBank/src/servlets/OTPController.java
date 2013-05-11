@@ -79,10 +79,8 @@ public class OTPController extends HttpServlet {
 		try {
 			t = Long.parseLong(new String(Hex.decodeHex(sign_data.toCharArray())));
 		} catch (NumberFormatException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (DecoderException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
