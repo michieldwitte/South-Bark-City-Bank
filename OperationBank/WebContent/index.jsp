@@ -77,7 +77,7 @@ BigInteger.prototype.getString = function(){
 			var salt     =  CryptoJS.SHA256(password);
 			var pw_pbkdf2 = CryptoJS.PBKDF2(password,
 					                        salt, {
-				keySize : 256 / 32,
+				keySize : 256 / 64,
 				hasher : CryptoJS.algo.SHA256,
 				iterations : 1
 			});
