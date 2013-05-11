@@ -18,6 +18,7 @@ import org.apache.commons.codec.binary.Hex;
 import pdf.GeneratePdf;
 import bcrypt.BCrypt;
 
+import crypto.AES;
 import crypto.Random;
 import crypto.TOTP;
 
@@ -112,6 +113,9 @@ public class RegisterController extends HttpServlet {
 			e1.printStackTrace();
 			return;
 		}
+		
+		//TODO: verwijderen van debug output
+		System.out.println(AES.getInstance().encryptMessage(password.getBytes(),shared_secret));
 		generatePdf.createPDF(response, GUUID, new String(Hex.encodeHex(shared_secret)));
 	}
 
