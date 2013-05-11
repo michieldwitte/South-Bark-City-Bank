@@ -17,6 +17,7 @@
 	<br />
 	<br />
 	<br />
+	<a href="NewTransaction.jsp">Create a new Transaction</a>
 	
 	<table>
 		<tr>

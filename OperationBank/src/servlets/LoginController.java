@@ -64,14 +64,10 @@ public class LoginController extends HttpServlet {
 			Integer att = Integer.parseInt(request.getSession().getAttribute("att").toString());
 			System.out.println("att value on begin of methode: " + request.getSession().getAttribute("att"));
 			if(att >= 3){
-				try{
 				String update_block_value = "update users set blocked='1' where uuid='"+guuid+"';";
 				System.out.println(update_block_value);
 				DatabaseManager.getInstance().executeUpdate(update_block_value);
 				request.setAttribute("login", "over");
-				}catch(SQLException e){
-					e.printStackTrace();
-				}
 				//TODO: toevoegen dat inloggen is geblokeerd
 				return;
 			}

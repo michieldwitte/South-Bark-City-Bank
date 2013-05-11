@@ -38,12 +38,6 @@ public class RegisterController extends HttpServlet {
 
 	private GeneratePdf generatePdf = new GeneratePdf();
 	private static final long serialVersionUID = 1L;
-	private static final String loginUser = "postgres";
-	private static final String loginPasswd = "sander";
-	private static final String loginUrl = "jdbc:postgresql://localhost/bank";
-	private static final String dataBaseString = "org.postgresql.Driver";
-
-	private Connection dbcon;  // Connection for scope of ShowBedrock
 
 	/**
 	 * @see HttpServlet#HttpServlet()

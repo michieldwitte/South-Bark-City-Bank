@@ -20,8 +20,14 @@
     <servlet-name>ViewTransactions</servlet-name>
     <servlet-class>servlets.ViewTransactions</servlet-class>
   </servlet>
-  
-   
+   <servlet>
+    <servlet-name>VerifyTransaction</servlet-name>
+    <servlet-class>servlets.VerifyTransaction</servlet-class>
+  </servlet>
+   <servlet>
+    <servlet-name>ExecuteTransaction</servlet-name>
+    <servlet-class>servlets.ExecuteTransaction</servlet-class>
+  </servlet>
    
    
   <servlet-mapping>
@@ -39,5 +45,13 @@
   <servlet-mapping>
     <servlet-name>ViewTransactions</servlet-name>
     <url-pattern>/ViewTransactions</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VerifyTransaction</servlet-name>
+    <url-pattern>/VerifyTransaction</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ExecuteTransaction</servlet-name>
+    <url-pattern>/ExecuteTransaction</url-pattern>
   </servlet-mapping>
 </web-app>

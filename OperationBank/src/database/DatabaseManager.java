@@ -40,14 +40,36 @@ public class DatabaseManager {
 		return instance;
 	}
 	
-	public ResultSet executeQuery(String sql_string) throws SQLException{
-		Statement statment = databaseConnection.createStatement();
-		return statment.executeQuery(sql_string);
+	public ResultSet executeQuery(String sql_string){
+		try{
+			Statement statment = databaseConnection.createStatement();
+			return statment.executeQuery(sql_string);
+		} catch (SQLException ex){
+			System.out.println(ex);
+		}
+		return null;
 	}
 	
-	public void executeUpdate(String sql_query) throws SQLException{
-		Statement statment = databaseConnection.createStatement();
-		statment.executeUpdate(sql_query);
+	public void executeUpdate(String sql_query){
+		try{
+			Statement statment = databaseConnection.createStatement();
+			statment.executeUpdate(sql_query);
+		} catch (SQLException ex){
+			System.out.println(ex);
+		}
+	}
+	
+	public String querySingleValue(String sql_query, String columnLabel){
+		try{
+			Statement statement = databaseConnection.createStatement();
+			ResultSet rs = statement.executeQuery(sql_query);
+			if(rs.next()){
+				return rs.getString(columnLabel);
+			}
+		} catch (SQLException ex){
+			System.out.println(ex);
+		}
+		return null;
 	}
 
 

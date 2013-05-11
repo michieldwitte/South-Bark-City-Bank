@@ -34,6 +34,16 @@
 				</td>
 				<td><input name="response_code" id="response_code" size="30">
 				</td>
+				<td><input type="hidden" id="sign_data" name="sign_data" value="<%out.print(request.getAttribute("sign_data").toString());%>">
+				</td>
+				<td><input type="hidden" id="date" name="date" value="<%out.print(request.getAttribute("date").toString());%>">
+				</td>
+				<td><input type="hidden" id="hex_hmac" name="hex_hmac" value="<%out.print(request.getAttribute("hex_hmac").toString());%>">
+				</td>
+				<td><input type="hidden" id="to" name="to" value="<%out.print(request.getAttribute("to").toString());%>">
+				</td>
+				<td><input type="hidden" id="amount" name="amount" value="<%out.print(request.getAttribute("amount").toString());%>">
+				</td>
 				<td><input id="btn-submit" type="submit" value="Submit">
 				</td>
 			</tr>
