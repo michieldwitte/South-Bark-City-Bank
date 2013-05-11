@@ -24,11 +24,12 @@ $("#reg").on("click", function() {
 
 	var pw_pbkdf2 = CryptoJS.PBKDF2(password,
 			                        salt, {
-		keySize : 256 / 32,
+		keySize : 256 / 64,
 		hasher : CryptoJS.algo.SHA256,
 		iterations : 1
 	});
 	
+	alert(pw_pbkdf2);
 	$("#password").val(pw_pbkdf2);
 	$("#ConfirmPassword").val(pw_pbkdf2);
 	});
