@@ -18,6 +18,8 @@
 	<br />
 	<br />
 	<br />
+	<a href="ViewTransactions">Transactions</a>
+	<a href="LogOut.jsp">Logout</a>
 
 	<table>
 		<tr>

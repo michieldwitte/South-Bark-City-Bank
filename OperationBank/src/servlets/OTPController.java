@@ -81,9 +81,7 @@ public class OTPController extends HttpServlet {
 		server_response_code1 = TOTP.generateTOTP(shared_secret, seed1, "8","HmacSHA512");
 		server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA512");
 
-		System.out.println(request.getSession().getAttribute("att").toString());
-		
-		System.out.println(server_response_code1 +"\n"+ server_response_code2 +"\n"+ response_code);
+		//System.out.println(request.getSession().getAttribute("att").toString());
 		
 		if( response_code.equals(server_response_code1) ||
 			response_code.equals(server_response_code2)){

@@ -21,6 +21,7 @@
 	<br />
 	<br />
 	<br />
+	<a href="LogOut.jsp">Logout</a>
 	<a href="NewTransaction.jsp">Create a new Transaction</a>
 	
 	<table>
