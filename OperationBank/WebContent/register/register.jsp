@@ -38,7 +38,7 @@ $("#reg").on("click", function() {
 </head>
 <body>
 	<center>
-		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg"/>
+		<img alt="SouthBarkCityBank" src="../SouthBarkCityBank.jpg"/>
 	</center>
 	<br />
 	<br />

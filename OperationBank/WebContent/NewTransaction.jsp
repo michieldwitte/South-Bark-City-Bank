@@ -1,3 +1,4 @@
+<%@page import="global.Status"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -7,6 +8,9 @@
 <title>New Transaction</title>
 </head>
 <body>
+<%
+		Status.check(request, response);
+%>
 		<center>
 		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
 	</center>

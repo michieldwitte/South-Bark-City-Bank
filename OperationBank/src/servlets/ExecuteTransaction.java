@@ -1,5 +1,7 @@
 package servlets;
 
+import global.Status;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.sql.DriverManager;
@@ -48,6 +50,11 @@ public class ExecuteTransaction extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+		
+		if (Status.check(request, response)){
+			return;
+		}
+		
 		String GUUID = request.getSession().getAttribute("GUUID").toString();
 		String shared_secret = request.getSession().getAttribute("shared_secret").toString();
 		

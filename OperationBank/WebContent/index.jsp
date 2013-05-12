@@ -115,6 +115,12 @@ BigInteger.prototype.getString = function(){
 	<br />
 	<br />
 	<br />
+	
+	<%
+		if(request.getSession().getAttribute("GUUID") != null){
+			response.sendRedirect("ViewTransactions");
+		}
+	%>
 
 	<table>
 		<tr>

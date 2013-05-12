@@ -88,6 +88,7 @@ public class OTPController extends HttpServlet {
 		if( response_code.equals(server_response_code1) ||
 			response_code.equals(server_response_code2)){
 			//request.getRequestDispatcher("ViewTransactions").forward(request, response);
+			request.getSession().setAttribute("status", "logged in");
 			response.sendRedirect("ViewTransactions");
 			return;
 		}else{
