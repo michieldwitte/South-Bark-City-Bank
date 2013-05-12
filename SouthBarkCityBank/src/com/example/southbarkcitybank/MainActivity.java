@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements OnClickListener{
     	}
     	String fin = Long.toHexString(toEncrypt).toUpperCase();
     	
-        return TOTP.generateTOTP(ssecret, fin, "8", "HmacSHA512");
+        return TOTP.generateTOTP(ssecret, fin, "8", "HmacSHA256");
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
