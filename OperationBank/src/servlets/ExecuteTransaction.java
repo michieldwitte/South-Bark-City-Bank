@@ -155,8 +155,8 @@ public class ExecuteTransaction extends HttpServlet {
 			
 		}catch(Exception e){}
 		
-		server_response_code1 = TOTP.generateTOTP(shared_secret, seed1, "8","HmacSHA512");
-		server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA512");
+		server_response_code1 = TOTP.generateTOTP(shared_secret, seed1, "8","HmacSHA256");
+		server_response_code2 = TOTP.generateTOTP(shared_secret, seed2, "8","HmacSHA256");
 		
 		if( response_code.equals(server_response_code1) ||
 			response_code.equals(server_response_code2)){

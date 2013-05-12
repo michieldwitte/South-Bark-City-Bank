@@ -1,6 +1,5 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage}
-
 \usepackage{hyperref}
 \setlength{\parindent}{0cm}
 %Gummi|061|=)
@@ -110,7 +109,7 @@ Op dit moment beschikken zowel de server als de gebruiker over het shared secret
 \subsubsection{Challenge and response}
 De manier waarop de server dit doet is de volgende, de server genereerd 8 random bytes gebruik makende van fortuna \ref{sec:fortuna}. Deze 8 random bytes worden in de vorm van een QR-code aan de client gepresenteerd. De client gebruikt de smartphone app om deze 8 random bytes te verwerken op de volgende manier.\\
 
-De 8 random bytes worden ge-xored met de unix time / 1000L (we delen hier door 1000L) om een tijd raam van 30 seconden te introduceren waarin de response geldig zal zijn.\\
+De 8 random bytes worden ge-xored met de unix time. Daarna introduceren we een  tijdsraam van 30 seconden waarin de response geldig zal zijn.\\
 
 We merken op dat de response afhankelijk is van de tijd (niet de challenge). De reden hiervoor is omdat we vanaf een response is gemaakt deze een vorm van informatie is voor de huidige inlog procedure. Voordat de response is gemaakt  heeft de challenge geen waarde.\\
 
@@ -137,24 +136,30 @@ Inloggen bestaat uit 2 fases. Het aanbieden van het ID en wachtwoord en het uitv
 Bij drie foute login pogingen moet de gebruiker contact met de bank opnemen om zijn account te resetten. Dit houd in dat een nieuwe \emph{shared secret} zal moeten worden aangemaakt.
 \subsection{Implementatie}
 \subsubsection{Random events}
+Random data is belangrijk. De 8 bytes login tokens, en het \emph{shared secret} maken er gebruik van.
+De initi\"ele seed voor fortuna hangt dan ook af van externe factoren. We gebruiken de system timer. Het verschil tussen 2 oproepen is meestal in de orde van $2^63$, maar aangezien het return type 64 bit is zal er dus vaak numurieke overflow zijn. Daarnaast gebruiken we nog het aantal beschikbare CPU's en fysiek geheugen dat beschikbaar is tijdens het opstarten van de applicatie.
 \subsubsection{Fortuna}
 \label{sec:fortuna}
-Implementatie details over fortuna
+De reden waarom we hebben gekozen voor fortuna als PRNG is voor de entropy accumulator. Fortuna maakt gebruik van entropy pools. Elke entropy source verdeeld informatie over deze pools wanneer de PRNG opnieuw word geseed. In het geval van onze applicatie is dat voor het aanmaken van nieuwe random bytes
 
 \subsubsection{Time-based One-time Password Algorithm}
 \label{sec:totp}
 We maken gebruik van het TOTP protocol beschreven in RFC 6238.
+$$ TOTP = Truncate(HMAC-SHA512(K,M))$$
+Waar $K$ het \emph{shared secret} is en $M$ de \emph{message} is die bestaande uit 8 bytes. Als de server een response code ontvangt controleerd deze dat ze ofwel valt in het hudige tijdsvenster of in het tijdsvenster ervoor. We herkennen het probleem dat een tijdscode kan worden gemaakt naar het einde toe van het huidige tijdsvenster, en tegen dat de server de code verwerkt er al een nieuwe tijdsvenster kan aangebroken zijn.\\
 
+TOTP maakt gebruikt van een HMAC, we gebruiken hier sha256 als onderliggend hashing algoritme omdat deze een blok lengte heeft van 512 bits, wat evenveel als het \emph{shared secret} (dit geld ook voor de transactie)
 \subsubsection{PBBKDF2}
 \label{sec:pbkdf2}
-Informatie over PBKDF2
+Omdat het wachtwoord van de gebruiker zal worden gebruikt als sleutel $S_{0}$ voor het encrypteren van het \emph{shared secret} op de server is het belangrijk dat deze sleutel de correcte lengte heeft en dat deze moeilijk te achterhalen zou zijn met brute kracht. De output van de PBKDF2 functie ($S_{0}$) is 256 bits die in zijn volledigheid naar de server wordt verstuurd.\\
 
+Het is hierbij van groot belang dat voor de server probeerd het \emph{shared secret} te decrypteren met $S_{0}$ het eerst verifieerd dat $S_{0}$ correct is door bcrypt te gebruiken en te vergelijken met de waarde in de databank. Als dit niet gebeurd kan de intergiteit van het systeem niet worden gegarandeerd. 
 \subsubsection{Bericht authenticatie}
 \label{sec:mac}
-
+Het is moeilijk om traditionele digitale handtekeningen te gebruiken omdat we moeten vertrouwen op informatie die de gebruiker intypt. Als alternatief maken we gebruik van een authenticatie codes met een shared secret. Het probleem met hashes van de vorm $H(key || message)$ is dat deze kwetsbaar zijn een Length extension attack als gevolg van de Merkle–Damgard construction. Met deze reden gebruiken we een HMAC.
 \subsubsection{Account beveiliging}
 \label{sec:bev}
-3 keer inloggen
+Standaard beleid voor account reset en wachtwoord verlies. De gebruiker kan contact opnemen met de bank om zijn account te laten blokeren of een nieuw \emph{shared secret} aan te vragen. Ook als de gebruiker 3 keer foutief inlogt zal zijn account worden geblokeerd en moet er contact worden opgenomen met de bank.
 \section{Problemen}
 \subsection{Algemene problemen en hun oplossingen}
 De denkwijze die we tijdens dit project handeerde is die van "Professional Paranoia". We gaan er ook vanuit dat de gebruiker zijn computer gecompromitteerd is en de aanvaller alles kan zien.
@@ -167,19 +172,66 @@ Daarnaast hebben we ook nog de \"something you have\"-factor, nl het \emph{share
 Er kan eventueel het probleem zijn dat de gebruiker zijn machine gecompromitteerd is. Wat wil zeggen dat het ID en wachtwoord gekend zijn. Het is voor een aanvaler niet mogelijk om informatie over het \emph{shared secret} te halen uit het response van de gebruiker. Ook kan deze response niet worden herbruikt omdat van zodra de response gemaakt word ze waarde krijgt in het protocol en de versheid beschermd word door de tijd.
 
 \subsubsection{Authenticatie en verificatie van transacties}
-De problemen hier verdelen we in 2 groepen.
+We beschouwen twee delen in dit proces.
 \begin{itemize}
 \item Verificatie in de huidige tijd en op latere tijdstippen.
 \item Authenticatie in de huidige tijd.
 \end{itemize}
 Verificatie in de hudige tijd gebeurd door een combinatie van 2 dingen, nl: De gebruiker is ingelogd en de server heeft toegang tot het \emph{shared secret} en de gebruiker kan bewijzen dat hij toegang heeft tot het zelfde \emph{shared secret} door terug de \emph{challenge response} procedure te doorlopen met de 64 minst significante bits van de HMAC. Als de server de response niet kan veriferen kan de transactie niet doorgaan. Deze 2 eisen zijn voldoende voor authenticatie en verificatie in de huidige tijd. \\
 
-Verificatie van een transactie op een later tijdstip kan worden gedaan als de gebruiker het \emph{shared secret} op de server decrypteerd. En enkel de gebruiker kon deze transactie doen want enkel hij beschikt over het wachtwoord om de bank toegang te geven zijn \emph{shared secret}. Daarnaast moeten alle stappen van het systeem worden uitgevoerd alsvoor het mogelijk is een transactie uit te voeren. Dus moet authenticatie ooit hebben plaats gevonden.
+Verificatie van een transactie op een later tijdstip kan worden gedaa als de gebruiker het \emph{shared secret} op de server decrypteerd. En enkel de gebruiker kon deze transactie doen want enkel hij beschikt over het wachtwoord om de bank toegang te geven zijn \emph{shared secret}. Daarnaast moeten alle stappen van het systeem worden uitgevoerd alsvoor het mogelijk is een transactie uit te voeren. Dus moet authenticatie ooit hebben plaats gevonden.
 \section{Conclusie en observaties}
-We bekijken alle belangrijke observaties en tonen aan hoe ons systeem voldoet aan de gestelde beveilingseisen in \ref{sec:bev_eis}.
-\ de rechtmatige gebruiker te zijn. Ofwel is de 
-If you are wondering where your old default text is; it has been stored as a template. The template menu can be used to access and restore it. 
+"Information security is hard". Er zijn altijd factoren in het spel waarmee we geen rekening kunnen houden. En om te zeggen dat onze beveiling perfect is, of te zeggen dat ze goed is zou onze eerste grote fout zijn. Wat we kunnen doen is hopen. Hopen dat onze beveiliging "goed genoeg" is. We moeten altijd de veronderstelling maken dat er fouten zijn. Fouten die niet zullen worden door ons of door de aanvallers.
+\begin{thebibliography}{9}
 
-\bibliography{information_security_bibtex}{}
-\bibliographystyle{plain}
+\bibitem{CRIME}
+  John Kelsey,
+  \emph{{{C}ompression and {I}nformation {L}eakage of {P}laintext}}.
+  Fast Software Encryption, 9th International Workshop,
+  2nd Edition,
+  2002.
+\bibitem{BEAST}
+	Juliano Rizzo and Thai Duong,
+	\emph{Browser Exploit Against SSL/TLS}. De "BEAST"-attack.
+\bibitem{TOTP}
+	 D. M'Raihi,  S. Machani, M. Pei en  J. Rydell,
+	 \emph{TOTP: Time-Based One-Time Password Algorithm}
+	 RFC 6238,
+\bibitem{len_ext_attack}
+	G. Tsudik,
+	\emph{Message authentication with one-way hash functions} en
+	\emph{http://www.vnsecurity.net/t/length-extension-attack/}
+	
+\bibitem{fortuna}
+	Bruce Schneier en Niels Ferguson
+	\emph{Fortun PRNG}
+\bibitem{AP}
+	Bruce Schneier
+	\emph{Applied cryptography}
+\bibitem{CE}
+	Niels Ferguson, Bruce Schneier, and Tadayoshi Kohno
+	\emph{Cryptography Engineering: Design Principles and Practical Applications}
+\bibitem{bcrypt}
+	Niels Provos en David Mazieres
+	\emph{Future-Adaptable Password Scheme - OpenBSD}
+\bibitem{multi_f}
+	Jon Oberheide,
+	\emph{Multi-factor authentication Past, Present and future}.\\
+	CTO, Scio Security
+\bibitem{pbkdf2}
+	Meltem sonmez turan, Elainse barker, Wiliam burr en Lily chen	
+	\emph{Recommandations for password-based key derivation}\\
+	\url{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}
+\bibitem{death_of_clever}
+	Bill Ricker,
+	\emph{Passwords "The death of clever"}, 
+	BLU.org 2012-09-19. \\
+	\url{blu.org/meetings/2012/09/Passwords.pdf‎}
+\bibitem{forward_secret}
+	Gene Itkis
+	\emph{Forward security: Adaptive Cryptograpy: Time evolution}
+	Computer Sience Department, Boston University.\\
+	\url{http://www.cs.bu.edu/~itkis/pap/forward-secure-survey.pdf}
+	
+\end{thebibliography}
 \end{document}
