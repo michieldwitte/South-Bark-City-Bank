@@ -1,3 +1,4 @@
+<%@page import="global.Status"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
@@ -107,7 +108,9 @@ BigInteger.prototype.getString = function(){
 </script>
 </head>
 <body>
-
+<%
+	Status.indexCheck(request, response);
+%>
 	<center>
 		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
 	</center>
@@ -115,12 +118,6 @@ BigInteger.prototype.getString = function(){
 	<br />
 	<br />
 	<br />
-	
-	<%
-		if(request.getSession().getAttribute("GUUID") != null){
-			response.sendRedirect("ViewTransactions");
-		}
-	%>
 
 	<table>
 		<tr>

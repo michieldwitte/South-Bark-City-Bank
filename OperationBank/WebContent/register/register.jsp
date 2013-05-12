@@ -1,3 +1,5 @@
+<%@page import="java.io.IOException"%>
+<%@page import="global.Status"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -37,6 +39,19 @@ $("#reg").on("click", function() {
 </script>
 </head>
 <body>
+<%
+	if(request.getSession().getAttribute("status") != null){
+		String status = request.getSession().getAttribute("status").toString();
+		if (status.equals("logged in")){
+			try {
+				response.sendRedirect("../ViewTransactions");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+%>
 	<center>
 		<img alt="SouthBarkCityBank" src="../SouthBarkCityBank.jpg"/>
 	</center>
