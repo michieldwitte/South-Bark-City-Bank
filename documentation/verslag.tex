@@ -88,7 +88,7 @@ We doen dit om de volgende redenen:
 \item De server zal deze 256 bits gebruiken om de shared key die op de server zal worden aangemaakt te encrypteren.
 \end{itemize}
 
-Deze informatie zal naar de server worden verzonden over een vertrouwlijk kanaal (ssl/tls). 
+Deze informatie zal naar de server worden verzonden over een vertrouwlijk kanaal (TLS/SSL). 
 Daarna maakt de server een \emph{shared secret} aan van 512 bits met fortuna \ref{sec:fortuna}. Dit shared secret wordt in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie wordt opgeslagen. Het \emph{shared secret} wordt eerst ge\"encrypteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot een plain text versie van het \emph{shared secret} als de gebruiker is ingelogd in het systeem. De andere informatie moet beschikbaar zijn, ook al is de gebruiker niet aanwezig, omdat de bank deze gegevens moet kunnen beheren.
 
 Password storage op de server wordt gedaan door het password eerst te onderwerpen aan bcrypt \ref{sec:bcrypt}. Bcrypt is een key derivation functie die is ontworpen met 2 doelstellingen:
@@ -155,7 +155,7 @@ De reden waarom we hebben gekozen voor fortuna als PRNG is voor de entropy accum
 \subsubsection{Time-based One-time Password Algorithm}
 \label{sec:totp}
 We maken gebruik van het TOTP protocol beschreven in RFC 6238.
-$$ TOTP = Truncate(HMAC-SHA512(K,M))$$
+$$ TOTP = Truncate(HMAC-SHA256(K,M))$$
 Waar $K$ het \emph{shared secret} is en $M$ de \emph{message} is die bestaat uit 8 bytes. Als de server een response code ontvangt controleert deze dat ze ofwel in het huidige tijdsvenster valt of in het tijdsvenster ervoor. We herkennen het probleem dat een tijdscode kan worden gemaakt naar het einde toe van het huidige tijdsvenster, zodat als de server de code verwerkt er al een nieuw tijdsvenster kan aangebroken zijn.\\
 
 TOTP maakt gebruikt van een HMAC. We gebruiken hier sha256 als onderliggend hashing algoritme omdat deze een bloklengte heeft van 512 bits. Dit is evenveel als het \emph{shared secret} (dit geldt ook voor de transactie)
