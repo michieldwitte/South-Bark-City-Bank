@@ -19,7 +19,7 @@ Online bankieren en bekijken van financi\"ele informatie op een computer is onmi
 \section{Beveiligingseisen}
 \label{sec:bev_eis}
 \begin{itemize}
-\item Privacy (tussen de gebruikers, de bank zelf moet kunnen verificeren dat het echt wel de juiste gebruiker is). De gebruiker moet kunnen vertrouwen dat de bank zijn/haar informatie geheim houd. Het limiteren van wie in de bank zelf aan welke informatie kan is hier van groot belang.
+\item Privacy (tussen de gebruikers, de bank zelf moet kunnen verificeren dat het echt wel de juiste gebruiker is). De gebruiker moet kunnen vertrouwen dat de bank zijn/haar informatie geheim houdt. Het limiteren van wie in de bank zelf aan welke informatie kan is hier van groot belang.
 \item Vertrouwelijkheid (encryptie van gevoelige informatie)
 \item Verificatie (is de informatie wel correct?)
 \item Authenticatie (praat je wel met de juiste server, praat de server wel met wie hij denkt te praten?)
@@ -42,7 +42,7 @@ Waarom wachtwoorden? Wat bewijzen wachtwoorden? Waarom zijn wachtwoorden een zwa
 
 \subsubsection{Vertrouwelijkheid op applicatie niveau}
 %TODO: bespreken van encryptie in de databank. 
-Informatie die de bank over de klant opslaat in de databank is volledig ge\"encrypteerd. Een echte bank zou gebruik maken van trusted hardware encryption in het datacenter zelf. Dit was voor ons geen optie. Er gebeurd dus encryptie van de data door de database zelf (AES 256). Wachtwoord opslag doen we met bcrypt \cite{bcrypt}\ref{sec:bcrypt}. Als alternatief hier konden we scrypt, dat gebruik maakt van "memory hard problems"\cite{scrypt}. Het verschil tussen beide is dat de snelheid van bcrypt afhankelijk is van "computational speed", terwijl memory hard function vereisen dat voor elke berekening een zekere hoeveelheid fysiek geheugen moet beschikbaar zijn. En geheugen is duurder dan cpu snelheid wat resulteert in betere veiligheid.
+Informatie die de bank over de klant opslaat in de databank is volledig ge\"encrypteerd. Een echte bank zou gebruik maken van trusted hardware encryption in het datacenter zelf. Dit was voor ons geen optie. Er gebeurt dus encryptie van de data door de database zelf (AES 256). Wachtwoord opslag doen we met bcrypt \cite{bcrypt}\ref{sec:bcrypt}. Als alternatief hier konden we scrypt, dat gebruik maakt van "memory hard functions"\cite{scrypt}, implementeren. Het verschil tussen beide is dat de snelheid van bcrypt afhankelijk is van "computational speed", terwijl memory hard functions vereisen dat voor elke berekening een zekere hoeveelheid fysiek geheugen beschikbaar is. Gezien geheugen duurder is dan cpu snelheid resulteert dit in betere veiligheid.
 
 \subsubsection{Vertrouwelijkheid op transport niveau}
 %TODO: bespreken van TLS/SSL en het probleem met MITM en CBC BEAST-attack op ssl3.0/tls1.0 (opgelost in TLS1.1 maar geen goeie adoptie (gebruik van RC4 is hier een oplossing)
@@ -78,7 +78,7 @@ Gekoppeld aan het gebruik van het systeem is een Android applicatie die we gebru
 
 De Android app maakt het ook mogelijk om aan bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als verificatie voor een transactie (we gaan hier later verder op in).
 
-Tijdens het opzetten van een account zal de gebruiker persoonlijke informatie aanbieden aan de bank (via een webformulier), deze informatie bevat onder meer een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn  woonplaats.\\
+Tijdens het opzetten van een account zal de gebruiker persoonlijke informatie aanbieden aan de bank (via een webformulier). Deze informatie bevat onder meer een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn  woonplaats.\\
 
 Voor deze informatie naar de server wordt gezonden zal op de gebruiker zijn computer het wachtwoord worden versterkt. Hiervoor maken we gebruik van een password based key derivation function \ref{sec:pbkdf2}\cite{death_of_clever} om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
 
@@ -89,14 +89,14 @@ We doen dit om de volgende redenen:
 \end{itemize}
 
 Deze informatie zal naar de server worden verzonden over een vertrouwlijk kanaal (ssl/tls). 
-Daarna maakt de server een \emph{shared secret} aan van 512 bits met fortuna \ref{sec:fortuna}. Dit shared secret word in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie wordt opgeslagen. Het \emph{shared secret} wordt eerst ge\"encrypteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot een plain text versie van het \emph{shared secret} als de gebruiker is ingelogd in het systeem. De andere informatie moet beschikbaar zijn, ook al is de gebruiker niet aanwezig, omdat de bank deze gegevens moet kunnen beheren.
+Daarna maakt de server een \emph{shared secret} aan van 512 bits met fortuna \ref{sec:fortuna}. Dit shared secret wordt in de database opgeslagen samen met de andere informatie en het default saldo van de gebruiker. Er is een belangrijk verschil in hoe deze informatie wordt opgeslagen. Het \emph{shared secret} wordt eerst ge\"encrypteerd met het wachtwoord dat de server ontvangt (de 256 bits output van de PBKDF2 functie). De reden hiervoor is dat de server enkel toegang mag hebben tot een plain text versie van het \emph{shared secret} als de gebruiker is ingelogd in het systeem. De andere informatie moet beschikbaar zijn, ook al is de gebruiker niet aanwezig, omdat de bank deze gegevens moet kunnen beheren.
 
 Password storage op de server wordt gedaan door het password eerst te onderwerpen aan bcrypt \ref{sec:bcrypt}. Bcrypt is een key derivation functie die is ontworpen met 2 doelstellingen:
 \begin{itemize}
 \item Introduceren van een salt om rainbow tables tegen te gaan.
 \item Meerdere rondes van encryptie met blowfish. Bcrypt maakt gebruik van een licht aangepaste key setup. Zowel het bericht (het wachtwoord) en de salt worden gebruikt om subkeys te maken. Het doel hiervan is om de hoeveelheid rekenkracht nodig om 1 wachtwoord te bepalen te doen stijgen. 
 \end{itemize}
-De reden dat we zowel hashen op de server als op de computer van de gebruiker is omdat op deze manier de server kan garanderen dat het nooit het wachtwoord van de gebruiker kent. De bank beschermt zich op deze manier tegen zichzelf \cite{pw_habit}. Daarna worden de "plain text" wachtwoorden ook nog eens veilig opgeslagen op de server met Bcrypt\cite{bcrypt}. Dit maakt het \emph{computational invisible} om de wachtwoorden te vinden met brute kracht.
+De reden dat we zowel hashen op de server als op de computer van de gebruiker is omdat op deze manier de server kan garanderen dat het nooit het wachtwoord van de gebruiker kent. De bank beschermt zich op deze manier tegen zichzelf \cite{pw_habit}. Daarna worden de "plain text" wachtwoorden ook nog eens veilig opgeslagen op de server met bcrypt\cite{bcrypt}. Dit maakt het \emph{computational invisible} om de wachtwoorden te vinden met brute kracht.
 
 Om een gebruiker uniek te identifieren wordt een unieke id aangemaakt die met de gebruiker zijn account wordt geassocieerd. Dit zal samen met het gekozen wachtwoord worden gebruikt als \'e\'en authenticatie factor van het multi-factor authenticatie proces.
 	
@@ -105,7 +105,7 @@ Het shared secret heeft een centrale rol in ons systeem. Het wordt gebruikt om v
 Het \emph{shared secret} wordt gedeeld tussen de gebruiker en de server. We communiceren dit aan de gebruiker door het \emph{shared secret} te encoderen als een QR-code en de smartphone app deze code te laten inlezen.\\
 %TODO: michiel: beschrijf hoe de app die opslaat. 
 Het \emph{shared secret} wordt op 2 manieren gebruikt. \\
-Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. Het wachtwoord wordt door de client terug door een PBKDF2 transformatie gestuurd en verzonden naar de server. Eerst wordt gecontroleerd of het wachtwoord correct is door Bcrypt te gebruiken en te vergelijken met het resulaat in de databank. Als de verificatie slaagt zal het origineel verzonden wachtwoord (de output van de PBKDF2 functie op de client) worden gebruikt om het \emph{shared secret} te decrypteren in de databank. Voor de rest van de sessie zal een  plain text versie van het \emph{shared secret} beschikbaar zijn op de server.
+Tijdens het inloggen moet de gebruiker zijn ID en gekozen wachtwoord ingeven. Het wachtwoord wordt door de client terug door een PBKDF2 transformatie gestuurd en verzonden naar de server. Eerst wordt gecontroleerd of het wachtwoord correct is door bcrypt te gebruiken en te vergelijken met het resulaat in de databank. Als de verificatie slaagt zal het origineel verzonden wachtwoord (de output van de PBKDF2 functie op de client) worden gebruikt om het \emph{shared secret} te decrypteren in de databank. Voor de rest van de sessie zal een  plain text versie van het \emph{shared secret} beschikbaar zijn op de server.
 
 Op dit moment beschikken zowel de server als de gebruiker over het shared secret. De server voert een \emph{challenge and response} protocol uit om te controleren of de gebruiker beschikt over het correcte \emph{shared secret}.\\
 
@@ -118,19 +118,19 @@ We merken op dat enkel de response een geldigheidsduur bevat in de response zelf
 
 Daarna gebruiken we een Time-Based One-Time Password Algorithm \ref{sec:totp} met als key het \emph{shared secret} en als tijd factor de 8 bytes ge-xored met de unix time. We herkennen het probleem dat ongeveer de 32 minst significante bits zullen worden be\"invloed door de tijd. Dit is niet echt een probleem omdat de overige bits ook random zijn.
 
-De gebruiker voert het Time-Based One-Time Password algoritme uit met als key het \emph{shared secret} en als message de 8 bytes. Het resultaat is een token van 8 digits lang die afhankelijk is van de server zijn \emph{challenge}, een tijdsfactor en het \emph{shared secret}. De gebruiker stuurt dit terug naar de server. De server beschikt over de zelfde informatie op de exacte tijd na, maar is in staat om het tijdsvenster van de response te controleren. We erkennen het probleem dat de tijd op de server en client kan verschillen. De server zal hier dan ook rekening mee houden.\\
+De gebruiker voert het Time-Based One-Time Password algoritme uit met als key het \emph{shared secret} en als message de 8 bytes. Het resultaat is een token van 8 digits lang die afhankelijk is van de server zijn \emph{challenge}, een tijdsfactor en het \emph{shared secret}. De gebruiker stuurt dit terug naar de server. De server beschikt over dezelfde informatie op de exacte tijd na, maar is in staat om het tijdsvenster van de response te controleren. We herkennen het probleem dat de tijd op de server en client kan verschillen. De server zal hier dan ook rekening mee houden.\\
 
 De tweede manier waarop het \emph{shared secret} wordt gebruikt is tijdens het authenticeren en het verif\"ieren van een transactie.
 
 \subsubsection{Verificatie en authenticatie van een transactie}
-Op het moment dat de gebruiker een transactie wil uitvoeren zal de server een hash-based message authenticatie code bepalen van de transactie (HMAC). Op dit moment is de gebruiker ingelogd en heeft het systeem toegang tot de plain text versie van het \emph{shared secret}. Dit \emph{shared secret} zal als key worden gebruikt (herinner dat het \emph{shared secret} 512 bits lang is). Als key voor het HMAC bericht wordt alle informatie in de transactie samen beschouwd (inclusief de tijd op het moment van de transactie zelf). \\
+Op het moment dat de gebruiker een transactie wil uitvoeren zal de server een hash-based message authenticatie code (HMAC) bepalen van de transactie. Op dit moment is de gebruiker ingelogd en heeft het systeem toegang tot de plain text versie van het \emph{shared secret}. Dit \emph{shared secret} zal als key worden gebruikt (herinner dat het \emph{shared secret} 512 bits lang is). Als key voor het HMAC bericht wordt alle informatie in de transactie samen beschouwd (inclusief de tijd op het moment van de transactie zelf). \\
 
 Het is enkel mogelijk om een geldige HMAC te bepalen van een transactie als de gebruiker is ingelogd en zijn \emph{shared secret} is gedecrypteerd.\\
 
 Deze HMAC kan later worden gebruikt als verificatie van de transactie, nl: "Het is enkel mogelijk dat deze HMAC is gemaakt met een plain text versie van het \emph{shared secret}". Dit impliceert dat de maker van de HMAC kennis moet hebben van het \emph{shared secret} in plain text, de bank heeft hiertoe enkel toegang als de gebruiker is ingelogd in het systeem.\\
 
 
-We gebruiken hier een HMAC in tegenstelling tot een gewone bericht authenticate om de length extension attack te voorkomen.\\
+We gebruiken hier een HMAC in plaats van gewone bericht authenticatie om de length extension attack te voorkomen.\\
 
 Eenmaal de HMAC is berekend nemen we de 64 minst significante bits en maken terug een QR-code en voeren we opnieuw het bovenstaande challenge en reponse protocol uit. Dit resulteert in transactie authenticatie. Dit bewijst enkel dat op het huidige moment een persoon met kennis van het \emph{shared secret} en de challenge (de 64 minst significante bits) deze transactie goedkeurt. Het systeem zal enkel een transactie uitvoeren als de response code geldig is. Dit slaan we ook op in de databank samen met de HMAC.
 \subsubsection{Account security assets}
@@ -139,12 +139,12 @@ Inloggen bestaat uit 2 fases: het aanbieden van het ID en wachtwoord en het uitv
 Bij drie foute login pogingen moet de gebruiker contact met de bank opnemen om zijn account te resetten. Dit houdt in dat een nieuwe \emph{shared secret} zal moeten worden aangemaakt.
 \subsection{Implementatie}
 \subsubsection{Android APP}
-De android app bevat ook het shared secert. Het is dus hier ook van groot belang dat dit veilig gebeurd. 
-De android app is beschermd met een 4 digit PIN. Het shared secret zelf is met AES geencrypteerd. 
+De android app bevat ook het shared secret. Het is dus hier ook van groot belang dat dit veilig gebeurt. 
+De android app is beschermd met een 4 digit PIN. Het shared secret zelf is met AES ge\"encrypteerd. 
 
-We herkennen het probleem dat, in tegenstelling tot andere banken we niet kunnen gebruik maken van speciale hardware tokens. Als de gebruiker controle verliest over zijn smartphone is het triviaal op de geencrypteerde shared secert op te zoeken in de app en deze met brute kracht de PIN proberen te achterhalen. 
+We herkennen het probleem dat we, in tegenstelling tot andere banken, geen gebruik kunnen maken van speciale hardware tokens. Als de gebruiker controle verliest over zijn smartphone is het triviaal om de ge\"encrypteerde shared secret op te zoeken in de app. Nu kunnen we met brute kracht de PIN proberen te achterhalen om zo het shared secret te weten te komen. 
 
-Als dit zou gebeuren dat bezit de aanvaller enkel en alleen 
+Als dit zou gebeuren dat bezit de aanvaller enkel en alleen het shared secret.
 \subsubsection{Random events}
 Random data is belangrijk. De 8 bytes login tokens en het \emph{shared secret} maken er gebruik van.
 De initi\"ele seed voor fortuna hangt dan ook af van externe factoren. We gebruiken hiervoor de system timer. Het verschil tussen 2 oproepen is meestal in de orde van $2^63$, maar aangezien het return type 64 bit is zal er dus vaak numurieke overflow zijn. Daarnaast gebruiken we nog het aantal beschikbare CPU's en fysiek geheugen dat beschikbaar is tijdens het opstarten van de applicatie.
@@ -158,18 +158,18 @@ We maken gebruik van het TOTP protocol beschreven in RFC 6238.
 $$ TOTP = Truncate(HMAC-SHA512(K,M))$$
 Waar $K$ het \emph{shared secret} is en $M$ de \emph{message} is die bestaat uit 8 bytes. Als de server een response code ontvangt controleert deze dat ze ofwel in het huidige tijdsvenster valt of in het tijdsvenster ervoor. We herkennen het probleem dat een tijdscode kan worden gemaakt naar het einde toe van het huidige tijdsvenster, zodat als de server de code verwerkt er al een nieuw tijdsvenster kan aangebroken zijn.\\
 
-TOTP maakt gebruikt van een HMAC. We gebruiken hier sha256 als onderliggend hashing algoritme omdat deze een blok lengte heeft van 512 bits. Dit is evenveel als het \emph{shared secret} (dit geldt ook voor de transactie)
+TOTP maakt gebruikt van een HMAC. We gebruiken hier sha256 als onderliggend hashing algoritme omdat deze een bloklengte heeft van 512 bits. Dit is evenveel als het \emph{shared secret} (dit geldt ook voor de transactie)
 \subsubsection{PBKDF2}
 \label{sec:pbkdf2}
 Omdat het wachtwoord van de gebruiker zal worden gebruikt als sleutel $S_{0}$ voor het encrypteren van het \emph{shared secret} op de server is het belangrijk dat deze sleutel de correcte lengte heeft en dat deze moeilijk te achterhalen zou zijn met brute kracht. De output van de PBKDF2 functie ($S_{0}$) is 256 bits die in zijn volledigheid naar de server wordt verstuurd.\\
 
-Het is hierbij van groot belang dat voor de server probeert het \emph{shared secret} te decrypteren met $S_{0}$ het eerst verifieert dat $S_{0}$ correct is door Bcrypt te gebruiken en te vergelijken met de waarde in de databank. Als dit niet gebeurt kan de integriteit van het systeem niet worden gegarandeerd. 
+Het is hierbij van groot belang dat alvorens de server probeert het \emph{shared secret} te decrypteren met $S_{0}$ het eerst verifieert dat $S_{0}$ correct is door bcrypt te gebruiken en te vergelijken met de waarde in de databank. Als dit niet gebeurt kan de integriteit van het systeem niet worden gegarandeerd. 
 \subsubsection{Bericht authenticatie}
 \label{sec:mac}
 Het is moeilijk om traditionele digitale handtekeningen te gebruiken omdat we moeten vertrouwen op informatie die de gebruiker intypt. Als alternatief maken we gebruik van authenticatie codes met een shared secret. Het probleem met hashes van de vorm $H(key || message)$ is dat deze kwetsbaar zijn voor een Length extension attack als gevolg van de Merkle–Damgard construction\cite{len_ext_attack}. Omwille van deze reden gebruiken we een HMAC voor bericht authentitcatie.
 \subsubsection{Account beveiliging}
 \label{sec:bev}
-Standaard beleid voor account reset en wachtwoord verlies. De gebruiker kan contact opnemen met de bank om zijn account te laten blokkeren of een nieuw \emph{shared secret} aan te vragen. Ook als de gebruiker 3 keer foutief inlogt zal zijn account worden geblokkeerd en moet er contact worden opgenomen met de bank.\\
+Standaard beleid voor account reset en wachtwoord verlies lijkt ons de beste optie. De gebruiker kan contact opnemen met de bank om zijn account te laten blokkeren of een nieuw \emph{shared secret} aan te vragen. Ook als de gebruiker 3 keer foutief inlogt zal zijn account worden geblokkeerd en moet er contact worden opgenomen met de bank.\\
 
 Het systeem houdt ook bij wie al is ingelogd, zodat een tweede login poging voor een sessie die bezig is zal worden gezien als een aanvalspoging.
 \section{Problemen}
@@ -181,7 +181,7 @@ Het is enkel mogelijk om in te loggen als de persoon beschikt over de correcte I
 
 Daarnaast hebben we ook nog de "something you have"-factor, met name het \emph{shared secret}. Enkel de gebruiker beschikt over deze informatie in de Android app. We herkennen het probleem dat de gebruiker deze informatie kan verliezen. Maar de app beschikt enkel over het \emph{shared secret}, niet over de gebruiker zijn ID of wachtwoord.\\
 
-Er kan eventueel het probleem zijn dat de gebruiker zijn machine gecompromitteerd is. Dit wil zeggen dat het ID en wachtwoord gekend zijn. Het is voor een aanvaler niet mogelijk om informatie over het \emph{shared secret} te halen uit de response van de gebruiker. Ook kan deze response niet worden herbruikt want zodra de response gemaakt wordt krijgt ze een waarde in het protocol en de versheid wordt beschermd door de tijd.
+Er kan eventueel het probleem zijn dat de gebruiker zijn machine gecompromitteerd is. Dit wil zeggen dat het ID en wachtwoord gekend zijn. Het is voor een aanvaler niet mogelijk om informatie over het \emph{shared secret} te halen uit de response van de gebruiker. Ook kan deze response niet opnieuw worden gebruikt want zodra de response gemaakt wordt krijgt ze een waarde in het protocol en de versheid wordt beschermd door de tijd.
 
 \subsubsection{Authenticatie en verificatie van transacties}
 We beschouwen twee delen in dit proces:
