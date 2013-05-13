@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  13 MAY 2013 21:38
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.9.6)  13 MAY 2013 21:47
 entering extended mode
  %&-line parsing enabled.
 **verslag.tex
@@ -226,10 +226,6 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-
-LaTeX Warning: Reference `sec:bcrypt' on page 2 undefined on input line 45.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 59--62
 
  []
@@ -375,7 +371,7 @@ c/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
 m/cmr8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
 </usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share
 /texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on verslag.pdf (11 pages, 289030 bytes).
+Output written on verslag.pdf (11 pages, 289002 bytes).
 PDF statistics:
  269 PDF objects out of 1000 (max. 8388607)
  61 named destinations out of 1000 (max. 500000)
