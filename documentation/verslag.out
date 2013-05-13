@@ -1,0 +1,27 @@
+\BOOKMARK [1][-]{section.1}{Inleiding}{}
+\BOOKMARK [1][-]{section.2}{Beveiligingseisen}{}
+\BOOKMARK [2][-]{subsection.2.1}{Beveiliging aanvalsvectoren}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Authenticatie van entititen op applicatie niveau}{subsection.2.1}
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Vertrouwelijkheid op applicatie niveau}{subsection.2.1}
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Vertrouwelijkheid op transport niveau}{subsection.2.1}
+\BOOKMARK [2][-]{subsection.2.2}{Mechanismen om te voldoen aan Beveiligingseisen}{section.2}
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Multi-factor authentication}{subsection.2.2}
+\BOOKMARK [1][-]{section.3}{Architectuur en Implementatie}{}
+\BOOKMARK [2][-]{subsection.3.1}{Architectuur}{section.3}
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Shared secret}{subsection.3.1}
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Challenge and response}{subsection.3.1}
+\BOOKMARK [3][-]{subsubsection.3.1.3}{Verificatie en authenticatie van een transactie}{subsection.3.1}
+\BOOKMARK [3][-]{subsubsection.3.1.4}{Account security assets}{subsection.3.1}
+\BOOKMARK [2][-]{subsection.3.2}{Implementatie}{section.3}
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Android APP}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Random events}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Fortuna}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.4}{Time-based One-time Password Algorithm}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.5}{PBKDF2}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.6}{Bericht authenticatie}{subsection.3.2}
+\BOOKMARK [3][-]{subsubsection.3.2.7}{Account beveiliging}{subsection.3.2}
+\BOOKMARK [1][-]{section.4}{Problemen}{}
+\BOOKMARK [2][-]{subsection.4.1}{Algemene problemen en hun oplossingen}{section.4}
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Inlog procedure}{subsection.4.1}
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Authenticatie en verificatie van transacties}{subsection.4.1}
+\BOOKMARK [1][-]{section.5}{Conclusie en observaties}{}
