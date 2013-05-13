@@ -58,9 +58,9 @@ Implementatie/algoritmische fouten zijn fouten die ge\"introduceerd zijn door he
 
 Om het eerste probleem op te lossen maken we gebruik van een browser feature met de naam STS (strict-transport-security). Dit is een web security policy waarbij een webserver verklaart aan web clients dat het enkel en alleen maar mag benaderd worden via een HTTPS-verbinding. HSTS heeft vele features. E\'en van deze features is dat van zodra er een fout is met het certificaat de browser zal weigeren verbinding te maken met de website. De gebruiker kan deze waarschuwing niet negeren. We merken op dat het nog steeds mogelijk is om tijdens de eerste initiele handshake het slachtoffer te worden van een MITM-aanval. Het is dan ook aangeraden om contact op te nemen met browser vendors en op de preloaded HSTS sites lijst te komen. \cite{HSTS} \cite{STS} \cite{prehsts}
 \newline
-Daarnaast is er een probleem bij het gebruik van CBC-encryption mode bij SSL3.0/TLS1.0. CBC mode in SSL3.0/TLS1.0 maakt gebruik van chained initialization vectors die het mogelijk maken een MITM aanval uit te voeren door een blockwise chosen-boundary aaval uit te voeren. Het resultaat is dat HTTP headers leesbaar worden en een deel vertrouwelijkheid verloren gaat.\cite{BEAST} \\
+Daarnaast is er een probleem bij het gebruik van CBC-encryption mode bij TLS1.0/SSL3.0. CBC mode in TLS1.0/SSL3.0 maakt gebruik van chained initialization vectors die het mogelijk maken een MITM aanval uit te voeren door een blockwise chosen-boundary aaval uit te voeren. Het resultaat is dat HTTP headers leesbaar worden en een deel vertrouwelijkheid verloren gaat.\cite{BEAST} \\
 
-Bovendien is het mogelijk voor een hacker om session-hijacking te doen op een SSL/TLS verbinding als de verbinding compressie gebruikt. Bij deze aanval gaat niet enkel de vertrouwelijkheid verloren maar ook de authenticiteit van beide eindpunten is verloren. \cite{CRIME}\\
+Bovendien is het mogelijk voor een hacker om session-hijacking te doen op een TLS/SSL verbinding als de verbinding compressie gebruikt. Bij deze aanval gaat niet enkel de vertrouwelijkheid verloren maar ook de authenticiteit van beide eindpunten is verloren. \cite{CRIME}\\
 
 Verder is er ook nog een probleem met TLS/SSL renegotiation wat kan resulteren in het verliezen van vertrouwelijkheid. \cite{reg}
 
