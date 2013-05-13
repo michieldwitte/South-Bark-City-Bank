@@ -3,7 +3,7 @@
 \usepackage{hyperref}
 \setlength{\parindent}{0cm}
 %Gummi|061|=)
-\title{\textbf{Beveiliging voor online banking}}
+\title{\textbf{Beveiliging voor online bankieren}}
 \author{Sander Demeester\\
 		Michiel De Witte\\
 		Stef Trenson}
@@ -13,39 +13,36 @@
 \maketitle
 
 \section{Inleiding}
-Online bankieren en bekijken van Financi\"ele informatie op een computer is onmisbaar in de digitale wereld van vandaag. Goeie beveiligingsmechanisme zijn dus van een cruciaal belang voor deze system. 
+Online bankieren en bekijken van financi\"ele informatie op een computer is onmisbaar in de digitale wereld van vandaag. Goeie beveiligingsmechanisme zijn dus van een cruciaal belang voor deze systemen. 
 
 \section{Beveiligingseisen}
 \label{sec:bev_eis}
 \begin{itemize}
-\item Privacy (tussen de gebruikers, de bank zelf moet kunnen verificeren dat het echt wel de juiste gebruiker is). De gebruiker moet kunnen vertrouwen dat de bank zijn/haar informatie geheim houd. Het limeteren van wie in de bank aan welke informatie kan is hier van groot belang.
-\item Vertrouwelijkheid (encryptie van informatie)
+\item Privacy (tussen de gebruikers, de bank zelf moet kunnen verificeren dat het echt wel de juiste gebruiker is). De gebruiker moet kunnen vertrouwen dat de bank zijn/haar informatie geheim houd. Het limiteren van wie in de bank zelf aan welke informatie kan is hier van groot belang.
+\item Vertrouwelijkheid (encryptie van gevoelige informatie)
 \item Verificatie (is de informatie wel correct?)
 \item Authenticatie (praat je wel met de juiste server, praat de server wel met wie hij denkt te praten?)
 \item Worden betalingen en transacties correct uitgevoerd. Is er niet repudiation?
-\item Systeem vertrouwen/persoonvertrouwen (vertrouw je iedereen die werkt in uw bank met uw gegevens).
+\item Systeem vertrouwen/persoonvertrouwen (vertrouw je iedereen die werkt in uw bank met uw gegevens). 
 \item Cryptografische functies moeten veilig zijn. Maar correct gebruik in het grotere systeem is belangrijker.
-
 \end{itemize}
 We maken het onderscheid tussen 2 belangrijke zaken. nl: 
 \begin{itemize}
-\item vertrouwelijkheid van gegevens
-\item Authenticatie van entiteiten met een zoon hoog mogelijke zekerheid van identificatie van beide actoren (server,client).
+\item Vertrouwelijkheid van gegevens.
+\item Authenticatie van entiteiten met een zo'n hoog mogelijke zekerheid van hun identiteit. 
 \end{itemize}
 \subsection{Beveiliging aanvalsvectoren}
 %TODO: Hier bekijken we het threat model. Waar beschermen we tegen en vooral waar beschermen we niet tegen
-We analyseren het \" threat model \" van ons systeem. Aan de hand van onze applicatie-eisen zullen we een threat model opstellen en proberen mogelijke aanvalsvectoren te identificeren. We herkennen dat zoiets als "perfecte beveiling niet bestaat". Er zijn altijd meerdere partijen betrokken bij het systeem en foutief gedrag van een partij kan leiden tot een gecompromitteerd systeem. Ons doel is een voldoende beveiling te garanderen voor onze resources.
+We analyseren het "threat model" van ons systeem. We doen dit aan de hand van onze applicatie-eisen. We zullen proberen mogelijke aanvalsvectoren te identificeren. We herkennen dat zoiets als "perfecte beveiling" niet bestaat. Er zijn altijd meerdere partijen betrokken bij het systeem die we niet kunnen controleren en foutief gedrag van een partij kan leiden tot een gecompromitteerd systeem. Ons doel is een voldoende beveiling te garanderen voor onze resources.
 \subsubsection{Authenticatie van entititen op applicatie niveau}
 %TODO: bespreken wachtwoorden en andere mechanismes voor authenticatie en verificatie
 %Opnemen van multifactor authenticatie en hun nut (something you are, something you know, something you have).
-Waarom wachtwoorden? Wat bewijzen wachtwoorden? Waarom zijn wachtwoorden een zwake vorm van authenticatie? Het belangt van OTP en het belang van een niet statische 2de factor.
-
-\subsubsection{Denial of Service}
-%TODO: bespreken van DoS aanvallen op server
+Waarom wachtwoorden? Wat bewijzen wachtwoorden? Waarom zijn wachtwoorden een zwake vorm van authenticatie? Het belangt van OTP en het belang van een niet statische tweede factor. \cite{death_of_clever}\cite{pw_habit}
 
 \subsubsection{Vertrouwelijkheid op applicatie niveau}
 %TODO: bespreken van encryptie in de databank. 
-Bespreken van bcrypt, scrypt. Memory hard problems. Waarom encrypteren op de client en op de server kant (omdat de bank nooit zelf zou beschikken over het originele wachtwoord dat de gebruiker elder zou hergebruiken).
+Informatie die de bank over de klant opslaat in de databank is volledig ge\"encrypteerd. Een echte bank zou gebruik maken van trusted hardware encryption in het datacenter zelf. Dit was voor ons geen optie. Wachtwoord opslag doen we met bcrypt \cite{bcrypt}\ref{sec:bcrypt}. Een alternatief hier kon het gebruikt van scrypt zijn die gebruik maakt van "memory hard problems"\cite{scrypt}.
+Bespreken van bcrypt, scrypt. Memory hard problems. Waarom encrypteren op de client en op de server kant (omdat de bank nooit zelf zou beschikken over het originele wachtwoord dat de gebruiker elders zou hergebruiken).
 
 \subsubsection{Vertrouwelijkheid op transport niveau}
 %TODO: bespreken van TLS/SSL en het probleem met MITM en CBC BEAST-attack op ssl3.0/tls1.0 (opgelost in TLS1.1 maar geen goeie adoptie (gebruik van RC4 is hier een oplossing)
@@ -53,21 +50,27 @@ Bespreken van bcrypt, scrypt. Memory hard problems. Waarom encrypteren op de cli
 TLS/SSL is de manier om vandaag vertrouwelijkheid te realiseren op transport/netwerk laag. We kunnen 2 groepen van problemen onderscheiden.
 
 \begin{itemize}
-\item Menselijke fouten
-\item Implementatie/algoritmische fouten
+\item Menselijke fouten.
+\item Implementatie/algoritmische fouten.
 \end{itemize}
-
 Menselijke fouten is het negeren van browser waarschuwingen en phishing emails niet te negeren.
-Implementatie/algoritmische fouten zijn fouten die geintroduceerd zijn door het beveiligingssysteem zelf of door slechte configuratie van het systeem. Zoals het gebruik van md5 voor digital signatures bij ssl/tls (md5 second-preimage resistance is gebroken).
-Daarnaast is er een probleem bij het gebruikt van CBC-encryption mode bij ssl3.0/tls1.0. CBC mode in ssl2.0/tls1.0 maakt gebruik van chained initialization vectors die het mogelijk maken een MITM aanval uit te voeren door een blockwise chosen-boundary aaval uit te voeren. Het resultaat is dat HTTP headers leesbaar worden en een deel vertrouwelijkheid verloren gaat. \\
+Implementatie/algoritmische fouten zijn fouten die geintroduceerd zijn door het beveiligingssysteem zelf of door slechte configuratie van het systeem. Zoals het gebruik van md5 voor digital signatures bij TLS/SSL (md5 second-preimage resistance is gebroken).
 
-Daarnaast is het mogelijk voor een hacker om session-hijacking te doen op een ssl/tls verbinding als de verbinding compressie gebruikt. Bij deze aanval gaat niet enkel de vertrouwelijkheid verloren maar ook de authenticiteit van beide eindpunten is verloren.
+Om het eerste probleem op te lossen maken we gebruik van een browser feature met de naam STS (strict-transport-security). Dit is een web security policy waarbij een webserver verklaart aan web clients dat het enkel en alleen maar mag benaderd worden via een HTTPS-verbinding. HSTS heeft vele features, een van deze features is dat van zodra er een fout is met certificaat zal de browser weigeren verbinding te maken met de website, de gebruiker kan de waarschuwing niet negeren.
 
+Daarnaast is er een probleem bij het gebruikt van CBC-encryption mode bij SSL3.0/TLS1.0. CBC mode in SSL3.0/TLS1.0 maakt gebruik van chained initialization vectors die het mogelijk maken een MITM aanval uit te voeren door een blockwise chosen-boundary aaval uit te voeren. Het resultaat is dat HTTP headers leesbaar worden en een deel vertrouwelijkheid verloren gaat.\cite{BEAST} \\
+
+Daarnaast is het mogelijk voor een hacker om session-hijacking te doen op een SSL/TLS verbinding als de verbinding compressie gebruikt. Bij deze aanval gaat niet enkel de vertrouwelijkheid verloren maar ook de authenticiteit van beide eindpunten is verloren. \cite{CRIME}\\
+
+Daarnaast is er ook nog een probleem met TLS/SSL renegotiation wat kan resulteren in het verliezen van vertrouwelijkheid. \cite{reg}
+
+Het correct opzetten van een TLS/SSL webserver is niet triviaal. Ondersteuning voor oudere versies van TLS/SSL moet worden uitgezet. En we opteren ook om RC4 als eerste keuze te gebruiken in onze Cipher suite.
 \subsection{Mechanismes om te voldoen aan Beveiligingseisen}
 op welke manieren probeert ons syteem te voldoen aan de beveiligingseisen die worden gesteld.
 
 \subsubsection{Multi-factor authentication}
-Dit is de notie van \"something you have and something you know \". 
+Dit is de notie van "something you have and something you know ". 
+\cite{multi_f}
 Het traditioneel gebruik van wachtwoorden is niet voldoende. Wachtwoorden worden hergebruikt en zijn een single point of failure voor een authenticatie systeem. We moeten dus gebruik maken van een extra factor waar beide entititen (zowel de bank als de klant) weet van moeten hebben. Het is belangrijk dat deze factor onafhankelijk is van het systeem en niet berust op de gebruiker om iets te moeten onthouden (zoals een wachtwoord). Deze werkwijze neemt meestal de vorm aan van een hardware token. Omdat het niet mogelijk was zelf hardware tokens te maken hebben we een android app ontworpen om een deel van deze functionaliteit te simuleren.
 \section{Architectuur en Implementatie}
 \subsection{Architectuur}
@@ -75,9 +78,9 @@ Gekoppeld aan het gebruik van het systeem is een android app die we gebruiken vo
 
 De android app maakt het ook mogelijk om aan bericht authenticatie te doen in de vorm van een HMAC die we zullen gebruiken als verificatie voor een transactie (we gaan hier later verder op in).
 
-Tijdens het opzetten van een account zal de gebruiker persoonlijke informatie aanbieden aan de bank (via een web formulier), deze informatie bevat onder meer een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn email adres en woonplaats.\\
+Tijdens het opzetten van een account zal de gebruiker persoonlijke informatie aanbieden aan de bank (via een web formulier), deze informatie bevat onder meer een door de gebruiker gekozen wachtwoord en persoonlijke informatie zoals zijn  woonplaats.\\
 
-Voor deze informatie naar de server wordt overbracht zal op de gebruiker zijn computer het wachtwoord worden versterkt. We maken gebruik van een password based key derivation function \ref{sec:pbkdf2} om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
+Voor deze informatie naar de server wordt overbracht zal op de gebruiker zijn computer het wachtwoord worden versterkt. We maken gebruik van een password based key derivation function \ref{sec:pbkdf2}\cite{death_of_clever} om het wachtwoord te verlengen naar 256 bits (de salt is de hash van het zelfde wachtwoord). 
 
 We doen dit voor de volgende redenen.
 \begin{itemize}
@@ -93,7 +96,7 @@ Password storage op de server wordt gedaan door het password eerst te onderwerpe
 \item Introduceren van een salt om rainbow tables tegen te gaan.
 \item Meerdere rondes van encryptie met blowfish. Bcrypt maakt gebruik van een licht aangepaste key setup. Zowel het bericht (het wachtwoord) en de salt worden gebruikt om subkeys te maken. Het doel hiervan is om de hoeveel rekenkracht nodig om 1 wachtwoord te bepalen te doen stijgen. 
 \end{itemize}
-De reden dat we zowel hashen op de server als op de computer van de gerbuiker is omdat op deze manier server kan garanderen dat het nooit het wachtwoord van de gebruiker kent. De bank beschermt zich op deze manier tegen zichzelf. Daarna worden de \"plain text\" wachtwoorden ook nog eens veilig opgeslagen op de server met bcrypt. Dit maakt het \emph{computational invisible} om de wachtwoorden te brute forcen.
+De reden dat we zowel hashen op de server als op de computer van de gebruiker is omdat op deze manier server kan garanderen dat het nooit het wachtwoord van de gebruiker kent. De bank beschermt zich op deze manier tegen zichzelf \cite{pw_habit}. Daarna worden de "plain text" wachtwoorden ook nog eens veilig opgeslagen op de server met bcrypt\cite{bcrypt}. Dit maakt het \emph{computational invisible} om de wachtwoorden te vinden met brute kracht.
 
 Om een gebruiker uniek te identifieren wordt een unique id aangemaakt die met de gebruiker zijn account wordt geassocieerd. Dit zal, samen met het gekozen wachtwoord worden gebruikt als één authenticatie factor van het multifactor authenticatie proces.
 	
@@ -109,9 +112,9 @@ Op dit moment beschikken zowel de server als de gebruiker over het shared secret
 \subsubsection{Challenge and response}
 De manier waarop de server dit doet is de volgende, de server genereerd 8 random bytes gebruik makende van fortuna \ref{sec:fortuna}. Deze 8 random bytes worden in de vorm van een QR-code aan de client gepresenteerd. De client gebruikt de smartphone app om deze 8 random bytes te verwerken op de volgende manier.\\
 
-De 8 random bytes worden ge-xored met de unix time. Daarna introduceren we een  tijdsraam van 30 seconden waarin de response geldig zal zijn.\\
+We nemen de unix time en introduceren een tijdsraam van 30 seconden. Daarna xoren we de 8 random bytes met de unix time.
 
-We merken op dat de response afhankelijk is van de tijd (niet de challenge). De reden hiervoor is omdat we vanaf een response is gemaakt deze een vorm van informatie is voor de huidige inlog procedure. Voordat de response is gemaakt  heeft de challenge geen waarde.\\
+We merken op dat enkel de response een geldigheidsduur bevat in de response zelf. Dit is niet het geval voor de challenge. De reden is dat de response een waarde heeft in het systeem, het is nl de tweede factor. Een bovengrens voor de tijd op de server is natuurlijk de tijd tegen dat de http sessie verloopt.
 
 Daarna gebruiken we een Time-Based One-Time password Algorithm \ref{sec:totp} met als key het \emph{shared secret} en als tijd factor de 8 bytes ge-xored met de unix time. We herkennen het probleem dat ongeveer de 32 minst significaten bits zullen worden beinvloed door de tijd. Dit is niet echt een probleem omdat de overige bits ook random zijn.
 
@@ -124,7 +127,7 @@ Op het moment dat de gebruiker een transactie wil uitvoeren zal de server een ha
 
 Het is enkel mogelijk om een geldige HMAC te bepalen van een transactie als de gebruiker is ingelogd en zijn \emph{shared secret} is gedecrypteerd.\\
 
-Deze HMAC kan later worden gebruikt als verificatie van de transactie, nl: "Het is enkel mogelijk da deze HMAC is gemaakt met een plain text versie van het \emph{shared secret}". Dit impliceerd dat de maker van de HMAC kennis moet hebben van het \emph{shared secret} in plain text, de bank heeft hiertoe enkel toegang als de gebruiker is ingelogd in het systeem.\\
+Deze HMAC kan later worden gebruikt als verificatie van de transactie, nl: "Het is enkel mogelijk dat deze HMAC is gemaakt met een plain text versie van het \emph{shared secret}". Dit impliceerd dat de maker van de HMAC kennis moet hebben van het \emph{shared secret} in plain text, de bank heeft hiertoe enkel toegang als de gebruiker is ingelogd in het systeem.\\
 
 
 We gebruiken hier een HMAC in tegenstelling tot een gewone bericht authenticate om de length extension attack te voorkomen.\\
@@ -146,10 +149,10 @@ De reden waarom we hebben gekozen voor fortuna als PRNG is voor de entropy accum
 \label{sec:totp}
 We maken gebruik van het TOTP protocol beschreven in RFC 6238.
 $$ TOTP = Truncate(HMAC-SHA512(K,M))$$
-Waar $K$ het \emph{shared secret} is en $M$ de \emph{message} is die bestaande uit 8 bytes. Als de server een response code ontvangt controleerd deze dat ze ofwel valt in het hudige tijdsvenster of in het tijdsvenster ervoor. We herkennen het probleem dat een tijdscode kan worden gemaakt naar het einde toe van het huidige tijdsvenster, en tegen dat de server de code verwerkt er al een nieuwe tijdsvenster kan aangebroken zijn.\\
+Waar $K$ het \emph{shared secret} is en $M$ de \emph{message} is die bestaande uit 8 bytes. Als de server een response code ontvangt controleerd deze dat ze ofwel valt in het huidige tijdsvenster of in het tijdsvenster ervoor. We herkennen het probleem dat een tijdscode kan worden gemaakt naar het einde toe van het huidige tijdsvenster, en tegen dat de server de code verwerkt er al een nieuwe tijdsvenster kan aangebroken zijn.\\
 
 TOTP maakt gebruikt van een HMAC, we gebruiken hier sha256 als onderliggend hashing algoritme omdat deze een blok lengte heeft van 512 bits, wat evenveel als het \emph{shared secret} (dit geld ook voor de transactie)
-\subsubsection{PBBKDF2}
+\subsubsection{PBKDF2}
 \label{sec:pbkdf2}
 Omdat het wachtwoord van de gebruiker zal worden gebruikt als sleutel $S_{0}$ voor het encrypteren van het \emph{shared secret} op de server is het belangrijk dat deze sleutel de correcte lengte heeft en dat deze moeilijk te achterhalen zou zijn met brute kracht. De output van de PBKDF2 functie ($S_{0}$) is 256 bits die in zijn volledigheid naar de server wordt verstuurd.\\
 
@@ -181,7 +184,7 @@ Verificatie in de hudige tijd gebeurd door een combinatie van 2 dingen, nl: De g
 
 Verificatie van een transactie op een later tijdstip kan worden gedaa als de gebruiker het \emph{shared secret} op de server decrypteerd. En enkel de gebruiker kon deze transactie doen want enkel hij beschikt over het wachtwoord om de bank toegang te geven zijn \emph{shared secret}. Daarnaast moeten alle stappen van het systeem worden uitgevoerd alsvoor het mogelijk is een transactie uit te voeren. Dus moet authenticatie ooit hebben plaats gevonden.
 \section{Conclusie en observaties}
-"Information security is hard". Er zijn altijd factoren in het spel waarmee we geen rekening kunnen houden. En om te zeggen dat onze beveiling perfect is, of te zeggen dat ze goed is zou onze eerste grote fout zijn. Wat we kunnen doen is hopen. Hopen dat onze beveiliging "goed genoeg" is. We moeten altijd de veronderstelling maken dat er fouten zijn. Fouten die niet zullen worden door ons of door de aanvallers.
+"Information security is hard". Er zijn altijd factoren in het spel waarmee we geen rekening kunnen houden. En om te zeggen dat onze beveiling perfect is, of te zeggen dat ze goed is zou onze eerste grote fout zijn. Wat we kunnen doen is hopen. Hopen dat onze beveiliging "goed genoeg" is.We moeten steeds veronderstellen dat er fouten zijn, die noch door ons noch door de aanvallers gevonden zullen worden.
 \begin{thebibliography}{9}
 
 \bibitem{CRIME}
@@ -191,8 +194,12 @@ Verificatie van een transactie op een later tijdstip kan worden gedaa als de geb
   2nd Edition,
   2002.
 \bibitem{BEAST}
-	Juliano Rizzo and Thai Duong,
+	Juliano Rizzo en Thai Duong,
 	\emph{Browser Exploit Against SSL/TLS}. De "BEAST"-attack.
+\bibitem{reg}
+	\emph{Protect your server against TLS renegotiation and man-in-the-middle vulnerabilities.}
+	\url{https://www.digicert.com/news/2011-06-03-ssl-renego.htm}
+
 \bibitem{TOTP}
 	 D. M'Raihi,  S. Machani, M. Pei en  J. Rydell,
 	 \emph{TOTP: Time-Based One-Time Password Algorithm}
@@ -209,17 +216,21 @@ Verificatie van een transactie op een later tijdstip kan worden gedaa als de geb
 	Bruce Schneier
 	\emph{Applied cryptography}
 \bibitem{CE}
-	Niels Ferguson, Bruce Schneier, and Tadayoshi Kohno
+	Niels Ferguson, Bruce Schneier, and Tadayoshi Kohno,
 	\emph{Cryptography Engineering: Design Principles and Practical Applications}
 \bibitem{bcrypt}
-	Niels Provos en David Mazieres
+	Niels Provos en David Mazieres,
 	\emph{Future-Adaptable Password Scheme - OpenBSD}
+\bibitem{scrypt}
+	Colin Percival,
+	\emph{Stronger Key Derivation via Sequential Memory-hard functions}
+	\url{www.tarsnap.com/scrypt/scrypt.pdf}
 \bibitem{multi_f}
 	Jon Oberheide,
 	\emph{Multi-factor authentication Past, Present and future}.\\
 	CTO, Scio Security
 \bibitem{pbkdf2}
-	Meltem sonmez turan, Elainse barker, Wiliam burr en Lily chen	
+	Meltem sonmez turan, Elainse barker, Wiliam burr en Lily chen,
 	\emph{Recommandations for password-based key derivation}\\
 	\url{http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf}
 \bibitem{death_of_clever}
@@ -228,10 +239,17 @@ Verificatie van een transactie op een later tijdstip kan worden gedaa als de geb
 	BLU.org 2012-09-19. \\
 	\url{blu.org/meetings/2012/09/Passwords.pdf‎}
 \bibitem{forward_secret}
-	Gene Itkis
+	Gene Itkis,
 	\emph{Forward security: Adaptive Cryptograpy: Time evolution}
 	Computer Sience Department, Boston University.\\
 	\url{http://www.cs.bu.edu/~itkis/pap/forward-secure-survey.pdf}
 	
+\bibitem{pw_habit}
+	Dinei Florencio en Cormac Herley,
+	\emph{A Large-Scale Study of Web Password Habits}
+	Microsoft Research.\\
+	\url{https://research.microsoft.com/pubs/74164/www2007.pdf}
+	
+
 \end{thebibliography}
 \end{document}
