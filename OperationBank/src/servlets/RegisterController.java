@@ -110,19 +110,6 @@ public class RegisterController extends HttpServlet {
 			return;
 		}
 		
-		//TODO: verwijderen van debug output
-		String test = "sander demeester";
-		String enc = AES.getInstance().encryptMessage(password.getBytes(),test);
-		System.out.println(enc);
-		String dec = "";
-		try {
-			dec = AES.getInstance().decryptMessage(password.getBytes(),enc);
-		} catch (DecoderException e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println(enc);
-		System.out.println(dec);
 		generatePdf.createPDF(response, GUUID, new String(Hex.encodeHex(shared_secret)));
 	}
 
