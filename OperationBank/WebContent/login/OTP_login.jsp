@@ -26,7 +26,7 @@
 <div id="header"><img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" /></div>
 <div id="content">
 	<h1>Login</h1>
-	<p class="center">Scan onderstaande QR code met uw smartphone applicatie.</p>
+	<p class="center">Scan following QR code with the smartphone application.</p>
 	<p class="center">
 		<%
 			ByteArrayOutputStream baout = QRCode
@@ -37,7 +37,6 @@
 
 		<img src="data:image/jpg;base64,<%=image%>" alt="qrcode" />
 	</p>
-	<p>
 	<form name="response_form" method="post" action="/OperationBank/OTPController">
 		<table class="middle">
 			<tr>
@@ -52,7 +51,6 @@
 			</tr>
 		</table>
 	</form>
-	</p>
 	</div>
 </div>
 </body>

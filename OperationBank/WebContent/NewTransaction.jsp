@@ -4,6 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>New Transaction</title>
 </head>
@@ -11,17 +12,14 @@
 <%
 		Status.check(request, response);
 %>
-		<center>
-		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
+<div id="wrap">
+	<div id="header"><img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" /></div>
+	
+	<div id="content">
 	<a href="ViewTransactions">Transactions</a>
 	<a href="LogOut.jsp">Logout</a>
 
-	<table>
+	<table class="middle">
 		<tr>
 			<td>
 				<form name="form1" method="post" action="VerifyTransaction">
@@ -46,6 +44,7 @@
 			</td>
 		</tr>
 	</table>
-	
+	</div>
+	</div>
 </body>
 </html>

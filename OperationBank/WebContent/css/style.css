@@ -1,11 +1,11 @@
 #wrap
 {
 	width:728px;
-	background:#A4A4A4;
+	background:#5882FA;
 	margin-left: auto ;
   	margin-right: auto ;
   	height:750px;
-  	font:calibre;
+  	font-family:"Verdana";
 }
 
  #content
@@ -17,11 +17,16 @@
  {
  	margin-top: 50px;
  }
+ 
+ #registertable
+ {
+ 	text-align:right;
+ }
 fieldset
 {
 	border:1;
 	border-color:#848484;
-	width: 300px;
+	width: 310px;
 }
 
 legend
@@ -29,7 +34,7 @@ legend
 	font-size: 20px;
 }
 
-td
+.right
 {
 	text-align:right;
 }
@@ -47,5 +52,10 @@ td
 
 h1
 {
+	text-align:center;
+}
+#passwordAlert
+{
+	color:red;
 	text-align:center;
 }

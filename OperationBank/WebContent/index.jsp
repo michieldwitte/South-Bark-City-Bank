@@ -121,11 +121,11 @@ BigInteger.prototype.getString = function(){
 					<legend>Login</legend>
 						<table>
 							<tr>
-								<td><label for="username">Username :</label></td>
+								<td><label for="username">Username</label></td>
 								<td><input name="username" type="text" id="GUUID" size="30"></td>
 							</tr>
 							<tr>
-								<td><label for="password">Password :</label></td>
+								<td><label for="password">Password</label></td>
 								<td><input name="password" type="password" id="passwd"
 									size="30"></td>
 							</tr>
@@ -141,7 +141,7 @@ BigInteger.prototype.getString = function(){
 			<fieldset class="middle">
 		
 					<legend>Register</legend>
-					Register now and receive 500 dorra for free !
+					Register now and receive 500 dorra for free!
 					<a href="register/register.jsp">Click here to register.</a>
 				</fieldset>
 		</div>
