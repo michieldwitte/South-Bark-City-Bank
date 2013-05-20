@@ -21,6 +21,8 @@
 	<a href="LogOut.jsp">Logout</a>
 	<a href="NewTransaction.jsp">Create a new Transaction</a>
 	
+	<p>Balance:  <% out.print(request.getAttribute("balance").toString()); %></p>
+	
 	<table class="middle">
 		<tr>
 			<td>amount</td>
