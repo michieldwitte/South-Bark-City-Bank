@@ -1,7 +1,10 @@
 #wrap
 {
 	width:728px;
-	background:#5882FA;
+	border-width:3px;
+  	border-style:solid;
+  	border-color:#6E6E6E;
+  	background-color:#F2F2F2;
 	margin-left: auto ;
   	margin-right: auto ;
   	height:750px;

@@ -116,6 +116,12 @@ $("#reg").on("click", function() {
 </table>
 </form>
 <div id="passwordAlert"></div>
+
+<br />
+<br />
+<br /><br />
+<br />
+<a href="../index.jsp">Return Home</a>
 </div>
 </div>
 </body>
