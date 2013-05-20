@@ -5,6 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="../css/style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Register</title>
 <script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
@@ -49,19 +50,13 @@ $("#reg").on("click", function() {
 		}
 	}
 %>
-	<center>
-		<img alt="SouthBarkCityBank" src="../SouthBarkCityBank.jpg"/>
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
-	
+<div id="wrap">
+	<div id="header"><img alt="SouthBarkCityBank" src="../SouthBarkCityBank.jpg"/></div>
+
+<div id="content">
+<h1>Register</h1>
 <form method="POST" action="/OperationBank/RegisterController">
-<table>
-		<tr>
-			<td><a>Register</a></td>
-		</tr>
+<table class="middle">
 		<tr>
 			<td><a>Password:</a></td>
 			<td><input type="password" name="Password" id="password"></td>
@@ -100,6 +95,7 @@ $("#reg").on("click", function() {
 		</tr>
 </table>
 </form>
-
+</div>
+</div>
 </body>
 </html>

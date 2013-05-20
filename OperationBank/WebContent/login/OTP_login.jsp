@@ -6,6 +6,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <script type="text/javascript" src="/OperationBank/js/jquery-1.9.0.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -21,33 +22,12 @@
 <title>Inloggen fase 2.</title>
 </head>
 <body>
-	<center>
-		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
-<p>
-	DEBUG:
-	<%
-		out.print(request.getAttribute("login").toString());
-	%> 
-</p>
-	<p>
-		De hex voorstelling van de qr code.<br>
-		<%
-		out.print(request.getAttribute("sign_data").toString());
-	 	%> 
-	</p>
-	<p>
-	DEBUG:
-		<%
-			out.print(request.getSession().getAttribute("shared_secret"));
-		%>
-	</p>
-	De echte voorstelling van de qr code.
-	<p>
+<div id="wrap">
+<div id="header"><img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" /></div>
+<div id="content">
+	<h1>Login</h1>
+	<p class="center">Scan onderstaande QR code met uw smartphone applicatie.</p>
+	<p class="center">
 		<%
 			ByteArrayOutputStream baout = QRCode
 					.from(request.getAttribute("sign_data").toString())
@@ -59,7 +39,7 @@
 	</p>
 	<p>
 	<form name="response_form" method="post" action="/OperationBank/OTPController">
-		<table>
+		<table class="middle">
 			<tr>
 				<td><label for="response_code">Response code: </label>
 				</td>
@@ -73,5 +53,7 @@
 		</table>
 	</form>
 	</p>
+	</div>
+</div>
 </body>
 </html>

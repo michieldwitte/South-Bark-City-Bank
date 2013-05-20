@@ -5,6 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="no-cache">
 <meta http-equiv="Expires" content="-1">
@@ -108,21 +109,16 @@ BigInteger.prototype.getString = function(){
 <%
 	Status.indexCheck(request, response);
 %>
-	<center>
+<div id="wrap">
+	<div id="header">
 		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
-
-	<table>
-		<tr>
-			<td>
-
-				<form name="form1" method="post" action="#">
-					<fieldset>
-						<legend>Login</legend>
+	</div>
+	
+	<div id="content">
+		<div id="login">
+			<form name="form1" method="post" action="#">
+				<fieldset class="middle">
+					<legend>Login</legend>
 						<table>
 							<tr>
 								<td><label for="username">Username :</label></td>
@@ -140,28 +136,16 @@ BigInteger.prototype.getString = function(){
 						</table>
 					</fieldset>
 				</form>
-			</td>
-			<td>
-
-				<fieldset>
+		</div>
+		<div id="register">
+			<fieldset class="middle">
+		
 					<legend>Register</legend>
-					<table>
-						<tr>
-							<td>Register now and receive 500 dorra for free !</td>
-						</tr>
-
-						<tr>
-							<td><a href="register/register.jsp">Click here to
-									register.</a></td>
-						</tr>
-
-					</table>
+					Register now and receive 500 dorra for free !
+					<a href="register/register.jsp">Click here to register.</a>
 				</fieldset>
-
-
-			</td>
-		</tr>
-	</table>
-
+		</div>
+	</div>
+</div>
 </body>
 </html>

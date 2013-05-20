@@ -1,0 +1,51 @@
+#wrap
+{
+	width:728px;
+	background:#A4A4A4;
+	margin-left: auto ;
+  	margin-right: auto ;
+  	height:750px;
+  	font:calibre;
+}
+
+ #content
+ {
+ 	margin-top:50px;
+ }
+ 
+ #register
+ {
+ 	margin-top: 50px;
+ }
+fieldset
+{
+	border:1;
+	border-color:#848484;
+	width: 300px;
+}
+
+legend
+{
+	font-size: 20px;
+}
+
+td
+{
+	text-align:right;
+}
+
+.center
+{
+	text-align:center;
+}
+
+.middle
+{
+	margin-left: auto ;
+  	margin-right: auto ;
+}
+
+h1
+{
+	text-align:center;
+}
