@@ -23,7 +23,7 @@
 	
 	<p>Balance:  <% out.print(request.getAttribute("balance").toString()); %></p>
 	
-	<table class="middle">
+	<table id="transaction" class="middle">
 		<tr>
 			<td>amount</td>
 			<td>from</td>

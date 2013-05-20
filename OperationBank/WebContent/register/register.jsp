@@ -21,7 +21,7 @@ $(document).ready(function() {
 $("#reg").on("click", function() {
 	var password = $("#password").val();
 	var confirm = $("#ConfirmPassword").val();
-	if(password.length > 7 && password == confirm){
+	if(password.length > 6 && password == confirm){
 		var salt     =  CryptoJS.SHA256(password);
 
 		var pw_pbkdf2 = CryptoJS.PBKDF2(password,
