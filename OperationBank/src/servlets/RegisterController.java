@@ -91,7 +91,9 @@ public class RegisterController extends HttpServlet {
 				(country   != "") && 
 				(areaCode  != "") && 
 				(city      != "") && 
-				(address   != "")){
+				(address   != "") &&
+				password.length() > 6
+				){
 		}else{
 			return;
 
