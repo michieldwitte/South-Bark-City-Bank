@@ -54,7 +54,7 @@ TLS/SSL is de manier om vandaag vertrouwelijkheid te realiseren op transport/net
 \item Implementatie/algoritmische fouten.
 \end{itemize}
 Menselijke fouten zijn bijvoorbeeld het negeren van browser waarschuwingen en ingaan op phishing emails.
-Implementatie/algoritmische fouten zijn fouten die ge\"introduceerd zijn door het beveiligingssysteem zelf (implementatie, ontwerpfouten) of door slechte configuratie van het systeem. Een voorbeeld hiervan is het gebruik van md5 voor digital signatures bij TLS/SSL (md5 second-preimage resistance is gebroken).
+Implementatie/algoritmische fouten zijn fouten die ge\"introduceerd zijn door het beveiligingssysteem zelf (implementatie, ontwerpfouten) of door slechte configuratie van het systeem. Een voorbeeld hiervan is het gebruik van md5 voor digital signatures bij TLS/SSL (md5 strong collision resistance).
 
 Om het eerste probleem op te lossen maken we gebruik van een browser feature met de naam STS (strict-transport-security). Dit is een web security policy waarbij een webserver verklaart aan web clients dat het enkel en alleen maar mag benaderd worden via een HTTPS-verbinding. HSTS heeft vele features. E\'en van deze features is dat van zodra er een fout is met het certificaat de browser zal weigeren verbinding te maken met de website. De gebruiker kan deze waarschuwing niet negeren. We merken op dat het nog steeds mogelijk is om tijdens de eerste initiele handshake het slachtoffer te worden van een MITM-aanval. Het is dan ook aangeraden om contact op te nemen met browser vendors en op de preloaded HSTS sites lijst te komen. \cite{HSTS} \cite{STS} \cite{prehsts}
 \newline
