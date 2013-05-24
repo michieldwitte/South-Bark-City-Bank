@@ -7,6 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Transactions</title>
 </head>
@@ -14,17 +15,15 @@
 <%
 		Status.check(request, response);
 %>
-	<center>
-		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
+<div id="wrap">
+	<div id="header"><img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" /></div>
+	<div id="content">
 	<a href="LogOut.jsp">Logout</a>
 	<a href="NewTransaction.jsp">Create a new Transaction</a>
 	
-	<table>
+	<p>Balance:  <% out.print(request.getAttribute("balance").toString()); %></p>
+	
+	<table id="transaction" class="middle">
 		<tr>
 			<td>amount</td>
 			<td>from</td>
@@ -45,5 +44,7 @@
 			}
 	%>
 	</table>
+</div>
+</div>
 </body>
 </html>

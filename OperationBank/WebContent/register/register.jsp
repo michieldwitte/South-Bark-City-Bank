@@ -20,23 +20,43 @@ $(document).ready(function() {
 
 $("#reg").on("click", function() {
 	var password = $("#password").val();
-	var salt     =  CryptoJS.SHA256(password);
+	var confirm = $("#ConfirmPassword").val();
+	if(password.length > 6 && password == confirm){
+		var salt     =  CryptoJS.SHA256(password);
 
-	var pw_pbkdf2 = CryptoJS.PBKDF2(password,
-			                        salt, {
-		keySize : 256 / 64,
-		hasher : CryptoJS.algo.SHA256,
-		iterations : 1
-	});
+		var pw_pbkdf2 = CryptoJS.PBKDF2(password,
+				                        salt, {
+			keySize : 256 / 64,
+			hasher : CryptoJS.algo.SHA256,
+			iterations : 1
+		});
 	
-	alert(pw_pbkdf2);
-	$("#password").val(pw_pbkdf2);
-	$("#ConfirmPassword").val(pw_pbkdf2);
+		
+		$("#password").val(pw_pbkdf2);
+		$("#ConfirmPassword").val(pw_pbkdf2);
+	}
 	});
 });
 </script>
 </head>
 <body>
+<script>
+    function validate() {
+    	var password = document.reg.Password.value;
+    	var confirm = document.reg.ConfirmPassword.value;
+    	if(password.length < 7){
+    		alert("Password length is not correct");
+    		document.getElementById("passwordAlert").innerHTML = "The password must be at least 6 characters long.";
+    		return false;
+    	}else if( password != confirm){
+    		alert("Passwords don't match");
+    		document.getElementById("passwordAlert").innerHTML = "The passwords don't match";
+    		return false;
+    	}else{
+    		document.reg.submit();
+    	}
+    }
+</script>
 <%
 	if(request.getSession().getAttribute("status") != null){
 		String status = request.getSession().getAttribute("status").toString();
@@ -55,8 +75,8 @@ $("#reg").on("click", function() {
 
 <div id="content">
 <h1>Register</h1>
-<form method="POST" action="/OperationBank/RegisterController">
-<table class="middle">
+<form name ="reg" method="POST" action="/OperationBank/RegisterController">
+<table id="registertable" class="middle">
 		<tr>
 			<td><a>Password:</a></td>
 			<td><input type="password" name="Password" id="password"></td>
@@ -91,10 +111,17 @@ $("#reg").on("click", function() {
 		</tr>
 		<tr>
 			<td></td>
-			<td><input type="submit" name="submit" value="Submit" id="reg"></td>
+			<td><input type="submit" name="submit" value="Submit" id="reg" onclick="return validate();" /></td>
 		</tr>
 </table>
 </form>
+<div id="passwordAlert"></div>
+
+<br />
+<br />
+<br /><br />
+<br />
+<a href="../index.jsp">Return Home</a>
 </div>
 </div>
 </body>

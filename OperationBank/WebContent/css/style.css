@@ -1,11 +1,14 @@
 #wrap
 {
 	width:728px;
-	background:#A4A4A4;
+	border-width:3px;
+  	border-style:solid;
+  	border-color:#6E6E6E;
+  	background-color:#F2F2F2;
 	margin-left: auto ;
   	margin-right: auto ;
   	height:750px;
-  	font:calibre;
+  	font-family:"Verdana";
 }
 
  #content
@@ -17,11 +20,16 @@
  {
  	margin-top: 50px;
  }
+ 
+ #registertable
+ {
+ 	text-align:right;
+ }
 fieldset
 {
 	border:1;
 	border-color:#848484;
-	width: 300px;
+	width: 310px;
 }
 
 legend
@@ -29,7 +37,7 @@ legend
 	font-size: 20px;
 }
 
-td
+.right
 {
 	text-align:right;
 }
@@ -48,4 +56,14 @@ td
 h1
 {
 	text-align:center;
+}
+#passwordAlert
+{
+	color:red;
+	text-align:center;
+}
+
+#transaction
+{
+	border: 1px solid black;
 }

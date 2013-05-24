@@ -7,17 +7,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
-	<center>
-		<img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" />
-	</center>
-	<br />
-	<br />
-	<br />
-	<br />
+<div id="wrap">
+	<div id="header"><img alt="SouthBarkCityBank" src="SouthBarkCityBank.jpg" /></div>
+	<p class="center">Scan following QR code with the smartphone application.</p>
+	<p class="center">
 		<%
 			ByteArrayOutputStream baout = QRCode
 					.from(request.getAttribute("sign_data").toString())
@@ -26,9 +24,9 @@
 		%>
 
 		<img src="data:image/jpg;base64,<%=image%>" alt="qrcode" />
-		
+	</p>
 		<form name="response_form" method="post" action="ExecuteTransaction">
-		<table>
+		<table class="middle">
 			<tr>
 				<td><label for="response_code">Response code: </label>
 				</td>
@@ -49,5 +47,6 @@
 			</tr>
 		</table>
 	</form>
+</div>
 </body>
 </html>

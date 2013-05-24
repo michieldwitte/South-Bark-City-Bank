@@ -48,12 +48,25 @@ public class ViewTransactions extends HttpServlet {
 		}
 		
 		String GUUID = request.getSession().getAttribute("GUUID").toString();
+		request.setAttribute("balance", getBalance(GUUID));
 		ResultSet rs = getTransactions(GUUID);
 		if(rs != null){
 			request.getSession().setAttribute("transactions", rs);
 		}
 	    RequestDispatcher view = request.getRequestDispatcher("Transactions.jsp");
 	    view.forward(request, response); 
+	}
+	
+	public String getBalance(String GUUID){
+		try{
+			String sql_query = "SELECT balance from users where uuid='" + GUUID + "'";
+
+			DatabaseManager dbm = DatabaseManager.getInstance();
+			return dbm.querySingleValue(sql_query, "balance");
+		} catch (Exception ex){
+			System.out.println(ex);
+		}
+		return null;
 	}
 	
 	public ResultSet getTransactions(String GUUID){
